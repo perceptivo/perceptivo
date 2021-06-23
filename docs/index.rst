@@ -7,8 +7,16 @@ Welcome to perceptivo's documentation!
 ======================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 4
+   :caption: Hardware:
+
+   hardware/overview
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Software:
+
+
 
 
 
