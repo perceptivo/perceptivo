@@ -39,6 +39,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
+    'sphinx.ext.graphviz',
     'myst_parser'
 ]
 
