@@ -1,6 +1,6 @@
 # Overview
 
-# Hardware Block Diagram
+## Hardware Block Diagram
 
 ```{eval-rst}
 .. graphviz::
@@ -84,7 +84,7 @@
     }
 ```
 
-# Parts List
+## Parts List
 
 | Name | Distributor | Number | Link | Datasheet |
 | :--- | :----------- | -----: | ---- | --------- |
