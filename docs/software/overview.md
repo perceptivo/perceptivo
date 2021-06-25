@@ -4,6 +4,7 @@
 
 ```{eval-rst}
 .. graphviz::
+
     digraph g {
         newrank=true
         fontname="Courier New"
