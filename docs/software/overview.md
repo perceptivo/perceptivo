@@ -81,3 +81,67 @@
         
     }
 ```
+
+## Draft Description
+
+### Message-based architecture
+
+- The system will consist of separable modules that communicate with a globally-defined enum of message types. 
+- The system will consist of independent computers networked with an \[ad-hoc or hosted? wireless network\].
+- Messages will be serialized and sent as tcp packets between computers, and as inter-and intra-process packets within a computer.
+
+### Distribution of Labor
+
+- One computer will serve as the clinician-facing interface that controls the operation of the examination
+- One computer will serve as the primary examination device, delivering auditory stimuli, measuring pupil dilation, and controlling the stepping algorithm
+- One computer will serve as the patient-facing interface, presenting visual stimuli (as well as physical enclosure for cameras and speakers)
+
+### Synchronization
+
+- The two computers operating the examination will be tightly synchronized with a shared real-time clock
+- The examination computers will communicate asynchronously with the clinician-facing computer
+
+### GUI
+
+- The GUI will be made with Qt6, written in PySide6
+- \[*control requirements*\]
+- \[*display requirements*\]
+- \[*utility requirements*\]
+
+### Image Capture
+
+- Pupil images will be captured with a PiCam NoIR camera as single-channel luminance images from a YUV-encoded frame
+- Raw images will only be saved if explicitly requested, otherwise they will be shown in the GUI as a diagnostic
+
+### Pupil Processing
+
+- Pupil diameter will be extracted as the shorter diameter of an ellipse fit on the edges of a tracked pupil to account for eccentricity/occlusion
+- \[*filtering and signal conditioning*\]
+- \[*preservation of provenance*\]
+
+### Psychoacoustic Model
+
+this'll be a bit of work, ya!?
+
+### Sound
+
+#### Generation
+
+talk to avinash about stimuli
+
+#### Presentation
+
+- Sound will be presented with jack audio
+- Sound will be prebuffered in the presenting process, prioritizing continuity over low-latency
+
+#### Recording & Calibration
+
+### Video
+
+#### Generation
+
+#### Presentation
+
+### Patient Data
+
+### Maintenance, Logging, Debugging
