@@ -94,10 +94,10 @@
 
 | Name | Distributor | Number | Link | Datasheet |
 | :--- | :----------- | -----: | ---- | --------- |
-| Raspberry Pi 400 | Adafruit | 1 | https://www.adafruit.com/product/4796 | `x <../datasheets/pi400-product-brief.pdf>`_ |
-| | | | | |
-| | | | | |
-| | | | | |
+| Raspberry Pi 400 | Adafruit | 1 | https://www.adafruit.com/product/4796 | :download:`x <../datasheets/pi400-product-brief.pdf>` |
+| Touchscreen | | | | |
+| Mouse | | | | |
+| PSU | | | | |
 
 ### Raspis
 
