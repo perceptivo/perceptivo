@@ -21,8 +21,10 @@
               "speaker_l"  [fontname = "Courier New" shape = "Mrecord" label ="Speaker (L)" ];
               "speaker_r"  [fontname = "Courier New" shape = "Mrecord" label ="Speaker (R)" ];
               "microphone"  [ fontname = "Courier New" shape = "Mrecord" label ="Microphone" ];
+              "headphones" [fontname = "Courier New" shape = "Mrecord" label="Headphones"];
+              "rca" [fontname = "Courier New" shape = "Mrecord" label="RCA - 3.5mm"];
               "noir" [ fontname = "Courier New" shape = "Mrecord" label ="NoIR Camera" ];
-              "psu" [shape = "Mrecord" label="18V 2.6A PSU"]
+              "psu" [ fontname = "Courier New" shape = "Mrecord" label="18V 2.6A PSU"]
             {rank=same; noir dacadc}
             {rank=same; aamp60 microphone}
             {rank=same; speaker_l speaker_r psu}
@@ -30,11 +32,13 @@
           dacadc -> raspi0 [label="microphone input"]
           dacadc -> raspi0 [label="power"]
           raspi0 -> dacadc [label="sound output"];
-          dacadc -> aamp60 [label="sound output"];
+          dacadc -> aamp60 [label="line-level sound"];
+          dacadc -> rca [label="line-level sound"];
+          rca -> headphones [label="line-level sound"]
           aamp60 -> dacadc [label="power"];
-          microphone -> dacadc
-          aamp60 -> speaker_l
-          aamp60 -> speaker_r
+          microphone -> dacadc [label="line-level sound"];
+          aamp60 -> speaker_l [label="amplified sound"];
+          aamp60 -> speaker_r [label="amplified sound"];
           psu -> aamp60 [label="power"]
           noir -> raspi0 [penwidth = 1 fontsize = 14 fontcolor = "grey28"  label="pupil"]
         
@@ -42,7 +46,7 @@
             label="Raspi 1"
             
             "raspi1" [fontname = "Courier New" shape = "Mrecord" label ="Raspi 1\n+sd card\n+psu" ];
-            "displ_patient" [label="Patient Display"]
+            "displ_patient" [label="Patient Display"];
             "webcam" [label="RGB Webcam"]
             {rank=same; webcam displ_patient}
           }
@@ -51,7 +55,7 @@
           
             //   other hardware
           "rtc" [ fontname = "Courier New" shape = "Mrecord" label ="RTC" ];
-          "irlight" [label="IR Illuminator"]
+          "irlight" [fontname = "Courier New" shape = "Mrecord" label="IR Illuminator"]
           rtc -> raspi0
           rtc -> raspi1
       }
@@ -86,17 +90,50 @@
 
 ## Parts List
 
+### Clinician Interface
+
+| Name | Distributor | Number | Link | Datasheet |
+| :--- | :----------- | -----: | ---- | --------- |
+| Raspberry Pi 400 | Adafruit | 1 | https://www.adafruit.com/product/4796 | `x <../datasheets/pi400-product-brief.pdf>`_ |
+| | | | | |
+| | | | | |
+| | | | | |
+
+### Raspis
+
 | Name | Distributor | Number | Link | Datasheet |
 | :--- | :----------- | -----: | ---- | --------- |
 | Raspberry Pi 4B - 8GB | Adafruit | 1 | https://www.adafruit.com/product/4564 | |
-| AAmp60 | HiFiBerry | 1 | https://www.hifiberry.com/shop/boards/hifiberry-aamp60/ | |
-| DAC+ADC Pro | HiFiBerry | 1 | https://www.hifiberry.com/shop/boards/hifiberry-dac-adc-pro/ | | 
-| Speakers | | 2 | | |
 | RTC | | | | |
-| NoIR Camera? | | | | |
-| Interface/Screen? | | | | |
 | | | | | |
 | | | | | |
 | | | | | |
 | | | | | |
 
+### Audio
+
+| Name | Distributor | Number | Link | Datasheet |
+| :--- | :----------- | -----: | ---- | --------- |
+| AAmp60 | HiFiBerry | 1 | https://www.hifiberry.com/shop/boards/hifiberry-aamp60/ | |
+| DAC+ADC Pro | HiFiBerry | 1 | https://www.hifiberry.com/shop/boards/hifiberry-dac-adc-pro/ | | 
+| Speakers | | 2 | | |
+| | | | | |
+| | | | | |
+| | | | | |
+| | | | | |
+
+### Video
+
+| Name | Distributor | Number | Link | Datasheet |
+| :--- | :----------- | -----: | ---- | --------- |
+| NoIR Camera? | | | | |
+| Interface/Screen? | | | | |
+| Light source | | | | |
+| | | | | |
+| | | | | |
+| | | | | |
+
+### Etc
+
+| Name | Distributor | Number | Link | Datasheet |
+| :--- | :----------- | -----: | ---- | --------- |
