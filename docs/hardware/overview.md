@@ -114,8 +114,8 @@
 
 | Name | Distributor | Number | Link | Datasheet |
 | :--- | :----------- | -----: | ---- | --------- |
-| AAmp60 | HiFiBerry | 1 | [🛒](https://www.hifiberry.com/shop/boards/hifiberry-aamp60/) | [ ](https://www.hifiberry.com/docs/data-sheets/datasheet-aamp60/) |
-| DAC+ADC Pro | HiFiBerry | 1 | [🛒](https://www.hifiberry.com/shop/boards/hifiberry-dac-adc-pro/) | [ ](https://www.hifiberry.com/docs/data-sheets/datasheet-dac-adc-pro/) | 
+| AAmp60 | HiFiBerry | 1 | [🛒](https://www.hifiberry.com/shop/boards/hifiberry-aamp60/) | [🔗](https://www.hifiberry.com/docs/data-sheets/datasheet-aamp60/) |
+| DAC+ADC Pro | HiFiBerry | 1 | [🛒](https://www.hifiberry.com/shop/boards/hifiberry-dac-adc-pro/) | [🔗](https://www.hifiberry.com/docs/data-sheets/datasheet-dac-adc-pro/) | 
 | Speakers | | 2 | | |
 | Microphone | | 1 | | |
 | Headphones | | 1 | | |
