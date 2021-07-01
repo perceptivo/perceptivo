@@ -30,6 +30,6 @@ $25.98, 3"
 
 ![](../freqresponse/Dayton_RS75T-8.png)
 
-# Additional References
+## Additional References
 
 * [http://feleppa.com.au/speakermeasmid.html](http://feleppa.com.au/speakermeasmid.html)
