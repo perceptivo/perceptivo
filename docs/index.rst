@@ -11,6 +11,7 @@ Welcome to perceptivo's documentation!
    :caption: Hardware:
 
    hardware/overview
+   hardware/speaker_candidates
 
 .. toctree::
    :maxdepth: 4
