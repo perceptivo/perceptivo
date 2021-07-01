@@ -94,40 +94,41 @@
 
 | Name | Distributor | Number | Link | Datasheet |
 | :--- | :----------- | -----: | ---- | --------- |
-| Raspberry Pi 400 | Adafruit | 1 | https://www.adafruit.com/product/4796 | :download:`x <../datasheets/pi400-product-brief.pdf>` |
-| Touchscreen | | | | |
-| Mouse | | | | |
-| PSU | | | | |
+| Raspberry Pi 400 | Adafruit | 1 | [🛒](https://www.adafruit.com/product/4796) | {download}`📁 </datasheets/pi400-product-brief.pdf>` |
+| Touchscreen | | 1 | | |
+| Mouse | | 1 | | |
+| PSU | | 1 | | |
 
 ### Raspis
 
 | Name | Distributor | Number | Link | Datasheet |
 | :--- | :----------- | -----: | ---- | --------- |
-| Raspberry Pi 4B - 8GB | Adafruit | 1 | https://www.adafruit.com/product/4564 | |
-| RTC | | | | |
-| | | | | |
-| | | | | |
-| | | | | |
-| | | | | |
+| Raspberry Pi 4B - 8GB | Adafruit | 2 | [🛒](https://www.adafruit.com/product/4564) | {download}`📁 - brief </datasheets/raspi4-product-brief.pdf>`<br>{download}`📁 - mechanical </datasheets/raspi4-mechanical.pdf>`<br>{download}`📁 - circuits</datasheets/raspi4-circuit-schematic.pdf>`<br>{download}`📁 - bcm2711 </datasheets/bcm2711.pdf>` |
+| USB PSU | | 1 | | |
+| 18V 2.6A PSU | | 1 | | |
+| SD Card | | 2 | | |
+| Enclosures? | | 2 | | |
+| RTC | | 1 | | |
 
 ### Audio
 
 | Name | Distributor | Number | Link | Datasheet |
 | :--- | :----------- | -----: | ---- | --------- |
-| AAmp60 | HiFiBerry | 1 | https://www.hifiberry.com/shop/boards/hifiberry-aamp60/ | |
-| DAC+ADC Pro | HiFiBerry | 1 | https://www.hifiberry.com/shop/boards/hifiberry-dac-adc-pro/ | | 
+| AAmp60 | HiFiBerry | 1 | [🛒](https://www.hifiberry.com/shop/boards/hifiberry-aamp60/) | [ ](https://www.hifiberry.com/docs/data-sheets/datasheet-aamp60/) |
+| DAC+ADC Pro | HiFiBerry | 1 | [🛒](https://www.hifiberry.com/shop/boards/hifiberry-dac-adc-pro/) | [ ](https://www.hifiberry.com/docs/data-sheets/datasheet-dac-adc-pro/) | 
 | Speakers | | 2 | | |
-| | | | | |
-| | | | | |
-| | | | | |
+| Microphone | | 1 | | |
+| Headphones | | 1 | | |
+| RCA -> 3.5mm Adapter | | 1 | | |
 | | | | | |
 
 ### Video
 
 | Name | Distributor | Number | Link | Datasheet |
 | :--- | :----------- | -----: | ---- | --------- |
-| NoIR Camera? | | | | |
-| Interface/Screen? | | | | |
+| NoIR Camera | | | | |
+| PiCam | | | | |
+| Touchscreen | | | | |
 | Light source | | | | |
 | | | | | |
 | | | | | |
@@ -137,4 +138,6 @@
 
 | Name | Distributor | Number | Link | Datasheet |
 | :--- | :----------- | -----: | ---- | --------- |
-| | | | | |
+| Wired Router | | | | |
+| Ethernet Cables | | | | |
+| Small keyboard to attach to patient display | | | | |
