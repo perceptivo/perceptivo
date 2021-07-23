@@ -130,9 +130,6 @@
 | Raspberry Pi Camera V2 | Adafruit | 1 | [🛒](https://www.adafruit.com/product/3099?src=raspberrypi) | [🔗]() |
 | Touchscreen | | | [🛒]() | [🔗]() |
 | Light source? | | | [🛒]() | [🔗]() |
-| | | | | |
-| | | | | |
-| | | | | |
 
 ### Etc
 
