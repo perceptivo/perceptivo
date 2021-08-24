@@ -27,12 +27,20 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         self.vid_patient = None # type: Optional[widgets.Video]
         self.audiogram = None # type: Optional[widgets.Audiogram]
 
-        self.init_ui()
+        self.state = {
+            'frequencies': tuple(),
+            'amplitudes': tuple()
+        }
+
+        self._init_ui()
+        self._init_signals()
+
 
         self.show()
 
 
-    def init_ui(self):
+    def _init_ui(self):
+
         self.setCentralWidget(self.widget)
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
@@ -53,7 +61,16 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         self.layout.addWidget(self.vid_patient, 0, 2)
         self.layout.addWidget(self.pupil_ts, 1, 0, 1, 2)
         self.layout.addWidget(self.vid_pupil, 1, 2)
+        self.layout.setColumnStretch(0, 1)
+        self.layout.setColumnStretch(1, 1)
+        self.layout.setColumnStretch(2, 1)
 
+    def _init_signals(self):
+        self.control_panel.valueChanged.connect(self.audiogram.gridChanged)
+        self.control_panel.scaleChanged.connect(self.audiogram.scaleChanged)
+
+    def update_grid(self, value):
+        pass
 
 
 
