@@ -60,7 +60,7 @@ class Audiogram(QtWidgets.QGroupBox):
 
         points = np.array(np.meshgrid(self.frequencies, self.amplitudes)).T.reshape(-1,2)
         self.logger.debug(f'Drawing Points: {points}')
-        
+
         self.points.setData(pos=points)
 
 
