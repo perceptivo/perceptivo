@@ -19,6 +19,24 @@ Welcome to perceptivo's documentation!
 
    software/overview
 
+.. currentmodule:: perceptivo
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: module.rst
+   :recursive:
+
+   data
+   gui
+   networking
+   psychophys
+   sound
+   stim
+   video
+   prefs
+
+
+
 
 
 

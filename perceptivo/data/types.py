@@ -47,7 +47,7 @@ class GUI_Param_Type:
     key: GUI_PARAM_KEY
     name: str
     widget_type: GUI_WIDGET_TYPE
-    default: typing.Any
+    default: typing.Any = field(default=None)
     args: list = field(default_factory=list)
     kwargs: dict = field(default_factory=dict)
 
