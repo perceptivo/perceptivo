@@ -130,4 +130,4 @@ dmypy.json
 
 .idea
 
-docs/_automodule
+docs/_autosummary

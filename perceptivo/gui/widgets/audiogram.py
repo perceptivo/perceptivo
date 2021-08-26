@@ -35,6 +35,8 @@ class Audiogram(QtWidgets.QGroupBox):
 
     @QtCore.Slot(GUI_Param)
     def gridChanged(self, value: GUI_Param):
+        if value.key not in ('frequencies', 'amplitudes'):
+            return
         self.logger.debug(f'Grid Changed: {GUI_Param}')
         if value.key == 'frequencies':
             self.frequencies = value.value

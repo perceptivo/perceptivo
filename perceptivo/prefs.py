@@ -1,6 +1,7 @@
 """
 Preferences and configuration shared throughout the program
 """
+import typing
 from pathlib import Path
 from dataclasses import dataclass
 
@@ -11,7 +12,8 @@ class Directories:
     log_dir: Path = user_dir / 'logs/'
 
 
-@dataclass
-class Networking:
-    pass
+
+
+
+
 

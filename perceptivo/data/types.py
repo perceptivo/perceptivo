@@ -8,7 +8,8 @@ from dataclasses import dataclass, field
 from PySide6.QtWidgets import QWidget
 
 
-GUI_PARAM_KEY = typing.Literal['frequencies', 'amplitudes', 'log_x', 'log_y', 'extra_amplitude',]
+
+GUI_PARAM_KEY = typing.Literal['frequencies', 'amplitudes', 'log_x', 'log_y', 'extra_amplitude','amplitude_step', 'max_amplitude']
 """
 Possible keys for GUI parameters. 
 
@@ -17,6 +18,7 @@ Possible keys for GUI parameters.
 * ``log_x`` - boolean indicating whether an x-axis should be log scaled (True) or linearly scaled
 * ``log_y`` - boolean indicating whether a y-axis should be log scaled (True) or linearly scaled
 * ``extra_amplitude`` - boolean indicating whether an additional, suprathreshold amplitude should be tested as a confirmation
+* ``amplitude_step`` - Step size of amplitudes to test in dB
 """
 
 GUI_WIDGET_TYPE = typing.Literal['int', 'float', 'range', 'tuple', 'bool']
@@ -57,4 +59,20 @@ class GUI_Param:
     """Container for GUI_Params in transit"""
     key: GUI_PARAM_KEY
     value: typing.Union[str, float, tuple]
+
+# --------------------------------------------------
+# Networking
+# --------------------------------------------------
+
+ZMQ_SOCKET = typing.Literal['REQ', 'REP', 'PUB', 'SUB', 'PAIR', 'DEALER', 'ROUTER', 'PULL', 'PUSH']
+ZMQ_PROTOCOL = typing.Literal['tcp', 'ipc', 'inproc']
+
+
+
+@dataclass
+class Socket:
+    socket_type: ZMQ_SOCKET
+    protocol: ZMQ_PROTOCOL
+    port: int
+    id: str
 

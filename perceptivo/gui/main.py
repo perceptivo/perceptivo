@@ -5,10 +5,12 @@ Main Gui container for Perceptivo Clinician interface
 """
 from typing import Optional
 from PySide6 import QtWidgets
+from PySide6.QtCore import Signal, Slot
 from importlib.metadata import version
 from perceptivo.gui import widgets
+from perceptivo.root import Perceptivo_Object
 
-class Perceptivo_Clinician(QtWidgets.QMainWindow):
+class Perceptivo_Clinician(QtWidgets.QMainWindow, Perceptivo_Object):
     """
     GUI container for the Perceptivo clinician interface
     """
@@ -34,7 +36,6 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
 
         self._init_ui()
         self._init_signals()
-
 
         self.show()
 
@@ -69,11 +70,15 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         self.control_panel.valueChanged.connect(self.audiogram.gridChanged)
         self.control_panel.scaleChanged.connect(self.audiogram.scaleChanged)
 
+        self.control_panel.startToggled.connect(self.setStarted)
+
     def update_grid(self, value):
         pass
 
 
-
+    @Slot(bool)
+    def setStarted(self, value:bool):
+        self.logger.debug(f"Setting start value to {value}")
 
     @property
     def settings(self):
