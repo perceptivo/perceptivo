@@ -71,7 +71,7 @@ autodoc_default_options = {
     'autosummary': True
 }
 
-autosummary_generate = True
+autosummary_generate = False
 
 # --------------------------------------------------
 # intersphinx

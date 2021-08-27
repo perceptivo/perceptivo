@@ -19,21 +19,17 @@ Welcome to perceptivo's documentation!
 
    software/overview
 
-.. currentmodule:: perceptivo
+.. toctree::
+   :maxdepth: 4
+   :caption: API:
 
-.. autosummary::
-   :toctree: _autosummary
-   :template: module.rst
-   :recursive:
-
-   data
-   gui
-   networking
-   psychophys
-   sound
-   stim
-   video
-   prefs
+   api/data/index
+   api/gui/index
+   api/networking/index
+   api/psychophys/index
+   api/sound/index
+   api/stim/index
+   api/video/index
 
 
 

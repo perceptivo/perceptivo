@@ -38,8 +38,8 @@ EXAMINER = {
     )
 }
 """
-Sockets used by the 'examiner' machine responsible for managing the exam: measuring the pupil,
-presenting sounds, and maintaining the psychoacoustic model
+Sockets used by the 'examiner' machine responsible for managing the exam -
+measuring the pupil, presenting sounds, and maintaining the psychoacoustic model
 
 Processes:
 
