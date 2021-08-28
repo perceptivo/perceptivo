@@ -71,6 +71,8 @@ autodoc_default_options = {
     'autosummary': True
 }
 
+autodoc_mock_imports = ['autopilot']
+
 autosummary_generate = False
 
 # --------------------------------------------------
