@@ -40,8 +40,9 @@ class GUI_Param_Type:
         key (GUI_PARAMS): the key used for the parameter
         name (str): A human readable name for the parameter
         widget_type (GUI_WIDGETS): A string that indicates the type of widget that should be used.
-            Different ``widget_type``s may use different widgets, combinations of widgets, and
+            Different ``widget_type`` s may use different widgets, combinations of widgets, and
             validators, and are thus not strictly isomorphic to a single widget type.
+
         default (any): the default value to be set, must correspond to widget type
         args (list): args to pass to the widget
         kwargs (dict): kwargs to pass to the widget

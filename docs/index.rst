@@ -30,6 +30,9 @@ Welcome to perceptivo's documentation!
    api/sound/index
    api/stim/index
    api/video/index
+   api/prefs
+   api/root
+
 
 
 

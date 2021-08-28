@@ -68,7 +68,6 @@ autodoc_default_options = {
     'show-inheritance': False,
     'toctree': True,
     'undoc-members': True,
-    'imported-members': False,
     'autosummary': True
 }
 
