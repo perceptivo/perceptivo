@@ -71,7 +71,7 @@ autodoc_default_options = {
     'autosummary': True
 }
 
-autodoc_mock_imports = ['autopilot']
+autodoc_mock_imports = ['autopilot', 'PySide6']
 
 autosummary_generate = False
 
