@@ -4,6 +4,8 @@ Dataclasses for intra-program data exchange
 import typing
 from enum import Enum, auto
 from dataclasses import dataclass, field
+import shutil
+from pathlib import Path
 
 from PySide6.QtWidgets import QWidget
 
@@ -78,5 +80,36 @@ class Socket:
     mode: ZMQ_MODE
     port: int
     ip: str = field(default='*')
+
+
+
+# --------------------------------------------------
+# Sound
+# --------------------------------------------------
+
+@dataclass
+class Jackd_Config:
+    """
+    Configure the jackd daemon used by the sound server, see https://linux.die.net/man/1/jackd
+
+    Params:
+        bin (:class:`pathlib.Path`): Path to the jackd binary
+        priority (int): Priority to run the process (higher is better), default 75
+        driver (str): Driver to use, default 'alsa'
+        device_name (str): Device to use in alsa's parlance, default 'hw:sndrpihifiberry'
+        fs (int): Sampling rate in Hz, default 44100
+        nperiods (int): Number of periods per buffer cycle, default 3
+        period (int): size of period, default 1024 samples.
+        launch_str (str): launch string with arguments compiled from the other arguments
+    """
+    bin: Path = Path(shutil.which('jackd'))
+    priority: int = 75
+    driver: str = "alsa"
+    device_name: str = "hw:sndrpihifiberry"
+    fs: int = 44100
+    nperiods: int = 3
+    period: int = 1024
+    launch_str: str = f'{bin} -P{priority} -R -d{driver} -d{device_name} -D -r{fs} -n{nperiods} -p{period} -s &'
+
 
 

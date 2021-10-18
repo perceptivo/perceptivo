@@ -1,3 +1,5 @@
+.. _SoftwareOverview:
+
 # Software Overview
 
 ## Block Diagram

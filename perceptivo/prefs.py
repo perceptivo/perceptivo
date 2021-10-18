@@ -4,6 +4,7 @@ Preferences and configuration shared throughout the program
 import typing
 from pathlib import Path
 from dataclasses import dataclass
+import shutil
 
 @dataclass
 class Directories:
