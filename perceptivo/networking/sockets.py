@@ -4,7 +4,7 @@ Abstract description of socket topology.
 Each entry in each dict is a set of sockets to be run in an independent process.
 """
 
-from perceptivo.data.types import Socket
+from perceptivo.types.networking import Socket
 
 CLINICIAN_IP = "192.168.0.100"
 EXAMINER_IP = "192.168.0.101"

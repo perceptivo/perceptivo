@@ -12,7 +12,8 @@ from zmq.eventloop.zmqstream import ZMQStream
 from tornado.ioloop import IOLoop
 
 from perceptivo.root import Perceptivo_Object
-from perceptivo.data.types import Socket
+from perceptivo.types.networking import Socket
+
 
 class Node(Perceptivo_Object):
 

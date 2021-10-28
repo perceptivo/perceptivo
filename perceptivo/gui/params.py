@@ -2,7 +2,7 @@
 Parameters presented to the clinician to control the operation of the device
 """
 
-from perceptivo.data.types import GUI_Param_Type as Param
+from perceptivo.types.gui import GUI_Param_Type as Param
 from collections import OrderedDict as odict
 from PySide6 import QtWidgets
 from perceptivo.gui.widgets.components import Range_Setter

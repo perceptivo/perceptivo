@@ -9,7 +9,8 @@ import pyqtgraph as pg
 import numpy as np
 from perceptivo.data.logging import init_logger
 
-from perceptivo.data.types import GUI_Param
+from perceptivo.types.gui import GUI_Param
+
 
 class Audiogram(QtWidgets.QGroupBox):
     def __init__(self):

@@ -14,7 +14,7 @@ from time import sleep
 from autopilot import prefs
 prefs.set('AUDIOSERVER', 'jack')
 from autopilot.stim.sound import jackclient
-from perceptivo.data.types import Jackd_Config
+from perceptivo.types.sound import Jackd_Config
 
 _jackd_proc: typing.Optional[subprocess.Popen] = None
 

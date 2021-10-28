@@ -9,7 +9,7 @@ from PySide6.QtCore import Signal, Slot
 
 import numpy as np
 
-from perceptivo.data.types import GUI_Param
+from perceptivo.types.gui import GUI_Param
 from perceptivo.data.logging import init_logger
 
 class Range_Setter(QtWidgets.QWidget):

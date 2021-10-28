@@ -5,7 +5,8 @@ entrypoint for patient interface
 from perceptivo.root import Runtime
 from perceptivo import sound
 
-from perceptivo.data.types import Jackd_Config
+from perceptivo.types.sound import Jackd_Config
+
 
 class Patient(Runtime):
     """
