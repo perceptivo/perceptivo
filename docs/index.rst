@@ -24,6 +24,7 @@ Welcome to perceptivo's documentation!
    :caption: API:
 
    api/data/index
+   api/types/index
    api/gui/index
    api/networking/index
    api/psychophys/index
