@@ -71,7 +71,7 @@ autodoc_default_options = {
     'autosummary': True
 }
 
-autodoc_mock_imports = ['autopilot', 'PySide6']
+autodoc_mock_imports = ['autopilot', 'PySide6', 'pyqtgraph']
 
 autosummary_generate = False
 

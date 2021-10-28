@@ -7,14 +7,14 @@ Welcome to perceptivo's documentation!
 ======================================
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
    :caption: Hardware:
 
    hardware/overview
    hardware/speaker_candidates
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
    :caption: Software:
 
    software/overview

@@ -116,26 +116,26 @@
 | AAmp60 | HiFiBerry | 1 | [🛒](https://www.hifiberry.com/shop/boards/hifiberry-aamp60/) | [🔗](https://www.hifiberry.com/docs/data-sheets/datasheet-aamp60/) |
 | DAC+ADC Pro | HiFiBerry | 1 | [🛒](https://www.hifiberry.com/shop/boards/hifiberry-dac-adc-pro/) | [🔗](https://www.hifiberry.com/docs/data-sheets/datasheet-dac-adc-pro/) | 
 | Tang Band W3-1878 | Parts Express | 2 | [🛒](https://www.parts-express.com/Tang-Band-W3-1878-3-Full-Range-Driver-264-902) | [🔗](http://www.loudspeakerdatabase.com/TangBand/W3-1878) |
-| Condenser Microphone | | 1 | [🛒]() | [🔗]() |
-| Phantom Power Supply | | 1 | [🛒]() | [🔗]() |
+| Condenser Microphone | | 1 |  |  |
+| Phantom Power Supply | | 1 |  |  |
 | Sennheiser HDA 300 | | 1 | [🛒](https://www.bhphotovideo.com/c/product/1023207-REG/sennheiser_hda300_hda_300_audiometers_headphones.html) |  {download}`📁</datasheets/HDA300.pdf>` |
-| RCA -> 3.5mm Adapter | | 1 | [🛒]() | [🔗]() |
+| RCA -> 3.5mm Adapter | | 1 |  |  |
 | | | | | |
 
 ### Video
 
 | Name | Distributor | Number | Link | Datasheet |
 | :--- | :----------- | -----: | ---- | --------- |
-| NoIR Camera | Adafruit | 1 |  [🛒](https://www.adafruit.com/product/3100?src=raspberrypi) | [🔗]() |
-| Raspberry Pi Camera V2 | Adafruit | 1 | [🛒](https://www.adafruit.com/product/3099?src=raspberrypi) | [🔗]() |
-| Touchscreen | | | [🛒]() | [🔗]() |
-| Light source? | | | [🛒]() | [🔗]() |
+| NoIR Camera | Adafruit | 1 |  [🛒](https://www.adafruit.com/product/3100?src=raspberrypi) |  |
+| Raspberry Pi Camera V2 | Adafruit | 1 | [🛒](https://www.adafruit.com/product/3099?src=raspberrypi) |  |
+| Touchscreen | | |  |  |
+| Light source? | | |  |  |
 
 ### Etc
 
 | Name | Distributor | Number | Link | Datasheet |
 | :--- | :----------- | -----: | ---- | --------- |
-| Netgear 5-Port Switch (GS105NA) | Newegg | 1 | [🛒](https://www.newegg.com/netgear-gs105-v5-5-x-rj45/p/N82E16833122128) | [🔗]() |
-| Ethernet Cables (10ft) | Newegg | 3 | [🛒](https://www.newegg.com/p/N82E16812119169) | [🔗]() |
-| Perixx Periboard-706plus with trackball | Newegg | 1 | [🛒](https://www.newegg.com/perixx-10532-usb-rf-wireless/p/0GA-0038-00012?quicklink=true) | [🔗]() |
+| Netgear 5-Port Switch (GS105NA) | Newegg | 1 | [🛒](https://www.newegg.com/netgear-gs105-v5-5-x-rj45/p/N82E16833122128) |  |
+| Ethernet Cables (10ft) | Newegg | 3 | [🛒](https://www.newegg.com/p/N82E16812119169) |  |
+| Perixx Periboard-706plus with trackball | Newegg | 1 | [🛒](https://www.newegg.com/perixx-10532-usb-rf-wireless/p/0GA-0038-00012?quicklink=true) |  |
 | Speaker Wire | | | | |

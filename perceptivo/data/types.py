@@ -44,7 +44,6 @@ class GUI_Param_Type:
         widget_type (GUI_WIDGETS): A string that indicates the type of widget that should be used.
             Different ``widget_type`` s may use different widgets, combinations of widgets, and
             validators, and are thus not strictly isomorphic to a single widget type.
-
         default (any): the default value to be set, must correspond to widget type
         args (list): args to pass to the widget
         kwargs (dict): kwargs to pass to the widget
@@ -86,6 +85,12 @@ class Socket:
 # --------------------------------------------------
 # Sound
 # --------------------------------------------------
+def _find_jackd() -> Path:
+    jackd_location = shutil.which('jackd')
+    if jackd_location is None:
+        return Path('jackd')
+    else:
+        return Path(jackd_location)
 
 @dataclass
 class Jackd_Config:
@@ -102,7 +107,7 @@ class Jackd_Config:
         period (int): size of period, default 1024 samples.
         launch_str (str): launch string with arguments compiled from the other arguments
     """
-    bin: Path = Path(shutil.which('jackd'))
+    bin: Path = field(default_factory= _find_jackd)
     priority: int = 75
     driver: str = "alsa"
     device_name: str = "hw:sndrpihifiberry"
@@ -143,6 +148,7 @@ class Audiogram:
         >>> agram[3000] = Threshold(3000, 30)
         >>> agram[3000]
         Threshold(frequency=1000, threshold=10, confidence=0)
+
     """
     thresholds: typing.List[Threshold]
 
