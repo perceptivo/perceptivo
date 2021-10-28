@@ -63,7 +63,7 @@ tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>
 
 [[package]]
 name = "auto-pi-lot"
-version = "0.4.0"
+version = "0.4.3"
 description = "Distributed behavioral experiments"
 category = "main"
 optional = false
@@ -81,7 +81,7 @@ PySide2 = "*"
 pyzmq = ">=18.1"
 requests = "*"
 scikit-video = "*"
-scipy = "*"
+scipy = ">=1.6.0"
 tables = ">=3.4.2"
 tornado = ">=5.0"
 tqdm = "*"
@@ -231,7 +231,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "furo"
-version = "2021.6.18b36"
+version = "2021.10.9"
 description = "A clean customisable Sphinx documentation theme."
 category = "main"
 optional = true
@@ -239,10 +239,10 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 beautifulsoup4 = "*"
-sphinx = ">=3.0,<5.0"
+sphinx = ">=4.0,<5.0"
 
 [package.extras]
-doc = ["myst-parser", "sphinx-copybutton", "sphinx-inline-tabs", "docutils (!=0.17)"]
+doc = ["myst-parser", "sphinx-copybutton", "sphinx-design", "sphinx-inline-tabs"]
 test = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
@@ -555,7 +555,7 @@ numpy = ">=1.9.0"
 
 [[package]]
 name = "myst-parser"
-version = "0.15.1"
+version = "0.15.2"
 description = "An extended commonmark compliant parser, with bridges to docutils & sphinx."
 category = "main"
 optional = true
@@ -567,7 +567,7 @@ jinja2 = "*"
 markdown-it-py = ">=1.0.0,<2.0.0"
 mdit-py-plugins = ">=0.2.8,<0.3.0"
 pyyaml = "*"
-sphinx = ">=3,<5"
+sphinx = ">=3.1,<5"
 
 [package.extras]
 code_style = ["pre-commit (>=2.12,<3.0)"]
@@ -2692,7 +2692,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "pyqtgraph"
-version = "0.12.2"
+version = "0.12.3"
 description = "Scientific Graphics and GUI Library for Python"
 category = "main"
 optional = false
@@ -3025,17 +3025,17 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "sphinx"
-version = "3.5.4"
+version = "4.2.0"
 description = "Python documentation generator"
 category = "main"
 optional = true
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 
 [package.dependencies]
 alabaster = ">=0.7,<0.8"
 babel = ">=1.3"
 colorama = {version = ">=0.3.5", markers = "sys_platform == \"win32\""}
-docutils = ">=0.12,<0.17"
+docutils = ">=0.14,<0.18"
 imagesize = "*"
 Jinja2 = ">=2.3"
 packaging = "*"
@@ -3044,14 +3044,14 @@ requests = ">=2.5.0"
 snowballstemmer = ">=1.1"
 sphinxcontrib-applehelp = "*"
 sphinxcontrib-devhelp = "*"
-sphinxcontrib-htmlhelp = "*"
+sphinxcontrib-htmlhelp = ">=2.0.0"
 sphinxcontrib-jsmath = "*"
 sphinxcontrib-qthelp = "*"
-sphinxcontrib-serializinghtml = "*"
+sphinxcontrib-serializinghtml = ">=1.1.5"
 
 [package.extras]
 docs = ["sphinxcontrib-websupport"]
-lint = ["flake8 (>=3.5.0)", "isort", "mypy (>=0.800)", "docutils-stubs"]
+lint = ["flake8 (>=3.5.0)", "isort", "mypy (>=0.900)", "docutils-stubs", "types-typed-ast", "types-pkg-resources", "types-requests"]
 test = ["pytest", "pytest-cov", "html5lib", "cython", "typed-ast"]
 
 [[package]]
@@ -3283,7 +3283,7 @@ docs = ["sphinx", "furo", "myst-parser"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.10"
-content-hash = "cdabd46c03e019993a9073713ae36c36122a276d6375c8c3276b05de4d1e3184"
+content-hash = "cf3cfb79ba284a280a140e023550dc71d6fbbdf36a02de52506e457278eabbfa"
 
 [metadata.files]
 alabaster = [
@@ -3312,7 +3312,7 @@ attrs = [
     {file = "attrs-21.2.0.tar.gz", hash = "sha256:ef6aaac3ca6cd92904cdd0d83f629a15f18053ec84e6432106f7a4d04ae4f5fb"},
 ]
 auto-pi-lot = [
-    {file = "auto-pi-lot-0.4.0.tar.gz", hash = "sha256:e0494a2ba26ae905896a44785e13230428a5397dcef3a5e21cb86c0c9153eb2d"},
+    {file = "auto-pi-lot-0.4.3.tar.gz", hash = "sha256:4b7e048531176aa016d61615665c20bcbd5eac9dd68591eddfb735cf37e3ea98"},
 ]
 babel = [
     {file = "Babel-2.9.1-py2.py3-none-any.whl", hash = "sha256:ab49e12b91d937cd11f0b67cb259a57ab4ad2b59ac7a3b41d6c06c0ac5b0def9"},
@@ -3461,8 +3461,8 @@ freetype-py = [
     {file = "freetype_py-2.2.0-py3-none-win_amd64.whl", hash = "sha256:719a639040484a063b99421d104e3911a860d2e034b67769ae438bc1d4aa6e1f"},
 ]
 furo = [
-    {file = "furo-2021.6.18b36-py3-none-any.whl", hash = "sha256:a4c00634afeb5896a34d141a5dffb62f20c5eca7831b78269823a8cd8b09a5e4"},
-    {file = "furo-2021.6.18b36.tar.gz", hash = "sha256:46a30bc597a9067088d39d730e7d9bf6c1a1d71967e4af062f796769f66b3bdb"},
+    {file = "furo-2021.10.9-py3-none-any.whl", hash = "sha256:8da4448836e72db59033cd8d70dbdae96b0523c4424d806216febd38253870e8"},
+    {file = "furo-2021.10.9.tar.gz", hash = "sha256:2baa42a22ede3e6e95c6182ab364bac2ec15b79bc7f9ca7fb09fd9aec4b3540c"},
 ]
 future = [
     {file = "future-0.18.2.tar.gz", hash = "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"},
@@ -3748,8 +3748,8 @@ msgpack-numpy = [
     {file = "msgpack_numpy-0.4.7.1-py2.py3-none-any.whl", hash = "sha256:50d9e456d034ead6de53d9596a64bac4c9b0e15a682c4dce0efc556dc9d786fe"},
 ]
 myst-parser = [
-    {file = "myst-parser-0.15.1.tar.gz", hash = "sha256:7c3c78a36c4bc30ce6a67933ebd800a880c8d81f1688fad5c2ebd82cddbc1603"},
-    {file = "myst_parser-0.15.1-py3-none-any.whl", hash = "sha256:e8baa9959dac0bcf0f3ea5fc32a1a28792959471d8a8094e3ed5ee0de9733ade"},
+    {file = "myst-parser-0.15.2.tar.gz", hash = "sha256:f7f3b2d62db7655cde658eb5d62b2ec2a4631308137bd8d10f296a40d57bbbeb"},
+    {file = "myst_parser-0.15.2-py3-none-any.whl", hash = "sha256:40124b6f27a4c42ac7f06b385e23a9dcd03d84801e9c7130b59b3729a554b1f9"},
 ]
 npyscreen = [
     {file = "npyscreen-4.10.5.tar.gz", hash = "sha256:622ee0f9a5dae946e635b7c6e0f6d65e1ed3c9ea0d20b89dab7f58d580e5126e"},
@@ -4761,8 +4761,8 @@ pyqt5-sip = [
     {file = "PyQt5_sip-12.9.0.tar.gz", hash = "sha256:d3e4489d7c2b0ece9d203ae66e573939f7f60d4d29e089c9f11daa17cfeaae32"},
 ]
 pyqtgraph = [
-    {file = "pyqtgraph-0.12.2-py3-none-any.whl", hash = "sha256:151f2616c75353fdfffa9915ad37b9391af86e5d42ec1e99cb1d1b3062e6353e"},
-    {file = "pyqtgraph-0.12.2.tar.gz", hash = "sha256:fd0cf0678267b65ec28fb4908a7393424978a8c4b369e5749daf8861478fa4ca"},
+    {file = "pyqtgraph-0.12.3-py3-none-any.whl", hash = "sha256:06997eaae40bfa2b870647f98384a63b12f75118303b674337a080f8eb9a0030"},
+    {file = "pyqtgraph-0.12.3.tar.gz", hash = "sha256:f1dfee710fa5e9abaaf3d4dff0116659e6c7b4e7b514870c5cddad268a753d74"},
 ]
 pyserial = [
     {file = "pyserial-3.5-py2.py3-none-any.whl", hash = "sha256:c4451db6ba391ca6ca299fb3ec7bae67a5c55dde170964c7a14ceefec02f2cf0"},
@@ -4993,8 +4993,8 @@ soupsieve = [
     {file = "soupsieve-2.2.1.tar.gz", hash = "sha256:052774848f448cf19c7e959adf5566904d525f33a3f8b6ba6f6f8f26ec7de0cc"},
 ]
 sphinx = [
-    {file = "Sphinx-3.5.4-py3-none-any.whl", hash = "sha256:2320d4e994a191f4b4be27da514e46b3d6b420f2ff895d064f52415d342461e8"},
-    {file = "Sphinx-3.5.4.tar.gz", hash = "sha256:19010b7b9fa0dc7756a6e105b2aacd3a80f798af3c25c273be64d7beeb482cb1"},
+    {file = "Sphinx-4.2.0-py3-none-any.whl", hash = "sha256:98a535c62a4fcfcc362528592f69b26f7caec587d32cd55688db580be0287ae0"},
+    {file = "Sphinx-4.2.0.tar.gz", hash = "sha256:94078db9184491e15bce0a56d9186e0aec95f16ac20b12d00e06d4e36f1058a6"},
 ]
 sphinxcontrib-applehelp = [
     {file = "sphinxcontrib-applehelp-1.0.2.tar.gz", hash = "sha256:a072735ec80e7675e3f432fcae8610ecf509c5f1869d17e2eecff44389cdbc58"},
