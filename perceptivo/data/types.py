@@ -112,4 +112,60 @@ class Jackd_Config:
     launch_str: str = f'{bin} -P{priority} -R -d{driver} -d{device_name} -D -r{fs} -n{nperiods} -p{period} -s &'
 
 
+# --------------------------------------------------
+# Audiogram
+# --------------------------------------------------
+
+@dataclass
+class Threshold:
+    """
+    The audible threshold for a particular frequency
+
+    Args:
+        frequency (float): Frequency of threshold in Hz
+        threshold (float): Audible threshold in dbSPL
+        confidence (float): Confidence of threshold, units vary depending on estimation type
+    """
+    frequency: float
+    threshold: float
+    confidence: float = 0
+
+@dataclass
+class Audiogram:
+    """
+    A collection of :class:`.Threshold`s that represent a patient's audiogram
+    """
+    thresholds: typing.List[Threshold]
+
+    @property
+    def frequencies(self) -> typing.List[float]:
+        return [thresh.frequency for thresh in self.thresholds]
+
+    def __getitem__(self, key:float) -> Threshold:
+        thresh = [thresh for thresh in self.thresholds if thresh.frequency == key]
+        if len(thresh) == 0:
+            raise KeyError(f'No threshold found with frequency {key}')
+        elif len(thresh) == 1:
+            return thresh[0]
+        else:
+            raise KeyError(f'Got multiple thresholds for frequency {key}: {thresh}')
+
+    def __setitem__(self, key:float, value:Threshold):
+        # quick consistency check
+        if key != value.frequency:
+            raise ValueError(f"the assigned key: {key} does not match the frequency of the given Threshold object: {Threshold}")
+        # check if we already have one
+        thresh = [thresh for thresh in self.thresholds if thresh.frequency == key]
+        if len(thresh) == 0:
+            # new threshold!
+            self.thresholds.append(value)
+        elif len(thresh) == 1:
+            # we have one! replace it!
+            self.thresholds[self.thresholds.index(thresh[0])] = value
+        else:
+            raise KeyError(f'Already have multiple thresholds for frequency {key}: {thresh} \n something has gone wrong with the way thresholds are being constructed')
+
+
+
+
 
