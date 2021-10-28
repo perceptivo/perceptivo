@@ -14,6 +14,7 @@ PySide6 = "^6.1.2"
 PsychoPy = "^2021.2.0"
 auto-pi-lot = "^0.4.0"
 pyqtgraph = "^0.12.2"
+pyzmq = "^22.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
