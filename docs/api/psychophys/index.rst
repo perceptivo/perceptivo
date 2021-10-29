@@ -5,3 +5,7 @@ psychophys
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. toctree::
+
+   model
