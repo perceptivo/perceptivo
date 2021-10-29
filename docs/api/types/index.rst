@@ -11,4 +11,5 @@ types
 
    gui
    networking
+   psychophys
    sound

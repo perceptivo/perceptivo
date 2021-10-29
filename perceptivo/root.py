@@ -6,8 +6,9 @@ from typing import List
 import subprocess
 from logging import Logger
 from perceptivo.data.logging import init_logger
+from abc import ABC
 
-class Perceptivo_Object(object):
+class Perceptivo_Object(ABC):
     @property
     def logger(self) -> Logger:
         if not hasattr(self, '_logger') or self._logger is None:

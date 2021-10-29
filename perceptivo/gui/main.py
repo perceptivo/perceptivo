@@ -7,6 +7,8 @@ from typing import Optional
 from PySide6 import QtWidgets
 from PySide6.QtCore import Signal, Slot
 from importlib.metadata import version
+
+import perceptivo.types.psychophys
 from perceptivo.gui import widgets
 from perceptivo.root import Perceptivo_Object
 
@@ -28,7 +30,7 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow, Perceptivo_Object):
         self.vid_pupil = None # type: Optional[widgets.Video]
         self.vid_patient = None # type: Optional[widgets.Video]
         self.audiogram = None # type: import perceptivo.types.sound
-Optional[perceptivo.types.sound.Audiogram]
+Optional[perceptivo.types.psychophys.Audiogram]
 
         self.state = {
             'frequencies': tuple(),

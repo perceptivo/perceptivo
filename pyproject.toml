@@ -15,6 +15,8 @@ PsychoPy = "^2021.2.0"
 auto-pi-lot = "^0.4.3"
 pyqtgraph = "^0.12"
 pyzmq = "^22.3.0"
+sphinxcontrib-bibtex = {version="^2.4.1", optional=true}
+scikit-learn = "^1.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -24,7 +26,7 @@ patient = 'perceptivo.patient:main'
 clinician = 'perceptivo.clinician:main'
 
 [tool.poetry.extras]
-docs = ["sphinx", "furo", "myst-parser"]
+docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex"]
 
 [build-system]
 requires = ["poetry>=0.12"]

@@ -34,6 +34,11 @@ Welcome to perceptivo's documentation!
    api/prefs
    api/root
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Meta
+
+   references
 
 
 
