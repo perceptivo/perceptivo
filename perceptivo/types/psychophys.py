@@ -1,6 +1,9 @@
 import typing
 from dataclasses import dataclass, field
 from datetime import datetime
+from sklearn.gaussian_process.kernels import RBF
+import pandas as pd
+import matplotlib.pyplot as plt
 
 from perceptivo.types.sound import Sound
 
@@ -17,6 +20,74 @@ class Sample:
     sound: Sound
     timestamp: datetime = field(default_factory=datetime.now)
 
+@dataclass(init=False)
+class Samples:
+    """
+    Multiple Samples!
+
+    Convenience class to init samples from numpy arrays and convert to pandas dataframe
+    """
+    samples: typing.List[Sample]
+    responses: typing.List[bool]
+    frequencies: typing.List[float]
+    amplitudes: typing.List[float]
+
+    def __init__(self, samples:typing.List[Sample]=None,
+                 responses:typing.List[bool]=None,
+                 frequencies:typing.List[float]=None,
+                 amplitudes:typing.List[float]=None):
+        if samples is not None and all([isinstance(s, Sample) for s in samples]):
+            self.samples = samples
+            self.responses = [s.response for s in samples]
+            self.frequencies = [s.sound.frequency for s in samples]
+            self.amplitudes = [s.sound.amplitude for s in samples]
+
+        elif all([x is not None for x in (responses, frequencies, amplitudes)]):
+            samples = []
+            for response, freq, amplitude in zip(responses, frequencies, amplitudes):
+                samples.append(Sample(
+                    response=response,
+                    sound=Sound(
+                        frequency=freq,
+                        amplitude=amplitude
+                    )))
+            self.samples = samples
+            self.responses = responses
+            self.frequencies = frequencies
+            self.amplitudes = amplitudes
+
+        else:
+            raise ValueError(f"Not sure how to init Samples from {samples, responses, frequencies, amplitudes}")
+
+    def to_df(self) -> pd.DataFrame:
+        """Make a dataframe with sound parameterization flattened out"""
+        return pd.DataFrame({
+            'response': self.responses,
+            'frequency': self.frequencies,
+            'amplitude': self.amplitudes
+        })
+
+    def plot(self, show=True):
+        """
+        Plot a collection of samples as points,
+        with blue meaning the sample was audible and red meaning inaudible
+
+        .. plot
+
+            from perceptivo.psychophys.model import generate_samples
+
+            samples = generate_samples(n_samples=1000, scale=10)
+            samples.plot()
+
+        Args:
+            show (bool): If ``True`` (default), call plt.show()
+
+        """
+        colors = ['r' if response == False else 'b' for response in self.to_df().response]
+        self.to_df().plot.scatter(x='frequency', y='amplitude', c=colors)
+        if show:
+            plt.show()
+
 
 @dataclass
 class Threshold:
@@ -31,6 +102,18 @@ class Threshold:
     frequency: float
     threshold: float
     confidence: float = 0
+
+@dataclass
+class Default_Kernel:
+    """
+    Default kernel to use with :class:`.psychophys.model.Gaussian_Process`
+
+    Uses a kernel with a short length scale for frequency, but a longer length scale for amplitude,
+    which should be smoother/monotonic where frequency can have an unpredictable shape
+    """
+    length_scale: typing.Tuple[float, float] = field(default=(1.0, 80.0))
+    kernel: RBF = RBF(length_scale=length_scale)
+
 
 
 @dataclass

@@ -29,8 +29,7 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow, Perceptivo_Object):
         self.pupil_ts = None # type: Optional[widgets.Pupil]
         self.vid_pupil = None # type: Optional[widgets.Video]
         self.vid_patient = None # type: Optional[widgets.Video]
-        self.audiogram = None # type: import perceptivo.types.sound
-Optional[perceptivo.types.psychophys.Audiogram]
+        self.audiogram = None # type: Optional[widgets.Audiogram]
 
         self.state = {
             'frequencies': tuple(),

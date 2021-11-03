@@ -41,7 +41,8 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.graphviz',
     'myst_parser',
-    'sphinxcontrib.bibtex'
+    'sphinxcontrib.bibtex',
+    'matplotlib.sphinxext.plot_directive'
 ]
 
 # --------------------------------------------------

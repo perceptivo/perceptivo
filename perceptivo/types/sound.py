@@ -50,7 +50,7 @@ class Sound:
     """
     frequency: float
     amplitude: float
-    duration: float
+    duration: typing.Optional[float] = None
     sound_type: SOUND_TYPES = "Gammatone"
 
 
