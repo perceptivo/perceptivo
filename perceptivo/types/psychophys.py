@@ -72,12 +72,15 @@ class Samples:
         Plot a collection of samples as points,
         with blue meaning the sample was audible and red meaning inaudible
 
-        .. plot
+        Examples:
 
-            from perceptivo.psychophys.model import generate_samples
+            .. plot::
 
-            samples = generate_samples(n_samples=1000, scale=10)
-            samples.plot()
+                from perceptivo.psychophys.model import generate_samples
+
+                samples = generate_samples(n_samples=1000, scale=10)
+                samples.plot()
+
 
         Args:
             show (bool): If ``True`` (default), call plt.show()

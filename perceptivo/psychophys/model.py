@@ -9,6 +9,7 @@ from perceptivo import types
 
 
 from sklearn.gaussian_process.kernels import Kernel, RBF
+from sklearn.gaussian_process import GaussianProcessClassifier
 
 
 def f_to_bark(frequency: float) -> float:
@@ -52,7 +53,8 @@ class Audiogram_Model(Perceptivo_Object):
         they are built together for now.
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(Audiogram_Model, self).__init__(*args, **kwargs)
         self.audiogram: perceptivo.types.psychophys.Audiogram
 
     @abstractmethod
@@ -90,9 +92,16 @@ class Gaussian_Process(Audiogram_Model):
 
     """
 
-    def __init__(self, kernel:typing.Optional[Kernel]=None):
+    def __init__(self, kernel:typing.Optional[Kernel]=None, *args, **kwargs):
+        super(Gaussian_Process, self).__init__(*args, **kwargs)
 
         self._kernel = kernel
+
+        self.model: GaussianProcessClassifier = GaussianProcessClassifier(
+            kernel=self.kernel, warm_start=True
+        )
+
+
 
 
 
