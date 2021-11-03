@@ -108,3 +108,7 @@ html_theme = 'furo'
 html_static_path = ['_static']
 
 bibtex_bibfiles=['perceptivo.bib']
+
+
+# show source code in ..plot directive calls
+plot_include_source = True

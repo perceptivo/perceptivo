@@ -166,6 +166,10 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             fh.setFormatter(log_formatter)
             parent_logger.addHandler(fh)
 
+            sh = logging.StreamHandler()
+            sh.setLevel(logging.WARNING)
+            parent_logger.addHandler(sh)
+
             ## log creation
             globals()['_LOGGERS'].append(module_name)
             parent_logger.info(f'parent, module-level logger created: {module_name}')

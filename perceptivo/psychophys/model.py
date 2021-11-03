@@ -96,14 +96,12 @@ class Gaussian_Process(Audiogram_Model):
         super(Gaussian_Process, self).__init__(*args, **kwargs)
 
         self._kernel = kernel
+        self._samples = [] # type: typing.List[types.psychophys.Sample]
+        self._started_fitting = False
 
         self.model: GaussianProcessClassifier = GaussianProcessClassifier(
             kernel=self.kernel, warm_start=True
         )
-
-
-
-
 
     @property
     def kernel(self) -> Kernel:
@@ -118,11 +116,43 @@ class Gaussian_Process(Audiogram_Model):
             self._kernel = types.psychophys.Default_Kernel().kernel
         return self._kernel
 
+    @property
+    def samples(self) -> types.psychophys.Samples:
+        """
+        Stored samples from updates
+
+        Returns:
+            :class:`~.types.psychophys.Samples`
+        """
+        return types.psychophys.Samples(self._samples)
+
+    def update(self, sample:types.psychophys.Sample):
+        """
 
 
+        Args:
+            sample ():
 
+        Returns:
+
+        """
+        self._samples.append(sample)
+
+        df = self.samples.to_df()
+        if sum(df.response) == 0 or sum(df.response) == len(df):
+            self.logger.warning('Need both True and False responses to fit model, storing sample and waiting to fit')
+            return
+
+        x = np.column_stack([df.frequency, df.amplitude])
+        self.model.fit(x, df.response)
 
     def next(self) -> types.sound.Sound:
+        """
+        Generate parameters for the next sound to present
+
+        Returns:
+            :class:`~.types.sound.Sound`
+        """
         pass
 
 
