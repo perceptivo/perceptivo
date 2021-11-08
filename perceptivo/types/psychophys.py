@@ -76,7 +76,7 @@ class Samples:
 
             .. plot::
 
-                from perceptivo.psychophys.model import generate_samples
+                from perceptivo.psychophys.oracle import generate_samples
 
                 samples = generate_samples(n_samples=1000, scale=10)
                 samples.plot()
