@@ -8,4 +8,6 @@ psychophys
 
 .. toctree::
 
+   gaussian
    model
+   oracle
