@@ -91,6 +91,9 @@ class Samples:
         if show:
             plt.show()
 
+    def __getitem__(self, item):
+        return self.samples[item]
+
 
 @dataclass
 class Threshold:
@@ -114,7 +117,7 @@ class Default_Kernel:
     Uses a kernel with a short length scale for frequency, but a longer length scale for amplitude,
     which should be smoother/monotonic where frequency can have an unpredictable shape
     """
-    length_scale: typing.Tuple[float, float] = (1.0, 80.0)
+    length_scale: typing.Tuple[float, float] = (1.0, 200.0)
     kernel: RBF = RBF(length_scale=length_scale)
 
 

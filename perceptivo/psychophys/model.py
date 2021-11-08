@@ -1,15 +1,13 @@
 import perceptivo.types.psychophys
 from perceptivo.root import Perceptivo_Object
-from perceptivo import types
 from abc import abstractmethod
 import numpy as np
 import typing
-import pandas as pd
 from perceptivo import types
+import matplotlib.pyplot as plt
 
-
-from sklearn.gaussian_process.kernels import Kernel, RBF
-from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.gaussian_process.kernels import Kernel
+from perceptivo.psychophys.gaussian import IterativeGPC
 
 
 def f_to_bark(frequency: float) -> float:
@@ -51,11 +49,30 @@ class Audiogram_Model(Perceptivo_Object):
         an audiogram model, but since the choice of the next stimulus
         should ideally be based on the current audiogram model,
         they are built together for now.
+
+    Args:
+        freq_range (tuple): Tuple of two floats indicating min/max frequency (default: (125, 8500))
+        amplitude_range (tuple): Tuple of two floats indicating min/max amplitude in dbSPL (default: (5,60))
+
+    Attributes:
+        audiogram (:class:`.types.psychophys.Audiogram`): Audiogram of model
+        samples (:class:`.types.psychophys.Samples`): Individual samples of frequency/amplitude and whether a sound was detected.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, freq_range:typing.Tuple[float,float]=(125,8500),
+                 amplitude_range:typing.Tuple[float,float]=(5,60),
+                 *args, **kwargs):
         super(Audiogram_Model, self).__init__(*args, **kwargs)
+
+        self._audiogram = None
+        self._samples = None
+
         self.audiogram: perceptivo.types.psychophys.Audiogram
+        self.samples: perceptivo.types.psychophys.Samples
+
+        self.freq_range = freq_range
+        self.amplitude_range = amplitude_range
+
 
     @abstractmethod
     def update(self, sample:types.psychophys.Sample):
@@ -76,7 +93,7 @@ class Gaussian_Process(Audiogram_Model):
     **Model:**
     * Bayesian Process Classifier, predicting binary audibility as a function of frequency and amplitude
     * Kernel:
-    * Covariance Function: Squared Exponent
+    * Covariance Function: Squared Exponent (RBF)
 
     **Process:**
     * Convert sampled frequency to bark with :func:`.f_to_bark`
@@ -99,8 +116,8 @@ class Gaussian_Process(Audiogram_Model):
         self._samples = [] # type: typing.List[types.psychophys.Sample]
         self._started_fitting = False
 
-        self.model: GaussianProcessClassifier = GaussianProcessClassifier(
-            kernel=self.kernel, warm_start=True
+        self.model: IterativeGPC = IterativeGPC(
+            kernel=self.kernel, warm_start=True, n_restarts_optimizer=10, max_iter_predict=200
         )
 
     @property
@@ -136,12 +153,12 @@ class Gaussian_Process(Audiogram_Model):
         Returns:
 
         """
-        self._samples.append(sample)
+        if isinstance(sample, list):
+            self._samples.extend(sample)
+        else:
+            self._samples.append(sample)
 
         df = self.samples.to_df()
-        if sum(df.response) == 0 or sum(df.response) == len(df):
-            self.logger.warning('Need both True and False responses to fit model, storing sample and waiting to fit')
-            return
 
         x = np.column_stack([df.frequency, df.amplitude])
         self.model.fit(x, df.response)
@@ -153,60 +170,61 @@ class Gaussian_Process(Audiogram_Model):
         Returns:
             :class:`~.types.sound.Sound`
         """
-        pass
+        xx, yy = np.meshgrid(
+            np.arange(self.freq_range[0], self.freq_range[1], 10),
+            np.arange(self.amplitude_range[0], self.amplitude_range[1], 1),
+        )
+
+        y = np.c_[xx.ravel(), yy.ravel()]
+
+        Z = self.model.predict_proba(y)
+        Z = Z[:,1]
+        uncertain = np.argmin(np.abs(0.5-Z))
+        return types.sound.Sound(frequency=y[uncertain,0], amplitude=y[uncertain,1])
 
 
-def generate_samples(n_samples:int, scale:float=5, freqs=None, amplitudes=None) -> types.psychophys.Samples:
-    """
-    Generate fake audiometry samples using median threshold values obtained from the NHANES dataset:
-    https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/AUX_I.htm
 
-    The median rates make a piecewise linear function:
+    def plot(self, mesh_resolution: int= 5):
+            """
 
-    ========= =========
-    Frequency Threshold
-    ========= =========
-    500       10
-    1000      10
-    2000      10
-    3000      10
-    4000      15
-    6000      20
-    8000      20
-    ========= =========
+            References:
+                https://scikit-learn.org/stable/auto_examples/gaussian_process/plot_gpc_iris.html#sphx-glr-auto-examples-gaussian-process-plot-gpc-iris-py
 
-    Args:
-        n_samples (int): number of samples to generate
-        scale (float): amount of randomness to multiply the noise of the pseudo-response threshold by
-        freqs (arraylike): (Optional) - predetermined array of frequencies (of length n_samples) to test
-        amplitudes (arraylike): (Optional) - predetermined array of amplitudes (of length n_samples) to test
+            Returns:
 
-    Returns:
-        :class:`.types.psychophys.Samples`
-    """
+            """
+            xx, yy = np.meshgrid(
+                np.arange(self.freq_range[0], self.freq_range[1], mesh_resolution),
+                np.arange(self.amplitude_range[0], self.amplitude_range[1], mesh_resolution),
+            )
 
-    # generate freqs and amplitudes
-    if freqs is None:
-        freqs = np.sort((np.random.random(n_samples)*7500) + 500)
-    if amplitudes is None:
-        amplitudes = np.random.random(n_samples)*50
+            Z = self.model.predict_proba(np.c_[xx.ravel(), yy.ravel()])
 
-    responses = np.zeros((n_samples,))
+            # Put the result into a color plot
+            Z = Z.reshape((xx.shape[0], xx.shape[1], 2))
+            # only need the first index, which is "yes response"
+            Z = Z[:,:,1]
 
-    # piecewise estimate responses given frequency and amplitude
-    # for each section, generate random number, scaled by scale param, then boolean whether above or below
-    slope_start_idx = np.where(freqs>3000)[0][0]
-    slope_end_idx = np.where(freqs>6000)[0][0]
+            plt.figure(figsize=(5,5))
+            im = plt.imshow(Z, extent=(self.freq_range[0], self.freq_range[1], self.amplitude_range[0], self.amplitude_range[1] ),
+                       cmap="RdGy", origin="lower", aspect="auto")
 
-    responses[0:slope_start_idx] = ((np.random.rand(slope_start_idx)*scale)+10-(scale/2))<amplitudes[0:slope_start_idx]
-    responses[slope_end_idx:] = ((np.random.rand(n_samples-slope_end_idx)*scale)+20-(scale/2))<amplitudes[slope_end_idx:]
+            # Plot also the training points
+            samples = self.samples.to_df()
 
-    threshes = (freqs[slope_start_idx:slope_end_idx]-3000)*(10/3000)+10
-    responses[slope_start_idx:slope_end_idx] = (np.random.rand(slope_end_idx-slope_start_idx)*scale) + threshes - (scale/2) < amplitudes[slope_start_idx:slope_end_idx]
+            plt.scatter(samples.frequency, samples.amplitude, c=np.array(["r", "k"])[samples.response.values.astype(int)], edgecolors=(1,1,1))
+            plt.xlabel("Frequency")
+            plt.ylabel("Amplitude")
+            plt.xlim(xx.min(), xx.max())
+            plt.ylim(yy.min(), yy.max())
+            # plt.xticks(())
+            # plt.yticks(())
+            plt.gcf().colorbar(im)
+            plt.title(
+                "%s, LML: %.3f" % ('Estimated Audiogram', self.model.log_marginal_likelihood(self.model.kernel_.theta))
+            )
 
-    return types.psychophys.Samples(responses=responses.astype(bool).tolist(),
-                                    frequencies=freqs.tolist(),
-                                    amplitudes=amplitudes.tolist())
+            plt.show()
 
 
 
