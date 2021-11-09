@@ -86,8 +86,9 @@ class Samples:
             show (bool): If ``True`` (default), call plt.show()
 
         """
-        colors = ['r' if response == False else 'b' for response in self.to_df().response]
-        self.to_df().plot.scatter(x='frequency', y='amplitude', c=colors)
+        df = self.to_df()
+        colors = ['r' if response == False else 'b' for response in df.response]
+        df.plot.scatter(x='frequency', y='amplitude', c=colors)
         if show:
             plt.show()
 

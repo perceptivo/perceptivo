@@ -3,6 +3,7 @@ Oracle functions for testing model
 """
 import typing
 import numpy as np
+import pdb
 
 from perceptivo import types
 from perceptivo.root import Perceptivo_Object
@@ -33,8 +34,8 @@ def piecewise_probabilistic(points:np.ndarray, scale:float=5) -> callable:
             y = points[-1,1]
         else:
             # somewhere in the range
-            l_idx = np.argwhere(sample.frequency>=points[:,0])[0]
-            r_idx = np.argwhere(sample.frequency<=points[:,0])[-1]
+            l_idx = np.argwhere(sample.frequency>=points[:,0])[-1]
+            r_idx = np.argwhere(sample.frequency<=points[:,0])[0]
 
             # compute y from line between points
             slope = (points[r_idx,1]-points[l_idx,1])/(points[r_idx,0]-points[l_idx,0])
@@ -45,13 +46,16 @@ def piecewise_probabilistic(points:np.ndarray, scale:float=5) -> callable:
         # add noise to the threshold to simulate error
         y += np.random.normal(loc=0, scale=scale)
 
+        if isinstance(y, np.ndarray) and y.shape  == (1,):
+            y = y[0]
+
         return sample.amplitude > y
 
     return _piecewise
 
 
 
-def reference_audiogram(scale:float=5) -> callable:
+def reference_audiogram(scale:float=2) -> callable:
     """
     Generate fake audiometry samples using median threshold values obtained from the NHANES dataset:
     https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/AUX_I.htm
@@ -94,7 +98,7 @@ def reference_audiogram(scale:float=5) -> callable:
     return piecewise_probabilistic(points, scale=scale)
 
 
-def generate_samples(n_samples:int, scale:float=5, freqs=None, amplitudes=None, randomize=False, freq_range=(500,8000), amplitude_range=(0,50),
+def generate_samples(n_samples:int, scale:float=2, freqs=None, amplitudes=None, randomize=False, freq_range=(500,8000), amplitude_range=(0,50),
                      oracle:typing.Optional[callable] = None) -> types.psychophys.Samples:
     """
     Generate fake audiometry samples using median threshold values obtained from the NHANES dataset:
@@ -113,6 +117,16 @@ def generate_samples(n_samples:int, scale:float=5, freqs=None, amplitudes=None, 
     6000      20
     8000      20
     ========= =========
+
+    Examples:
+
+        .. plot::
+
+            from perceptivo.psychophys.oracle import generate_samples
+
+            samples = generate_samples(n_samples=1000, scale=10)
+            samples.plot()
+
 
     Args:
         n_samples (int): number of samples to generate
