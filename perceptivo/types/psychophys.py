@@ -118,8 +118,9 @@ class Default_Kernel:
     Uses a kernel with a short length scale for frequency, but a longer length scale for amplitude,
     which should be smoother/monotonic where frequency can have an unpredictable shape
     """
-    length_scale: typing.Tuple[float, float] = (1.0, 200.0)
-    kernel: RBF = RBF(length_scale=length_scale)
+    length_scale: typing.Tuple[float, float] = (100.0, 200.0)
+    length_scale_bounds: typing.Tuple[float, float] = (1, 1e5)
+    kernel: RBF = RBF(length_scale=length_scale, length_scale_bounds=length_scale_bounds)
 
 
 @dataclass

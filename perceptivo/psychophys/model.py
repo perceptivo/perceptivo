@@ -5,6 +5,7 @@ import numpy as np
 import typing
 from perceptivo import types
 import matplotlib.pyplot as plt
+from matplotlib.cm import ScalarMappable
 
 from sklearn.gaussian_process.kernels import Kernel
 from perceptivo.psychophys.gaussian import IterativeGPC
@@ -101,6 +102,25 @@ class Gaussian_Process(Audiogram_Model):
     * Generate next stimulus
     * Convert back to freq
 
+    Examples:
+
+        .. plot::
+
+            from perceptivo.psychophys.oracle import reference_audiogram
+            from perceptivo.psychophys.model import Gaussian_Process
+            from perceptivo.types.psychophys import Sample
+
+            oracle = reference_audiogram(scale=3)
+            model = Gaussian_Process(amplitude_range=(5,35))
+
+            for i in range(100):
+                sound = model.next()
+                sample = Sample(response=oracle(sound), sound=sound)
+                model.update(sample)
+
+            model.plot()
+
+
     References:
         * :cite:p:`coxBayesianBinaryClassification2016`
         * :cite:p:`gardnerBayesianActiveModel2015`
@@ -117,8 +137,17 @@ class Gaussian_Process(Audiogram_Model):
         self._started_fitting = False
 
         self.model: IterativeGPC = IterativeGPC(
-            kernel=self.kernel, warm_start=True, n_restarts_optimizer=10, max_iter_predict=200
+            kernel=self.kernel, warm_start=True, n_restarts_optimizer=5, max_iter_predict=100
         )
+
+        self._plotted = False
+
+        self._xx, self._yy = np.meshgrid(
+            np.arange(self.freq_range[0], self.freq_range[1], 100),
+            np.arange(self.amplitude_range[0], self.amplitude_range[1], 1),
+        )
+
+        self._y = np.c_[self._xx.ravel(), self._yy.ravel()]
 
     @property
     def kernel(self) -> Kernel:
@@ -146,7 +175,6 @@ class Gaussian_Process(Audiogram_Model):
     def update(self, sample:types.psychophys.Sample):
         """
 
-
         Args:
             sample ():
 
@@ -170,17 +198,15 @@ class Gaussian_Process(Audiogram_Model):
         Returns:
             :class:`~.types.sound.Sound`
         """
-        xx, yy = np.meshgrid(
-            np.arange(self.freq_range[0], self.freq_range[1], 10),
-            np.arange(self.amplitude_range[0], self.amplitude_range[1], 1),
-        )
+        if len(self._samples) < 10:
+            freq = np.random.rand()*(self.freq_range[1]-self.freq_range[0])+self.freq_range[0]
+            amp = np.random.rand()*(self.amplitude_range[1]-self.amplitude_range[0])+self.amplitude_range[0]
+            return types.sound.Sound(frequency=freq, amplitude=amp)
 
-        y = np.c_[xx.ravel(), yy.ravel()]
-
-        Z = self.model.predict_proba(y)
+        Z = self.model.predict_proba(self._y)
         Z = Z[:,1]
         uncertain = np.argmin(np.abs(0.5-Z))
-        return types.sound.Sound(frequency=y[uncertain,0], amplitude=y[uncertain,1])
+        return types.sound.Sound(frequency=self._y[uncertain,0], amplitude=self._y[uncertain,1])
 
 
 
@@ -205,7 +231,8 @@ class Gaussian_Process(Audiogram_Model):
             # only need the first index, which is "yes response"
             Z = Z[:,:,1]
 
-            plt.figure(figsize=(5,5))
+            plt.figure(num=1,figsize=(12,8))
+            plt.gcf().clear()
             im = plt.imshow(Z, extent=(self.freq_range[0], self.freq_range[1], self.amplitude_range[0], self.amplitude_range[1] ),
                        cmap="RdGy", origin="lower", aspect="auto")
 
@@ -219,9 +246,15 @@ class Gaussian_Process(Audiogram_Model):
             plt.ylim(yy.min(), yy.max())
             # plt.xticks(())
             # plt.yticks(())
-            plt.gcf().colorbar(im)
+            # if not self._plotted:
+            self._cbar = plt.colorbar(ScalarMappable(cmap="RdGy"))
+            self._plotted = True
+
+
             plt.title(
-                "%s, LML: %.3f" % ('Estimated Audiogram', self.model.log_marginal_likelihood(self.model.kernel_.theta))
+                "Estimated Audiogram, n={}, LML: {:.3f}".format(
+                    samples.shape[0],
+                    self.model.log_marginal_likelihood(self.model.kernel_.theta))
             )
 
             plt.show()
