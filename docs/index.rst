@@ -23,6 +23,7 @@ Welcome to perceptivo's documentation!
    :maxdepth: 4
    :caption: API:
 
+   api/entrypoints/index
    api/data/index
    api/types/index
    api/gui/index
