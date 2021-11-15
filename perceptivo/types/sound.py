@@ -2,6 +2,10 @@ import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 import typing
+import uuid
+from datetime import datetime
+
+from perceptivo.sound import sounds
 
 
 def _find_jackd() -> Path:
@@ -21,7 +25,8 @@ class Jackd_Config:
         bin (:class:`pathlib.Path`): Path to the jackd binary
         priority (int): Priority to run the process (higher is better), default 75
         driver (str): Driver to use, default 'alsa'
-        device_name (str): Device to use in alsa's parlance, default 'hw:sndrpihifiberry'
+        device_name (str, int): Device to use in alsa's parlance, default 'hw:sndrpihifiberry'.
+            Also accepts ints for use with coreaudio
         fs (int): Sampling rate in Hz, default 44100
         nperiods (int): Number of periods per buffer cycle, default 3
         period (int): size of period, default 1024 samples.
@@ -30,11 +35,29 @@ class Jackd_Config:
     bin: Path = field(default_factory= _find_jackd)
     priority: int = 75
     driver: str = "alsa"
-    device_name: str = "hw:sndrpihifiberry"
+    device_name: typing.Union[str, int] = "hw:sndrpihifiberry"
     fs: int = 44100
     nperiods: int = 3
     period: int = 1024
-    launch_str: str = f'{bin} -P{priority} -R -d{driver} -d{device_name} -D -r{fs} -n{nperiods} -p{period} -s &'
+
+    @property
+    def launch_str(self) -> str:
+        base_str = f'{str(self.bin)} -P{self.priority} -R -d{self.driver}'
+        if self.driver == "alsa":
+            launch_str: str =  ' '.join(
+                [
+                    base_str,
+                    f'-d{self.device_name} -D -r{self.fs} -n{self.nperiods} -p{self.period} -s &'
+                ])
+        elif self.driver == "coreaudio":
+            launch_str = ' '.join([
+                base_str,
+                f'-P1 -C0 -r{self.fs} -p{self.period} -I{self.device_name} -s &'
+                ])
+        return launch_str
+
+
+
 
 SOUND_TYPES = typing.Literal['Gammatone']
 
@@ -47,11 +70,36 @@ class Sound:
         frequency (float): Frequency in Hz
         amplitude (float): Amplitude in dbSPL
         duration (float): Duration of sound in seconds
+
+    Attributes:
+        uuid (str): Unique UUID to identify sounds
     """
     frequency: float
     amplitude: float
-    duration: typing.Optional[float] = None
+    duration: float = 0.5
     sound_type: SOUND_TYPES = "Gammatone"
+    timestamp: typing.Optional[datetime] = None
+    uuid: str = field(default_factory=uuid.uuid4)
+
+    def stamp_time(self):
+        """
+        Record the time that the sound is played in :attr:`.Sound.timestamp`
+        """
+        self.timestamp = datetime.now()
+
+    @property
+    def sound_class(self) -> 'autopilot.stim.sound.sounds.Jack_Sound':
+        """
+        The sound class that corresponds to the :attr:`.sound_type` retrieved from
+        the :mod:`perceptivo.sound.sounds` module.
+
+        Returns:
+            :class:`autopilot.stim.sound.sounds.Jack_Sound` - The sound class!
+        """
+        return getattr(sounds, self.sound_type)
+
+
+
 
 
 

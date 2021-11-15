@@ -56,8 +56,31 @@ class Samples:
             self.frequencies = frequencies
             self.amplitudes = amplitudes
 
+        elif all([x is None for x in (samples, responses, frequencies, amplitudes)]):
+            # If we're initialized as an empty container, just initialize as empty
+            self.samples = []
+            self.responses = []
+            self.frequencies = []
+            self.amplitudes = []
+
         else:
             raise ValueError(f"Not sure how to init Samples from {samples, responses, frequencies, amplitudes}")
+
+    def append(self, sample: Sample):
+        """
+        Add a sample to the collection
+
+        Args:
+            sample (:class:`~.types.psychophys.Sample`): A New Sample!
+
+        """
+        if not isinstance(sample, Sample):
+            raise ValueError(f'Can only append a sample to a Samples object! got {sample}')
+
+        self.samples.append(sample)
+        self.responses.append(sample.response)
+        self.frequencies.append(sample.sound.frequency)
+        self.frequencies.append(sample.sound.amplitude)
 
     def to_df(self) -> pd.DataFrame:
         """Make a dataframe with sound parameterization flattened out"""
@@ -109,18 +132,6 @@ class Threshold:
     frequency: float
     threshold: float
     confidence: float = 0
-
-@dataclass
-class Default_Kernel:
-    """
-    Default kernel to use with :class:`.psychophys.model.Gaussian_Process`
-
-    Uses a kernel with a short length scale for frequency, but a longer length scale for amplitude,
-    which should be smoother/monotonic where frequency can have an unpredictable shape
-    """
-    length_scale: typing.Tuple[float, float] = (100.0, 200.0)
-    length_scale_bounds: typing.Tuple[float, float] = (1, 1e5)
-    kernel: RBF = RBF(length_scale=length_scale, length_scale_bounds=length_scale_bounds)
 
 
 @dataclass
@@ -179,3 +190,34 @@ class Audiogram:
             self.thresholds[self.thresholds.index(thresh[0])] = value
         else:
             raise KeyError(f'Already have multiple thresholds for frequency {key}: {thresh} \n something has gone wrong with the way thresholds are being constructed')
+
+
+# --------------------------------------------------
+# Model types
+# --------------------------------------------------
+
+@dataclass
+class Default_Kernel:
+    """
+    Default kernel to use with :class:`.psychophys.model.Gaussian_Process`
+
+    Uses a kernel with a short length scale for frequency, but a longer length scale for amplitude,
+    which should be smoother/monotonic where frequency can have an unpredictable shape
+    """
+    length_scale: typing.Tuple[float, float] = (100.0, 200.0)
+    length_scale_bounds: typing.Tuple[float, float] = (1, 1e5)
+    kernel: RBF = RBF(length_scale=length_scale, length_scale_bounds=length_scale_bounds)
+
+MODEL_TYPES = typing.Literal["Gaussian_Process"]
+
+@dataclass
+class Psychoacoustic_Model:
+    """
+    Parameterization of a psychoacoustic model to use to estimate audiograms and
+    control the presentation of stimuli
+    """
+    model_type: MODEL_TYPES = "Gaussian_Process"
+    args:typing.Optional[list] = field(default_factory=list)
+    kwargs:typing.Optional[dict] = field(default_factory=dict)
+
+
