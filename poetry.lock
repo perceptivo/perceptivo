@@ -72,13 +72,11 @@ develop = false
 
 [package.dependencies]
 blosc = "*"
+cffi = "*"
 inputs = "*"
 npyscreen = "*"
 numpy = ">=1.16.5"
 pandas = ">=0.19.2"
-PyOpenGL = "*"
-pyqtgraph = ">=0.11.0rc0"
-PySide2 = "*"
 pyzmq = ">=18.1"
 requests = "*"
 scikit-video = "*"
@@ -87,11 +85,16 @@ tables = ">=3.4.2"
 tornado = ">=5.0"
 tqdm = "*"
 
+[package.extras]
+docs = ["autodocsumm", "sphinx-rtd-theme", "sphinx-autobuild", "sphinx-sass @ git+https://github.com/sneakers-the-rat/sphinx-sass@master"]
+pilot = ["jack-client", "pigpio @ git+https://github.com/sneakers-the-rat/pigpio@master"]
+terminal = ["pyopengl", "pyqtgraph (>=0.11.0rc0)", "pyside2"]
+
 [package.source]
 type = "git"
 url = "https://github.com/wehr-lab/autopilot.git"
 reference = "dev"
-resolved_reference = "7bcc0e9b087aa8b879f37128a02c2a75099f060a"
+resolved_reference = "95b0db1ce1c1af5eaf8009aa78635a298b82849f"
 
 [[package]]
 name = "babel"
@@ -2825,7 +2828,7 @@ name = "pyopengl"
 version = "3.1.5"
 description = "Standard OpenGL bindings for Python"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -2905,7 +2908,7 @@ name = "pyqtgraph"
 version = "0.12.3"
 description = "Scientific Graphics and GUI Library for Python"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -2921,17 +2924,6 @@ python-versions = "*"
 
 [package.extras]
 cp2110 = ["hidapi"]
-
-[[package]]
-name = "pyside2"
-version = "5.15.2"
-description = "Python bindings for the Qt cross-platform application and UI framework"
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <3.10"
-
-[package.dependencies]
-shiboken2 = "5.15.2"
 
 [[package]]
 name = "pyside6"
@@ -3191,14 +3183,6 @@ tomli = ">=1.0.0"
 
 [package.extras]
 toml = ["setuptools (>=42)", "tomli (>=1.0.0)"]
-
-[[package]]
-name = "shiboken2"
-version = "5.15.2"
-description = "Python / C++ bindings helper module"
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <3.10"
 
 [[package]]
 name = "shiboken6"
@@ -5258,14 +5242,6 @@ pyserial = [
     {file = "pyserial-3.5-py2.py3-none-any.whl", hash = "sha256:c4451db6ba391ca6ca299fb3ec7bae67a5c55dde170964c7a14ceefec02f2cf0"},
     {file = "pyserial-3.5.tar.gz", hash = "sha256:3c77e014170dfffbd816e6ffc205e9842efb10be9f58ec16d3e8675b4925cddb"},
 ]
-pyside2 = [
-    {file = "PySide2-5.15.2-5.15.2-cp27-cp27m-macosx_10_13_intel.whl", hash = "sha256:4f17a0161995678110447711d685fcd7b15b762810e8f00f6dc239bffb70a32e"},
-    {file = "PySide2-5.15.2-5.15.2-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:0558ced3bcd7f9da638fa8b7709dba5dae82a38728e481aac8b9058ea22fcdd9"},
-    {file = "PySide2-5.15.2-5.15.2-cp35.cp36.cp37.cp38.cp39-abi3-macosx_10_13_intel.whl", hash = "sha256:976cacf01ef3b397a680f9228af7d3d6273b9254457ad4204731507c1f9e6c3c"},
-    {file = "PySide2-5.15.2-5.15.2-cp35.cp36.cp37.cp38.cp39-abi3-manylinux1_x86_64.whl", hash = "sha256:081d8c8a6c65fb1392856a547814c0c014e25ac04b38b987d9a3483e879e9634"},
-    {file = "PySide2-5.15.2-5.15.2-cp35.cp36.cp37.cp38.cp39-none-win32.whl", hash = "sha256:087a0b719bb967405ea85fd202757c761f1fc73d0e2397bc3a6a15376782ee75"},
-    {file = "PySide2-5.15.2-5.15.2-cp35.cp36.cp37.cp38.cp39-none-win_amd64.whl", hash = "sha256:1316aa22dd330df096daf7b0defe9c00297a66e0b4907f057aaa3e88c53d1aff"},
-]
 pyside6 = [
     {file = "PySide6-6.2.2.1-6.2.2-cp36.cp37.cp38.cp39.cp310-abi3-macosx_10_14_universal2.whl", hash = "sha256:f9fa755b30bd8098ba3734a8a7e7664b9bf6bf53d7c0462c7e9657f8a8d3392f"},
     {file = "PySide6-6.2.2.1-6.2.2-cp36.cp37.cp38.cp39.cp310-abi3-manylinux1_x86_64.whl", hash = "sha256:5d35206897edc00bfab3c67dcf180e45406a93c8694e68c12364c3f9e370dfc6"},
@@ -5483,14 +5459,6 @@ scipy = [
 setuptools-scm = [
     {file = "setuptools_scm-6.3.2-py3-none-any.whl", hash = "sha256:4c64444b1d49c4063ae60bfe1680f611c8b13833d556fd1d6050c0023162a119"},
     {file = "setuptools_scm-6.3.2.tar.gz", hash = "sha256:a49aa8081eeb3514eb9728fa5040f2eaa962d6c6f4ec9c32f6c1fba88f88a0f2"},
-]
-shiboken2 = [
-    {file = "shiboken2-5.15.2-5.15.2-cp27-cp27m-macosx_10_13_intel.whl", hash = "sha256:03f41b0693b91c7f89627f1085a4ecbe8591c03f904118a034854d935e0e766c"},
-    {file = "shiboken2-5.15.2-5.15.2-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:ae8ca41274cfa057106268b6249674ca669c5b21009ec49b16d77665ab9619ed"},
-    {file = "shiboken2-5.15.2-5.15.2-cp35.cp36.cp37.cp38.cp39-abi3-macosx_10_13_intel.whl", hash = "sha256:edc12a4df2b5be7ca1e762ab94e331ba9e2fbfe3932c20378d8aa3f73f90e0af"},
-    {file = "shiboken2-5.15.2-5.15.2-cp35.cp36.cp37.cp38.cp39-abi3-manylinux1_x86_64.whl", hash = "sha256:4aee1b91e339578f9831e824ce2a1ec3ba3a463f41fda8946b4547c7eb3cba86"},
-    {file = "shiboken2-5.15.2-5.15.2-cp35.cp36.cp37.cp38.cp39-none-win32.whl", hash = "sha256:89c157a0e2271909330e1655892e7039249f7b79a64a443d52c512337065cde0"},
-    {file = "shiboken2-5.15.2-5.15.2-cp35.cp36.cp37.cp38.cp39-none-win_amd64.whl", hash = "sha256:14a33169cf1bd919e4c4c4408fffbcd424c919a3f702df412b8d72b694e4c1d5"},
 ]
 shiboken6 = [
     {file = "shiboken6-6.2.2.1-6.2.2-cp36.cp37.cp38.cp39.cp310-abi3-macosx_10_14_universal2.whl", hash = "sha256:cbffaefe676f5cce4204d16c2d8f794521cb8c66abbe6470d6e5cb2b889c4b88"},

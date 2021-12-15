@@ -49,7 +49,8 @@ sudo apt install -y \
   libffi-dev \
   libjpeg-dev \
   zlib1g-dev \
-  libatlas-base-dev 
+  libatlas-base-dev \
+  gfortran
   
 ```
 
