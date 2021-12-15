@@ -3,7 +3,7 @@ Additional environmental/system setup routines post python package install
 
 Uses some autopilot scripts, see https://docs.auto-pi-lot.com/en/latest/setup/scripts.html
 """
-
+import argparse
 from autopilot.setup.run_script import run_scripts, call_series
 
 hifiberry_dacplus = [
@@ -22,6 +22,21 @@ def setup_patient():
     # install jackd audio and do performance tweaks
     run_scripts(['jackd_source', 'performance'])
     call_series(hifiberry_dacplus, 'hifiberry dacplus')
+
+parser = argparse.ArgumentParser(description="Do additional setup for perceptivo")
+parser.add_argument('--patient', help="Install additional requirements for patient runtime", action="store_true")
+parser.add_argument('--clinician', help="Install additional requirements for clinician runtime", action="store_true")
+
+if __name__ == "__main__":
+    args = parser.parse_args()
+
+    if args.patient:
+        print('installing patient requirements')
+        setup_patient()
+    if args.clinician:
+        print('installing clinician requirements')
+        raise NotImplementedError('Clinician requirements not implemented yet!')
+
 
 
 

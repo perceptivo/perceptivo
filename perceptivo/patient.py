@@ -85,7 +85,9 @@ class Patient(Runtime):
         Returns:
             :class:`~.types.sound.Sound` to play
         """
-        return self.model.next()
+        sound = self.model.next()
+        self.logger.debug(f'got next sound {sound}')
+        return sound
 
     def probe(self, sound:Sound) -> Sample:
         """
@@ -99,7 +101,9 @@ class Patient(Runtime):
             :class:`perceptivo.types.psychophys.Sample`
         """
         sound = self.play_sound(sound)
+        self.logger.debug(f'played sound {sound}, awaiting response')
         response = self.await_response(sound)
+        self.logger.debug(f'got response {response} for sound {sound}')
         return Sample(response=response, sound=sound)
 
     def play_sound(self, sound: Sound) -> Sound:

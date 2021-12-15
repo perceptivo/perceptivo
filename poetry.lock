@@ -91,7 +91,7 @@ tqdm = "*"
 type = "git"
 url = "https://github.com/wehr-lab/autopilot.git"
 reference = "dev"
-resolved_reference = "842fc6ceea4727f6caac382e960e0af81b36581a"
+resolved_reference = "7bcc0e9b087aa8b879f37128a02c2a75099f060a"
 
 [[package]]
 name = "babel"

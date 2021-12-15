@@ -18,6 +18,7 @@ Welcome to perceptivo's documentation!
    :caption: Software:
 
    software/overview
+   software/installation
 
 .. toctree::
    :maxdepth: 4
