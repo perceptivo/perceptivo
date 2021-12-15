@@ -83,6 +83,7 @@ autosummary_generate = False
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
+    'autopilot': ('https://docs.auto-pi-lot.com/en/dev', None)
 }
 
 
