@@ -2,6 +2,25 @@
 
 ## Imaging RaspiOS
 
+* Download the RaspiOS image from the [Download Page](https://www.raspberrypi.com/software/operating-systems/)
+  * For Patient, download Raspi OS Lite - [HTTP](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-11-08/2021-10-30-raspios-bullseye-armhf-lite.zip), [.torrent](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-11-08/2021-10-30-raspios-bullseye-armhf-lite.zip.torrent)
+  * For Clinician, download Raspi OS with Desktop - [HTTP](https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2021-11-08/2021-10-30-raspios-bullseye-armhf.zip), [.torrent](https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2021-11-08/2021-10-30-raspios-bullseye-armhf.zip.torrent)
+
+### Mac
+
+* Find the name of the SD card using `sudo diskutil list`, will be something like `/dev/disk2`
+* Unmount disk with `sudo diskutil unmountDisk /dev/disk2` (but replacing the name/number of your disk)
+* Use `dd` to copy the image, note the use of `rdisk` (with same number) rather than `disk`. You can check the status of the transfer with `ctrl+t`:
+```bash
+sudo dd if=/path/to/raspios-image.img of=/dev/rdisk2 bs=1m
+```
+
+### Imager
+
+You can also use the raspberry pi imager, available for windows, mac, and ubuntu:
+
+[https://www.raspberrypi.org/downloads.../](https://www.raspberrypi.org/downloads.../)
+
 ## Shared
 
 On all raspberry pis, after installing the operating system you should...
@@ -14,7 +33,7 @@ On all raspberry pis, after installing the operating system you should...
     * localization settings and timezone
     * enable SSH access
     * enable WiFi access (if needed)
-* If enabling SSH, install an RSA key and disable password access - see https://wiki.auto-pi-lot.com/index.php/SSH
+* If enabling SSH, install an RSA key and disable password access - see [https://wiki.auto-pi-lot.com/index.php/SSH](https://wiki.auto-pi-lot.com/index.php/SSH)
 
 ### Install system packages
 
