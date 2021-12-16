@@ -48,7 +48,15 @@ class Pupil:
 
     Attributes:
         sound (:class:`.types.sound.Sound`): Sound that was presented for this pupil response
+        dilation (:class:`.Dilation`): Dilation timeseries
+        params (:class:`.Pupil_Params`): Pupil parameterization!
 
+    Properties:
+        response (bool): True/False whether the sound was heard, calculated by dividing
+            the maximum measured pupil dilation in pixels / maximum possible dilation in pixels
+            and comparing to the detection threshold. Aka
+            ( :attr:`.Dilation.max_diameter` / :attr:`.Pupil_Params.max_diameter` ) >
+            :attr:`.Pupil_Params.threshold`
     """
     sound: Sound
     dilation: Dilation

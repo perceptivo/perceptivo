@@ -19,11 +19,7 @@ class Sample:
         timestamp (:class:`datetime.datetime`): Timestamp at which the response was elicited
 
     Properties:
-        response (bool): True/False whether the sound was heard, calculated by dividing
-            the maximum measured pupil dilation in pixels / maximum possible dilation in pixels
-            and comparing to the detection threshold. Aka
-            ( :attr:`~.types.video.Dilation.max_diameter` / :attr:`~.types.video.Pupil_Params.max_diameter` ) >
-            :attr:`~.types.video.Pupil_Params.threshold`
+        response (bool): Sub/Subtrathreshold response from :attr:`.Pupil.response`
 
     """
     pupil: Pupil
@@ -32,7 +28,7 @@ class Sample:
 
     @property
     def response(self) -> bool:
-        return (self.pupil.dilation.max_diameter / self.pupil.params.max_diameter) > self.pupil.params.threshold
+        return self.pupil.response
 
 @dataclass(init=False)
 class Samples:
