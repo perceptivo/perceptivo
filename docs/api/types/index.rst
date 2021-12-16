@@ -11,5 +11,7 @@ types
 
    gui
    networking
+   patient
    psychophys
    sound
+   video

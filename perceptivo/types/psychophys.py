@@ -6,19 +6,33 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from perceptivo.types.sound import Sound
+from perceptivo.types.video import Pupil
 
 @dataclass
 class Sample:
     """
     A single sample of a psychophysical response to a sound
 
-    Args:
-        response (bool): True/False whether the sound was heard
+    Attributes:
+        pupil (:class:`.types.video.Pupil`): Pupil object storing dilation for a given sample
+        sound (:class:`.types.sound.Sound`): Sound presented to elicit Pupil response
+        timestamp (:class:`datetime.datetime`): Timestamp at which the response was elicited
+
+    Properties:
+        response (bool): True/False whether the sound was heard, calculated by dividing
+            the maximum measured pupil dilation in pixels / maximum possible dilation in pixels
+            and comparing to the detection threshold. Aka
+            ( :attr:`~.types.video.Dilation.max_diameter` / :attr:`~.types.video.Pupil_Params.max_diameter` ) >
+            :attr:`~.types.video.Pupil_Params.threshold`
 
     """
-    response: bool
+    pupil: Pupil
     sound: Sound
     timestamp: datetime = field(default_factory=datetime.now)
+
+    @property
+    def response(self) -> bool:
+        return (self.pupil.dilation.max_diameter / self.pupil.params.max_diameter) > self.pupil.params.threshold
 
 @dataclass(init=False)
 class Samples:

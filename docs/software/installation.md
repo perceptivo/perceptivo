@@ -50,8 +50,9 @@ sudo apt install -y \
   libjpeg-dev \
   zlib1g-dev \
   libatlas-base-dev \
-  gfortran
-  
+  gfortran \
+  libhdf5-dev \
+  cmake
 ```
 
 Install rust (needed to install poetry):
