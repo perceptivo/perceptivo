@@ -91,6 +91,23 @@ class Sound:
         self.timestamp = datetime.now()
 
     @property
+    def sound_kwargs(self) -> dict:
+        """
+        Sound kwargs that the sound class accepts
+
+        (ie. filtering out ``sound_type`` and others the sound class doesn't take)
+
+        Returns:
+            dict of arguments
+        """
+        return {
+            'frequency': self.frequency,
+            'amplitude': self.amplitude,
+            'duration': self.duration,
+            'jack_client': self.jack_client
+        }
+
+    @property
     def sound_class(self) -> 'autopilot.stim.sound.sounds.Jack_Sound':
         """
         The sound class that corresponds to the :attr:`.sound_type` retrieved from

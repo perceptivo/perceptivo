@@ -117,7 +117,7 @@ class Patient(Runtime):
             :class:`~.types.sound.Sound`
         """
         # hydrate the sound
-        _sound = sound.sound_class(**asdict(sound))
+        _sound = sound.sound_class(**sound.sound_kwargs)
         _sound.play()
         sound.stamp_time()
         return sound
