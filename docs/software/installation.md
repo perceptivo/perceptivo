@@ -52,7 +52,8 @@ sudo apt install -y \
   libatlas-base-dev \
   gfortran \
   libhdf5-dev \
-  cmake
+  cmake \
+  ninja-build
 ```
 
 Install rust (needed to install poetry):
