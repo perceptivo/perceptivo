@@ -54,6 +54,8 @@ class Jackd_Config:
                 base_str,
                 f'-P1 -C0 -r{self.fs} -p{self.period} -I{self.device_name} -s &'
                 ])
+        else:
+            raise ValueError(f'dont know what to do with driver type {self.driver}')
         return launch_str
 
 
@@ -79,6 +81,7 @@ class Sound:
     duration: float = 0.5
     sound_type: SOUND_TYPES = "Gammatone"
     timestamp: typing.Optional[datetime] = None
+    jack_client: typing.Optional['autopilot.stim.sound.jackclient.JackClient'] = None
     uuid: str = field(default_factory=uuid.uuid4)
 
     def stamp_time(self):

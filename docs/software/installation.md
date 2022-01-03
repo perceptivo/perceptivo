@@ -107,6 +107,39 @@ Install additional post-install dependencies using perceptivo & autopilot script
 * Do performance-enhancing tweaks using `performance`
 * Enable hifiberry DAC / ADC Pro 
 
+Call
+
 ```bash
 python -m perceptivo.setup --patient
+```
+
+and then restart. 
+
+### Audio
+
+Depending on the raspberry pi, you might need some additional configuration to tell alsa
+which sound card to use.  By default, autopilot creates an alsa configuration file
+that points to the 0th card.
+
+To tell which card to use...
+
+```bash
+>>> aplay -l
+
+**** List of PLAYBACK Hardware Devices ****
+card 0: vc4hdmi0 [vc4-hdmi-0], device 0: MAI PCM i2s-hifi-0 [MAI PCM i2s-hifi-0]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 1: vc4hdmi1 [vc4-hdmi-1], device 0: MAI PCM i2s-hifi-0 [MAI PCM i2s-hifi-0]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 2: sndrpihifiberry [snd_rpi_hifiberry_dacplusadcpro], device 0: HiFiBerry DAC+ADC Pro HiFi multicodec-0 [HiFiBerry DAC+ADC Pro HiFi multicodec-0]
+  Subdevices: 0/1
+  Subdevice #0: subdevice #0
+```
+
+in this case we want to use card 2, so we replace that number in `/etc/asound.conf`
+
+```
+
 ```

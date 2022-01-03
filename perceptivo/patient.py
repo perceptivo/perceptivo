@@ -156,7 +156,7 @@ class Patient(Runtime):
     def _init_model(self, model_params: Psychoacoustic_Model) -> model.Audiogram_Model:
         # get model class
         model_class = getattr(model, model_params.model_type)
-        return model_class(*model_params.args, **model_params.kwargs)
+        return model_class(*model_params.args, jack_client=self.server, **model_params.kwargs)
 
 
 
