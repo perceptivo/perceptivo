@@ -120,7 +120,7 @@ class Patient(Runtime):
         sound_kwargs = sound.sound_kwargs
         # autopilot uses ms not seconds
         sound_kwargs['duration'] *= 1000
-        _sound = sound.sound_class(**sound.sound_kwargs)
+        _sound = sound.sound_class(**sound_kwargs)
         _sound.play()
         sound.stamp_time()
         return sound
