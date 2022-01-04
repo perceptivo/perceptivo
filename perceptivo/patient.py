@@ -147,7 +147,7 @@ class Patient(Runtime):
         self.procs.append(proc)
         # prefs.set('OUTCHANNELS', [0])
         # sleep(1)
-        client = server.jackclient.JackClient()
+        client = server.jackclient.JackClient(outchannels=self.jackd_config.outchannels)
         sleep(3)
         client.start()
         self.logger.info(f'Started jackd with pid: {proc.pid}, and also started jack client!')

@@ -39,6 +39,7 @@ class Jackd_Config:
     fs: int = 44100
     nperiods: int = 3
     period: int = 1024
+    outchannels: list = field(default_factory=lambda: [0,1])
 
     @property
     def launch_str(self) -> str:
