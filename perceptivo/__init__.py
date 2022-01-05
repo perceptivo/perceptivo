@@ -1,6 +1,10 @@
-from importlib.metadata import version
-from pathlib import Path
+import sys
+if sys.version_info.minor >= 8:
+    from importlib.metadata import version
+else:
+    from importlib_metadata import version
 __version__ = version('perceptivo')
+
 
 # fix prefs multiprocessing errors?
 import os
