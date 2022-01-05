@@ -38,7 +38,7 @@ add this to `~/.bashrc`
 ```bash
 export PYENV_ROOT="$HOME/git/pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
 ```
 
 and then source it so it works
@@ -49,16 +49,16 @@ source ~/.bashrc
 
 ## Install Python
 
-Use pyenv to install python, for example let's use `3.9.9`
+Use pyenv to install python, for example let's use `3.8.12`
 
 ```bash
-pyenv install 3.9.9
+pyenv install 3.8.12
 ```
 
 Then set the pyenv version in your `~/.bashrc` file
 
 ```angular2html
-echo "export PYENV_VERSION=\"3.9.9\"" >> ~/.bashrc
+echo "export PYENV_VERSION=\"3.8.12\"" >> ~/.bashrc
 source ~/.bashrc
 ```
 
