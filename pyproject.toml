@@ -11,15 +11,14 @@ auto-pi-lot = { git = "https://github.com/wehr-lab/autopilot.git", branch = "dev
 pyzmq = "^22.3.0"
 scikit-learn = "^1.0.1"
 matplotlib = "^3.4.3"
-numpy = {url = "https://github.com/numpy/numpy/releases/download/v1.22.0/numpy-1.22.0.tar.gz"}
 PySide6 = {version = "^6.1.2", optional=true}
-PsychoPy = {version = "^2021.2.0", optional=true}
 pyqtgraph = {version = "^0.12", optional=true}
 JACK-Client = {version="^0.5.3", optional=true}
 sphinx = {version = "^4.2", optional=true}
 furo = {version = "^2021", optional=true}
 myst-parser = {version ="^0.15", optional=true}
 sphinxcontrib-bibtex = {version="^2.4.1", optional=true}
+numpy = {url = "https://github.com/numpy/numpy/releases/download/v1.21.5/numpy-1.21.5.tar.gz"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
