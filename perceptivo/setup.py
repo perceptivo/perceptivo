@@ -25,7 +25,7 @@ apt_requirements = {
         'libsamplerate0-dev',
         'libsndfile1-dev',
         'libreadline-dev',
-        'libasound-dev',
+        'libasound2-dev',
         'liblo-dev'
     ]
 }

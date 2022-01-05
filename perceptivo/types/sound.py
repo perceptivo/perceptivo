@@ -39,16 +39,27 @@ class Jackd_Config:
     fs: int = 44100
     nperiods: int = 3
     period: int = 1024
+    playback_only: bool = True
     outchannels: list = field(default_factory=lambda: [0,1])
 
     @property
     def launch_str(self) -> str:
+        if self.playback_only:
+            io_mode = '-P'
+        else:
+            io_mode = '-D'
+
         base_str = f'{str(self.bin)} -P{self.priority} -R -d{self.driver}'
         if self.driver == "alsa":
             launch_str: str =  ' '.join(
                 [
                     base_str,
-                    f'-d{self.device_name} -D -r{self.fs} -n{self.nperiods} -p{self.period} -s &'
+                    f'-d{self.device_name}',
+                    io_mode,
+                    f'-r{self.fs}',
+                    f'-n{self.nperiods}',
+                    f'-p{self.period}',
+                    '-s &'
                 ])
         elif self.driver == "coreaudio":
             launch_str = ' '.join([
