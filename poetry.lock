@@ -284,7 +284,7 @@ reference = "piwheels.org"
 name = "importlib-metadata"
 version = "4.10.0"
 description = "Read metadata from Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -1237,7 +1237,7 @@ reference = "piwheels.org"
 name = "zipp"
 version = "3.7.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -1258,7 +1258,7 @@ patient = ["JACK-Client"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.9"
-content-hash = "90b658d19733f7ec67d770099ef1146430fb5952f85f16d29765453532e13851"
+content-hash = "f18248ba97b5919b5699f4dc4b6bd1bc42acb14828772a66a09a6a1ed6bdf824"
 
 [metadata.files]
 alabaster = [
