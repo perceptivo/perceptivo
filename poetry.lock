@@ -53,8 +53,8 @@ tornado = ">=5.0"
 tqdm = "*"
 
 [package.extras]
-docs = ["autodocsumm", "sphinx-rtd-theme", "sphinx-autobuild", "sphinx-sass"]
-pilot = ["jack-client", "pigpio"]
+docs = ["autodocsumm", "sphinx-rtd-theme", "sphinx-autobuild", "sphinx-sass @ git+https://github.com/sneakers-the-rat/sphinx-sass@master"]
+pilot = ["jack-client", "pigpio @ git+https://github.com/sneakers-the-rat/pigpio@master"]
 terminal = ["pyopengl", "pyqtgraph (>=0.11.0rc0)", "pyside2"]
 
 [package.source]
