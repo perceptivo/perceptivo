@@ -4,14 +4,14 @@ entrypoint for patient interface
 import typing
 from time import sleep
 
+import soundcard as sc
+
 from perceptivo.root import Runtime
 from perceptivo.sound import server
-
-from perceptivo.types.sound import Jackd_Config, Sound
+from perceptivo.types.sound import Jackd_Config, Audio_Config, Sound
 from perceptivo.types.psychophys import Sample, Samples, Psychoacoustic_Model, Default_Kernel
 from perceptivo.psychophys import model
 from dataclasses import asdict
-
 
 from autopilot import prefs
 
@@ -31,7 +31,7 @@ class Patient(Runtime):
     the parameterization passed in ``audiogram_model``
 
     Args:
-        jackd_config (:class:`~.types.sound.Jackd_Config`): Configuration used to boot the jackd server
+        audio_config (:class:`~.types.sound.Jackd_Config`): Configuration used to boot the jackd server
         audiogram_model (:class:`~.types.psychophys.Psychoacoustic_Model`): Model parameterization used to
             model the audiogram as well as generate optimal stimuli to sample
         oracle (callable): Optional, if present use an oracle to generate responses to stimuli rather than
@@ -41,20 +41,20 @@ class Patient(Runtime):
     """
 
     def __init__(self,
-                 jackd_config: Jackd_Config = Jackd_Config(),
+                 audio_config: Audio_Config = Audio_Config(),
                  audiogram_model: Psychoacoustic_Model =
                    Psychoacoustic_Model(
                        'Gaussian_Process',
                        kwargs={'kernel': Default_Kernel()}),
                  oracle: typing.Optional[callable]=None):
         super(Patient, self).__init__()
-        self.jackd_config = jackd_config
+        self.audio_config = audio_config
         self.audiogram_model = audiogram_model
         self.oracle = oracle
 
         self.samples = Samples() # type: Samples
 
-        self.server = self._init_audio() # type: server.jackclient.JackClient
+        self.server = self._init_audio() # type: typing.Union[server.jackclient.JackClient, sc.pulseaudio._Speaker]
         self.model = self._init_model(self.audiogram_model) # type: model.Audiogram_Model
 
     def loop(self):
@@ -72,10 +72,13 @@ class Patient(Runtime):
 
         """
         sound = self.next_sound()
+        self.logger.debug('got next sound')
+
         sample = self.probe(sound)
+        self.logger.debug('probed')
+
         self.samples.append(sample)
         self.model.update(sample)
-
         self.logger.debug(f'Sample collected - {sample}')
 
     def next_sound(self) -> Sound:
@@ -86,6 +89,8 @@ class Patient(Runtime):
             :class:`~.types.sound.Sound` to play
         """
         sound = self.model.next()
+        if isinstance(self.audio_config, Jackd_Config):
+            sound.jack_client = self.server
         self.logger.debug(f'got next sound {sound}')
         return sound
 
@@ -116,13 +121,24 @@ class Patient(Runtime):
         Returns:
             :class:`~.types.sound.Sound`
         """
-        # hydrate the sound
+        # hydrate the sound, clean the kwargs
         sound_kwargs = sound.sound_kwargs
         # autopilot uses ms not seconds
-        sound_kwargs['duration'] *= 1000
+        if sound_kwargs['duration'] < 25:
+            sound_kwargs['duration'] *= 1000
+        if not isinstance(self.audio_config, Jackd_Config):
+            del sound_kwargs['jack_client']
+            sound_kwargs['fs'] = self.audio_config.fs
+
+        # instantiate sound from autopilot Gammatone class
         _sound = sound.sound_class(**sound_kwargs)
-        _sound.play()
+
+        # stamp time and play sound depending on method implied by audio_config
         sound.stamp_time()
+        if isinstance(self.audio_config, Jackd_Config):
+            _sound.play()
+        else:
+            self.server.play(_sound.table, samplerate=self.audio_config.fs)
         return sound
 
     def await_response(self, sound:Sound) -> bool:
@@ -139,27 +155,34 @@ class Patient(Runtime):
             pass
 
 
-    def _init_audio(self) -> server.jackclient.JackClient:
+    def _init_audio(self) -> typing.Union[server.jackclient.JackClient, sc.pulseaudio._Speaker]:
         """
         Start the jackd process, connect a client to it!
 
         Returns:
             :class:`autopilot.stim.sound.jackclient.JackClient` - A booted jack client!
         """
-        proc = server.boot_jackd(self.jackd_config)
-        self.procs.append(proc)
-        # prefs.set('OUTCHANNELS', [0])
-        # sleep(1)
-        client = server.jackclient.JackClient(outchannels=self.jackd_config.outchannels)
-        sleep(3)
-        client.start()
-        self.logger.info(f'Started jackd with pid: {proc.pid}, and also started jack client!')
+        if isinstance(self.audio_config, Jackd_Config):
+            self.logger.debug('Using jack audio server')
+            proc = server.boot_jackd(self.audio_config)
+            self.procs.append(proc)
+            # prefs.set('OUTCHANNELS', [0])
+            # sleep(1)
+            client = server.jackclient.JackClient(outchannels=self.audio_config.outchannels)
+            sleep(3)
+            client.start()
+            self.logger.info(f'Started jackd with pid: {proc.pid}, and also started jack client!')
+        else:
+            self.logger.debug('Using SoundCard-based audio system')
+            prefs.set('AUDIOSERVER', 'dummy')
+            client = sc.default_speaker()
+
         return client
 
     def _init_model(self, model_params: Psychoacoustic_Model) -> model.Audiogram_Model:
         # get model class
         model_class = getattr(model, model_params.model_type)
-        return model_class(*model_params.args, jack_client=self.server, **model_params.kwargs)
+        return model_class(*model_params.args, **model_params.kwargs)
 
 
 

@@ -68,8 +68,8 @@ tornado = ">=5.0"
 tqdm = "*"
 
 [package.extras]
-docs = ["autodocsumm", "sphinx-rtd-theme", "sphinx-autobuild", "sphinx-sass @ git+https://github.com/sneakers-the-rat/sphinx-sass@master"]
-pilot = ["jack-client", "pigpio @ git+https://github.com/sneakers-the-rat/pigpio@master"]
+docs = ["autodocsumm", "sphinx-rtd-theme", "sphinx-autobuild", "sphinx-sass"]
+pilot = ["jack-client", "pigpio"]
 terminal = ["pyopengl", "pyqtgraph (>=0.11.0rc0)", "pyside2"]
 
 [package.source]
@@ -953,6 +953,23 @@ url = "https://www.piwheels.org/simple"
 reference = "piwheels.org"
 
 [[package]]
+name = "soundcard"
+version = "0.4.1"
+description = "Play and record audio without resorting to CPython extensions"
+category = "main"
+optional = true
+python-versions = ">=3.5"
+
+[package.dependencies]
+cffi = "*"
+numpy = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels.org"
+
+[[package]]
 name = "soupsieve"
 version = "2.3.1"
 description = "A modern CSS selector implementation for Beautiful Soup."
@@ -1253,12 +1270,12 @@ reference = "piwheels.org"
 [extras]
 clinician = ["PySide6", "pyqtgraph"]
 docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex"]
-patient = ["JACK-Client"]
+patient = ["JACK-Client", "SoundCard"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.9"
-content-hash = "f18248ba97b5919b5699f4dc4b6bd1bc42acb14828772a66a09a6a1ed6bdf824"
+content-hash = "3e671847ec6054477cbf1d9956daa0099e4960f148225f398abb61cab6568394"
 
 [metadata.files]
 alabaster = [
@@ -1480,6 +1497,9 @@ six = [
 ]
 snowballstemmer = [
     {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:53823aa64ad78444911007d0f56ee775f1b8c1e34c32bdba744d8be02ce7bbf3"},
+]
+soundcard = [
+    {file = "SoundCard-0.4.1-py3-none-any.whl", hash = "sha256:a70d306a24f4d5a61f46f5b4ae6ea633628aecca00d723e2cefa6fe5a21e58df"},
 ]
 soupsieve = [
     {file = "soupsieve-2.3.1-py3-none-any.whl", hash = "sha256:7941178a8813515ba520250db98ab296aa1486e51ce528ace741b0881267a49a"},

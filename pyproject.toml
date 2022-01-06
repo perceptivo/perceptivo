@@ -21,6 +21,7 @@ sphinxcontrib-bibtex = {version="^2.4.1", optional=true}
 numpy = "^1.21"
 importlib-metadata = {version="^4.10", python="~3.7"}
 typing-extensions = {version="^4.0", python="~3.7"}
+SoundCard = {version="^0.4", python=">=3.8", optional=true}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -31,7 +32,7 @@ clinician = 'perceptivo.clinician:main'
 
 [tool.poetry.extras]
 docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex"]
-patient = ["JACK-Client"]
+patient = ["JACK-Client", "SoundCard"]
 clinician = ["PySide6", "pyqtgraph"]
 
 [[tool.poetry.source]]

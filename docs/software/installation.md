@@ -71,7 +71,9 @@ sudo apt install -y \
   gfortran \
   libhdf5-dev \
   cmake \
-  ninja-build
+  ninja-build \
+  libopenjp2-7 \
+  libtiff5
 ```
 
 Install rust (needed to install poetry):

@@ -62,7 +62,6 @@ class Audiogram_Model(Perceptivo_Object):
 
     def __init__(self, freq_range:typing.Tuple[float,float]=(125,8500),
                  amplitude_range:typing.Tuple[float,float]=(5,60),
-                 jack_client: 'autopilot.stim.sound.jackclient.JackClient' = None,
                  *args, **kwargs):
         super(Audiogram_Model, self).__init__(*args, **kwargs)
 
@@ -74,7 +73,6 @@ class Audiogram_Model(Perceptivo_Object):
 
         self.freq_range = freq_range
         self.amplitude_range = amplitude_range
-        self.jack_client = jack_client
 
 
     @abstractmethod
@@ -206,16 +204,14 @@ class Gaussian_Process(Audiogram_Model):
             amp = np.random.rand()*(self.amplitude_range[1]-self.amplitude_range[0])+self.amplitude_range[0]
             return types.sound.Sound(
                 frequency=freq,
-                amplitude=amp,
-                jack_client=self.jack_client)
+                amplitude=amp)
 
         Z = self.model.predict_proba(self._y)
         Z = Z[:,1]
         uncertain = np.argmin(np.abs(0.5-Z))
         return types.sound.Sound(
             frequency=self._y[uncertain,0],
-            amplitude=self._y[uncertain,1],
-            jack_client=self.jack_client
+            amplitude=self._y[uncertain,1]
         )
 
 

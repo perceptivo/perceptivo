@@ -17,7 +17,17 @@ def _find_jackd() -> Path:
 
 
 @dataclass
-class Jackd_Config:
+class Audio_Config:
+    """
+    Base class for audio configuration
+
+    Params:
+        fs (int): Sampling rate in Hz, default 44100
+    """
+    fs: int = 44100
+
+@dataclass
+class Jackd_Config(Audio_Config):
     """
     Configure the jackd daemon used by the sound server, see https://linux.die.net/man/1/jackd
 
@@ -27,7 +37,7 @@ class Jackd_Config:
         driver (str): Driver to use, default 'alsa'
         device_name (str, int): Device to use in alsa's parlance, default 'hw:sndrpihifiberry'.
             Also accepts ints for use with coreaudio
-        fs (int): Sampling rate in Hz, default 44100
+
         nperiods (int): Number of periods per buffer cycle, default 3
         period (int): size of period, default 1024 samples.
         launch_str (str): launch string with arguments compiled from the other arguments
@@ -36,7 +46,6 @@ class Jackd_Config:
     priority: int = 75
     driver: str = "alsa"
     device_name: typing.Union[str, int] = "hw:sndrpihifiberry"
-    fs: int = 44100
     nperiods: int = 3
     period: int = 1024
     playback_only: bool = True
