@@ -6,7 +6,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from perceptivo.types.sound import Sound
-from perceptivo.types.video import Pupil
+from perceptivo.types.pupil import Dilation
+
 
 @dataclass
 class Sample:
@@ -14,7 +15,7 @@ class Sample:
     A single sample of a psychophysical response to a sound
 
     Attributes:
-        pupil (:class:`.types.video.Pupil`): Pupil object storing dilation for a given sample
+        dilation (:class:`.types.pupil.Dilation`): Pupil object storing dilation for a given sample
         sound (:class:`.types.sound.Sound`): Sound presented to elicit Pupil response
         timestamp (:class:`datetime.datetime`): Timestamp at which the response was elicited
 
@@ -22,13 +23,13 @@ class Sample:
         response (bool): Sub/Subtrathreshold response from :attr:`.Pupil.response`
 
     """
-    pupil: Pupil
+    dilation: Dilation
     sound: Sound
     timestamp: datetime = field(default_factory=datetime.now)
 
     @property
     def response(self) -> bool:
-        return self.pupil.response
+        return self.dilation.response
 
 @dataclass(init=False)
 class Samples:
@@ -42,31 +43,31 @@ class Samples:
     frequencies: typing.List[float]
     amplitudes: typing.List[float]
 
-    def __init__(self, samples:typing.List[Sample]=None,
-                 responses:typing.List[bool]=None,
-                 frequencies:typing.List[float]=None,
-                 amplitudes:typing.List[float]=None):
+    def __init__(self, samples:typing.Optional[typing.List[Sample]]=None,
+                 dilations:typing.Optional[typing.List[Dilation]]=None,
+                 frequencies:typing.Optional[typing.List[float]]=None,
+                 amplitudes:typing.Optional[typing.List[float]]=None):
         if samples is not None and all([isinstance(s, Sample) for s in samples]):
             self.samples = samples
             self.responses = [s.response for s in samples]
             self.frequencies = [s.sound.frequency for s in samples]
             self.amplitudes = [s.sound.amplitude for s in samples]
 
-        elif all([x is not None for x in (responses, frequencies, amplitudes)]):
+        elif all([x is not None for x in (dilations, frequencies, amplitudes)]):
             samples = []
-            for response, freq, amplitude in zip(responses, frequencies, amplitudes):
+            for dilation, freq, amplitude in zip(dilations, frequencies, amplitudes):
                 samples.append(Sample(
-                    response=response,
+                    dilation=dilation,
                     sound=Sound(
                         frequency=freq,
                         amplitude=amplitude
                     )))
             self.samples = samples
-            self.responses = responses
+            self.responses = [s.response for s in self.samples]
             self.frequencies = frequencies
             self.amplitudes = amplitudes
 
-        elif all([x is None for x in (samples, responses, frequencies, amplitudes)]):
+        elif all([x is None for x in (samples, dilations, frequencies, amplitudes)]):
             # If we're initialized as an empty container, just initialize as empty
             self.samples = []
             self.responses = []
@@ -74,7 +75,7 @@ class Samples:
             self.amplitudes = []
 
         else:
-            raise ValueError(f"Not sure how to init Samples from {samples, responses, frequencies, amplitudes}")
+            raise ValueError(f"Not sure how to init Samples from {samples, dilations, frequencies, amplitudes}")
 
     def append(self, sample: Sample):
         """
