@@ -975,14 +975,14 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 
 [extras]
 clinician = ["PySide6", "pyqtgraph"]
-docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex"]
+docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex", "matplotlib"]
 patient = ["JACK-Client", "SoundCard"]
 plotting = ["matplotlib"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.10"
-content-hash = "fe2da84536bb14487db4a619ed48f6394110f9ef84e452efbfcbe953350afc57"
+content-hash = "10936a176249166c692d07009cc684c7216495ff4ff72411c41105fdd1a6975e"
 
 [metadata.files]
 alabaster = [

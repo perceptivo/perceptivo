@@ -36,7 +36,7 @@ patient = 'perceptivo.patient:main'
 clinician = 'perceptivo.clinician:main'
 
 [tool.poetry.extras]
-docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex"]
+docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex", "matplotlib"]
 patient = ["JACK-Client", "SoundCard"]
 clinician = ["PySide6", "pyqtgraph"]
 plotting = ["matplotlib"]

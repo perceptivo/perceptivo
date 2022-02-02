@@ -3,7 +3,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from sklearn.gaussian_process.kernels import RBF
 import pandas as pd
-import matplotlib.pyplot as plt
+MATPLOTLIB = False
+try:
+    import matplotlib.pyplot as plt
+    MATPLOTLIB = True
+except ImportError:
+    pass
 
 from perceptivo.types.sound import Sound
 from perceptivo.types.pupil import Dilation
@@ -120,6 +125,9 @@ class Samples:
             show (bool): If ``True`` (default), call plt.show()
 
         """
+        if not MATPLOTLIB:
+            raise ImportError("matplotlib was not found!")
+
         df = self.to_df()
         colors = ['r' if response == False else 'b' for response in df.response]
         df.plot.scatter(x='frequency', y='amplitude', c=colors)
