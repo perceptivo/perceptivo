@@ -8,9 +8,16 @@ import numpy as np
 class Frame:
     """
     Single video frame container
+
+    Attributes:
+        frame (:class:`numpy.ndarray`): Frame!
+        timestamp (:class:`datetime.datetime`): Time of acquisition
+        color (bool): If ``False`` , grayscale (frame should be 2 dimensional or 3rd axis should be len  == 1 ).
+            if ``True``, RGB Color.
     """
     frame: np.ndarray
     timestamp: datetime
+    color: bool = False
 
 
 @dataclass

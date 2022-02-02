@@ -4,8 +4,16 @@ from abc import abstractmethod
 import numpy as np
 import typing
 from perceptivo import types
-import matplotlib.pyplot as plt
-from matplotlib.cm import ScalarMappable
+import warnings
+
+PLOTTING = False
+try:
+    import matplotlib.pyplot as plt
+    from matplotlib.cm import ScalarMappable
+    PLOTTING=True
+except ImportError:
+    pass
+
 
 from sklearn.gaussian_process.kernels import Kernel
 from perceptivo.psychophys.gaussian import IterativeGPC
@@ -225,6 +233,9 @@ class Gaussian_Process(Audiogram_Model):
             Returns:
 
             """
+            if not PLOTTING:
+                warnings.warn('matplotlib was not found')
+                return
             xx, yy = np.meshgrid(
                 np.arange(self.freq_range[0], self.freq_range[1], mesh_resolution),
                 np.arange(self.amplitude_range[0], self.amplitude_range[1], mesh_resolution),

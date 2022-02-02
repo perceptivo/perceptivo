@@ -92,5 +92,7 @@ show how they relate in order to derive a patient's audiogram
    networking
    patient
    psychophys
+   pupil
    sound
+   units
    video
