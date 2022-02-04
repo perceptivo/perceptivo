@@ -4,13 +4,17 @@ Individual transformation operations for video frames.
 To be used with the :class:`perceptivo.video.pupil.PupilExtractor` subclasses
 
 """
+import pdb
 import typing
 from typing import Union, Optional, List, Dict
 from abc import abstractmethod
 from types import MethodType
 from pathlib import Path
+from skimage.transform import hough_circle, hough_circle_peaks
 
 import numpy as np
+np.seterr(divide='ignore')
+np.seterr(invalid='ignore')
 import cv2
 from scipy.ndimage import sum as ndisum
 from scipy.ndimage import label
@@ -137,6 +141,9 @@ class Canny(Processor):
         self.high_thresh = high_thresh
 
     def process(self, frame:Frame) -> Frame:
+        # else:
+        low_thresh = self.low_thresh
+        high_thresh = self.high_thresh
 
 
         isobel = cv2.GaussianBlur(cv2.Scharr(frame.frame, ddepth=-1, dx=0, dy=1), ksize=(0, 0), sigmaX=self.blur_sigma)
@@ -232,8 +239,8 @@ class Canny(Processor):
         #
         # ---- Create two masks at the two thresholds.
         #
-        high_mask = local_maxima & (magnitude >= self.high_thresh)
-        low_mask = local_maxima & (magnitude >= self.low_thresh)
+        high_mask = local_maxima & (magnitude >= high_thresh)
+        low_mask = local_maxima & (magnitude >= low_thresh)
         #
         # Segment the low-mask, then only keep low-segments that have
         # some high_mask component in them
@@ -261,6 +268,12 @@ class Haar_Tracker(Processor):
     Download and use a haar cascade to track.
 
     Many trained cascade .xml files are available at https://github.com/opencv/opencv/tree/master/data/haarcascades
+
+    References:
+
+        * `OpenCV Cascade Classifier Tutorial <https://docs.opencv.org/4.5.5/db/d28/tutorial_cascade_classifier.html>`_
+
+
     """
 
     XML_URLS = {
@@ -268,12 +281,20 @@ class Haar_Tracker(Processor):
         'face_default': 'https://raw.githubusercontent.com/opencv/opencv/415a42f327104653604fc99314eb215cd938d6d7/data/haarcascades/haarcascade_frontalface_default.xml',
     }
 
-    def __init__(self, tracker_type:str='eye', **kwargs):
+    def __init__(self,
+                 tracker_type:str='eye',
+                 min_neighbors:int=20,
+                 adaptive_neighbors:bool=True,
+                 **kwargs):
         super(Haar_Tracker, self).__init__(**kwargs)
 
+        self.min_neighbors = min_neighbors
         self.tracker_type = tracker_type
+        self.adaptive_neighbors = adaptive_neighbors
         self.tracker = cv2.CascadeClassifier()
-        self.tracker.load(self.filename)
+        filename = str(self.filename)
+        self.logger.debug(f'using filename {filename}')
+        self.tracker.load(filename)
 
 
     @property
@@ -290,7 +311,7 @@ class Haar_Tracker(Processor):
             success = download(self.url, filename)
         return filename
 
-    def process(self, frame:Frame) -> typing.List[tuple]:
+    def process(self, frame:Frame) -> typing.Tuple[typing.List[tuple], typing.List[int]]:
         """
 
         Args:
@@ -299,7 +320,90 @@ class Haar_Tracker(Processor):
         Returns:
             list of tuples  corresponding to (x,y,width,height)
         """
-        return self.tracker.detectMultiScale(frame.frame)
+        eyes, numDetections = self.tracker.detectMultiScale2(
+            frame.frame, minNeighbors=self.min_neighbors)
+        if len(eyes) == 0:
+            self.min_neighbors -= 1
+        elif len(eyes) > 2:
+            self.min_neighbors += 1
+
+        return eyes, numDetections
+
+
+class Filtered_Hough(Processor):
+    """
+    A hough transform to detect circles, returning the one that bounds
+    the darkest area in the image
+    """
+
+    def __init__(self,
+                 radii=(15,30,100),
+                 max_considered = 3,
+                 peaks_kwargs: typing.Optional[dict]= None):
+        self.radii = radii
+        self.max_considered = max_considered
+        if peaks_kwargs is None:
+            self.peaks_kwargs = {}
+        else:
+            self.peaks_kwargs = peaks_kwargs
 
 
 
+    def process(self, edges:np.ndarray):
+        """
+        Frame to process, along with edges from canny edge detection
+        """
+        circs = hough_circle(edges, self.radii)
+        accum, cx, cy, crad = hough_circle_peaks(
+            circs,
+            self.radii,
+            num_peaks = self.max_considered,
+            **self.peaks_kwargs
+        )
+        circs = [(x, y, rad) for x, y, rad in zip(cx, cy, crad)]
+
+        return circs
+
+
+class Filter_Circles(Processor):
+    """
+    Filter Circles!
+    """
+
+    def __init__(self, prior_bias = 0.5):
+        """
+
+        Args:
+            prior_bias (float): how strongly to weight the similarity to the prior circle, if given
+        """
+        self.prior_bias = prior_bias
+
+    def process(self, frame:Frame,circles, prev_eye=None):
+        # find the darkest one
+        values = []
+        for x, y, rad in circles:
+            mean_val = np.mean(
+                frame.frame[
+                    circle_to_mask(frame.frame, x, y, rad)
+                ])
+            if prev_eye:
+                diff = np.mean(np.abs(np.array([x, y, rad]) - prev_eye))*self.prior_bias
+            else:
+                diff = 1
+
+            values.append(
+                mean_val * diff
+            )
+
+        if len(values) == 0:
+            return False
+
+        which = np.argmin(values)
+        return circles[which]
+
+
+def circle_to_mask(frame, ix, iy, rad):
+    nx, ny = frame.shape
+    pmask_x, pmask_y = np.ogrid[-iy:nx - iy, -ix:ny - ix]
+    pmask = pmask_x ** 2 + pmask_y ** 2 <= rad ** 2
+    return pmask

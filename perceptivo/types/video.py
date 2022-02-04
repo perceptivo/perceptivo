@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
+import typing
 
 import numpy as np
+import cv2
 
 
 @dataclass
@@ -17,7 +19,67 @@ class Frame:
     """
     frame: np.ndarray
     timestamp: datetime
-    color: bool = False
+    color: bool = True
+    cropped: typing.Optional['Frame'] = None
+
+    def __post_init__(self):
+        self._color = None
+        self._gray = None
+        self._norm = None
+        self.dtype = self.frame.dtype
+        if self.color:
+            self._color = self.frame
+        else:
+            self._gray = self.frame
+
+
+    def set_color(self, color):
+        if color and not self.color:
+            raise ValueError('Cant colorize grayscale images!')
+        elif not color and self.color:
+            self._color = self.frame.copy()
+            gray = self.gray
+            self.frame = gray
+            self.color = color
+
+    def norm(self):
+        """make frame 0-1"""
+        if self._norm is None:
+            if self.frame.dtype == 'uint8':
+                self._norm = self.frame.astype(float) / 255
+                self.frame = self._norm
+                self.dtype = 'float'
+
+    @property
+    def gray(self) -> np.ndarray:
+        """
+        Grayscale version of the frame, if color
+        """
+        if self._gray is None:
+            if self.color:
+                self._gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
+            else:
+                self._gray = self.frame
+        return self._gray
+
+    def crop(self, bbox:typing.List[int]):
+        """
+        Crop with a bounding box (top, bottom, left, right),
+        assign to self.cropped
+
+        Args:
+            bbox ():
+
+        Returns:
+            new Frame image with cropped image as its frame
+        """
+
+        self.cropped = Frame(
+            frame=self.frame[bbox[0]:bbox[1], bbox[2]:bbox[3]],
+            timestamp=self.timestamp,
+            color=self.color)
+
+        return self.cropped
 
 
 @dataclass
