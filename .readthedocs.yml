@@ -8,8 +8,11 @@ sphinx:
 formats:
    - pdf
 
+build:
+  tools:
+    python: "3.9"
+
 python:
-  version: 3.9
   install:
     - method: pip
       path: .
