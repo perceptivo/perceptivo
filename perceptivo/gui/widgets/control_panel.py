@@ -6,16 +6,16 @@ import typing
 from PySide6 import QtWidgets
 from PySide6.QtCore import Signal, Slot
 
-import perceptivo.types.gui
+from perceptivo.types.gui import GUI_Param
 from perceptivo.gui.widgets.components import Range_Setter
 from perceptivo.gui import params, styles
 from perceptivo.root import Perceptivo_Object
 
 class Control_Panel(QtWidgets.QGroupBox, Perceptivo_Object):
 
-    valueChanged = Signal(perceptivo.types.gui.GUI_Param)
-    scaleChanged = Signal(perceptivo.types.gui.GUI_Param)
-    startToggled = Signal(perceptivo.types.gui.GUI_Param)
+    valueChanged = Signal(GUI_Param)
+    scaleChanged = Signal(GUI_Param)
+    startToggled = Signal(GUI_Param)
 
     def __init__(self):
         super(Control_Panel, self).__init__('Control Panel')
@@ -136,9 +136,9 @@ class Control_Panel(QtWidgets.QGroupBox, Perceptivo_Object):
 
 
 
-    def _valueChanged(self, value: perceptivo.types.gui.GUI_Param):
-        if not isinstance(value, perceptivo.types.gui.GUI_Param):
-            value = perceptivo.types.gui.GUI_Param(key=self.sender().objectName(), value=value)
+    def _valueChanged(self, value: GUI_Param):
+        if not isinstance(value, GUI_Param):
+            value = GUI_Param(key=self.sender().objectName(), value=value)
 
         self.logger.debug(f'emitting {value}')
         self.valueChanged.emit(value)
@@ -156,12 +156,12 @@ class Control_Panel(QtWidgets.QGroupBox, Perceptivo_Object):
         if value == 'log':
             set_to = True
 
-        self.scaleChanged.emit(perceptivo.types.gui.GUI_Param(key, set_to))
+        self.scaleChanged.emit(GUI_Param(key, set_to))
 
     def _gridChanged(self):
         pass
 
-    @Slot(perceptivo.types.gui.GUI_Param)
-    def setValue(self, value: perceptivo.types.gui.GUI_Param):
+    @Slot(GUI_Param)
+    def setValue(self, value: GUI_Param):
         pass
 

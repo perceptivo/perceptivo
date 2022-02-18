@@ -4,8 +4,7 @@ Very basic units or unit-like things
 from dataclasses import dataclass
 import typing
 from skimage.draw import ellipse
-if typing.TYPE_CHECKING:
-    import numpy as np
+import numpy as np
 
 
 @dataclass

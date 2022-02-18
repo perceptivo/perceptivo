@@ -8,7 +8,6 @@ from PySide6 import QtWidgets
 from PySide6.QtCore import Signal, Slot
 from importlib.metadata import version
 
-import perceptivo.types.psychophys
 from perceptivo.gui import widgets
 from perceptivo.root import Perceptivo_Object
 

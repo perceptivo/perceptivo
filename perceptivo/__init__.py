@@ -27,3 +27,5 @@ if not Directories.user_dir.exists():
         print(val)
         if len(val.suffixes) == 0:
             val.mkdir(parents=True,exist_ok=True)
+
+from perceptivo import types
