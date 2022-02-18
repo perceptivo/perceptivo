@@ -12,3 +12,4 @@ video
 
    cameras
    pupil
+   processors

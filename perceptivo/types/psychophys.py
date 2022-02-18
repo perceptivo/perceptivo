@@ -51,7 +51,8 @@ class Samples:
     def __init__(self, samples:typing.Optional[typing.List[Sample]]=None,
                  dilations:typing.Optional[typing.List[Dilation]]=None,
                  frequencies:typing.Optional[typing.List[float]]=None,
-                 amplitudes:typing.Optional[typing.List[float]]=None):
+                 amplitudes:typing.Optional[typing.List[float]]=None,
+                 responses:typing.Optional[typing.List[bool]]=None):
         if samples is not None and all([isinstance(s, Sample) for s in samples]):
             self.samples = samples
             self.responses = [s.response for s in samples]
@@ -69,6 +70,11 @@ class Samples:
                     )))
             self.samples = samples
             self.responses = [s.response for s in self.samples]
+            self.frequencies = frequencies
+            self.amplitudes = amplitudes
+
+        elif all([x is not None for x in (responses, frequencies, amplitudes)]):
+            self.responses = responses
             self.frequencies = frequencies
             self.amplitudes = amplitudes
 
