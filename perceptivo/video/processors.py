@@ -407,3 +407,5 @@ def circle_to_mask(frame, ix, iy, rad):
     pmask_x, pmask_y = np.ogrid[-iy:nx - iy, -ix:ny - ix]
     pmask = pmask_x ** 2 + pmask_y ** 2 <= rad ** 2
     return pmask
+
+

@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 import typing
 
@@ -18,7 +18,7 @@ class Frame:
             if ``True``, RGB Color.
     """
     frame: np.ndarray
-    timestamp: datetime
+    timestamp: datetime = field(default_factory=datetime.now)
     color: bool = True
     cropped: typing.Optional['Frame'] = None
 
