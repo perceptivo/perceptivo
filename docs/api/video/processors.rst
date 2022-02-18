@@ -1,4 +1,4 @@
-networking
+processors
 =======================
 
 .. automodule:: perceptivo.video.processors
