@@ -22,13 +22,14 @@ class _IterativeBinaryGPCLaplace(_BinaryGaussianProcessClassifierLaplace):
     """
 
     def fit(self, X, y):
-        """Fit Gaussian process classification model.
-        Parameters
-        ----------
-        X : array-like of shape (n_samples, n_features) or list of object
-            Feature vectors or other representations of training data.
-        y : array-like of shape (n_samples,)
-            Target values, must be binary.
+        """
+        Fit Gaussian process classification model.
+
+        Args:
+            X : array-like of shape (n_samples, n_features) or list of object
+                Feature vectors or other representations of training data.
+            y : array-like of shape (n_samples,)
+                Target values, must be binary.
         Returns
         -------
         self : returns an instance of self.
@@ -160,17 +161,17 @@ class IterativeGPC(GaussianProcessClassifier):
 
 
     def fit(self, X, y):
-        """Fit Gaussian process classification model.
-        Parameters
-        ----------
-        X : array-like of shape (n_samples, n_features) or list of object
-            Feature vectors or other representations of training data.
-        y : array-like of shape (n_samples,)
-            Target values, must be binary.
-        Returns
-        -------
-        self : object
-            Returns an instance of self.
+        """
+        Fit Gaussian process classification model.
+
+        Args:
+            X : array-like of shape (n_samples, n_features) or list of object
+                Feature vectors or other representations of training data.
+            y : array-like of shape (n_samples,)
+                Target values, must be binary.
+
+        Returns:
+            self
         """
         if self.kernel is None or self.kernel.requires_vector_input:
             X, y = self._validate_data(

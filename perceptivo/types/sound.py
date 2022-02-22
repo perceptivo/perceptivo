@@ -43,7 +43,6 @@ class Jackd_Config(Audio_Config):
         driver (str): Driver to use, default 'alsa'
         device_name (str, int): Device to use in alsa's parlance, default 'hw:sndrpihifiberry'.
             Also accepts ints for use with coreaudio
-
         nperiods (int): Number of periods per buffer cycle, default 3
         period (int): size of period, default 1024 samples.
         launch_str (str): launch string with arguments compiled from the other arguments

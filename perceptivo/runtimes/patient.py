@@ -25,8 +25,6 @@ from perceptivo.types.video import Picamera_Params, Frame
 from perceptivo.types.pupil import Pupil, Pupil_Params, Dilation
 from perceptivo.types.patient import Collection_Params
 
-from dataclasses import asdict
-
 from autopilot import prefs
 
 

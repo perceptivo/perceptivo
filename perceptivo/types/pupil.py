@@ -61,6 +61,8 @@ class Dilation:
             and comparing to the detection threshold. Aka
             ( :attr:`.Dilation.max_diameter` / :attr:`.Pupil_Params.max_diameter` ) >
             :attr:`.Pupil_Params.threshold`
+
+
     """
 
     params: Pupil_Params

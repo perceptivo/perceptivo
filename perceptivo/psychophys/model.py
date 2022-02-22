@@ -123,7 +123,7 @@ class Gaussian_Process(Audiogram_Model):
 
             for i in range(100):
                 sound = model.next()
-                sample = Sample(dilation='',response=oracle(sound), sound=sound)
+                sample = Sample(response=oracle(sound), sound=sound)
                 model.update(sample)
 
             model.plot()
@@ -183,11 +183,10 @@ class Gaussian_Process(Audiogram_Model):
 
     def update(self, sample:types.psychophys.Sample):
         """
+        Update the model with a new sample!
 
         Args:
             sample ():
-
-        Returns:
 
         """
         if isinstance(sample, list):

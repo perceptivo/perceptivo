@@ -30,13 +30,15 @@ class Sample:
         response (bool): Sub/Subtrathreshold response from :attr:`.Pupil.response`
 
     """
-    dilation: Dilation
     sound: Sound
+    dilation: typing.Optional[Dilation] = None
     timestamp: datetime = field(default_factory=datetime.now)
     response: InitVar[bool] = None
 
     def __post_init__(self, response):
         self._response = response
+        if self.dilation is None and self._response is None:
+            raise ValueError(f'Need to either provide a Dilation object or a manual response')
 
     @property
     def response(self) -> bool:
@@ -182,6 +184,7 @@ class Audiogram:
         >>> agram[3000] = Threshold(3000, 30)
         >>> agram[3000]
         Threshold(frequency=1000, threshold=10, confidence=0)
+
 
     """
     thresholds: typing.List[Threshold]
