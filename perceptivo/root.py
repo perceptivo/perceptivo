@@ -75,6 +75,14 @@ class Runtime(Perceptivo_Object):
 
         prefs_file = Path(prefs_file)
 
+
+        if not Directories.user_dir.exists():
+
+            for val in Directories().__dict__.values():
+                print(val)
+                if len(val.suffixes) == 0:
+                    val.mkdir(parents=True, exist_ok=True)
+
         if not prefs_file.exists():
             prefs_class = self.prefs_class
             prefs = prefs_class()
