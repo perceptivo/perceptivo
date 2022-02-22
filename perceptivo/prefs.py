@@ -2,6 +2,15 @@
 Preferences and configuration shared throughout the program.
 
 Saves and loads to a prefs file (default is `~/.perceptivo/prefs.json` )
+
+Each runtime has its own set of preferences. When first run, if there is not
+prefs file detected it populates with defaults (though defaults can be populated at
+any time by instantiating the object with no arguments and using save, eg.::
+
+    prefs = Patient_Prefs()
+    prefs.save()
+
+
 """
 import pdb
 import typing
@@ -33,8 +42,6 @@ class Runtimes(Enum):
 
 
 class Prefs(BaseModel):
-
-    runtime: Runtimes = 'patient'
 
     def save(self, file: Path = Directories.prefs_file):
         with open(file, 'w') as pfile:

@@ -31,17 +31,22 @@ from autopilot import prefs
 
 class Patient(Runtime):
     """
-    Runtime agent for the patient-facing Pi (see :ref:`SoftwareOverview`)
+    Runtime agent for the patient-facing Pi (see :ref:`SoftwareOverview`).
 
     Runs the
 
-    * Session Manager -- controls the logic of the exam
     * Sound Server
     * PiCamera
     * Processing stages including pupil extraction, psychoacoustic model, and stimulus manager
 
     On intialization, boot the sound server and rehydrate the psychoacoustic model from
-    the parameterization passed in ``audiogram_model``
+    the parameterization passed in ``audiogram_model``. The patient runtime is parameterized
+    by the :class:`perceptivo.prefs.Patient_Prefs` object, which creates and reads from
+    a ``prefs.json`` file (located at :attr:`perceptivo.prefs.Directories.prefs_file` ).
+
+    The basic operation of the Patient runtime is encapsulated in the :meth:`.trial` method,
+    see that for further documentation.
+
 
     Args:
         audio_config (:class:`~.types.sound.Jackd_Config`): Configuration used to boot the jackd server
@@ -131,13 +136,29 @@ class Patient(Runtime):
 
     def trial(self):
         """
-        One complete loop through a probe cycle
+        One complete loop through a probe cycle. In order:
 
-        Calls:
+        * check if a previous trial is still running using the :attr:`._trial_active` event,
+          if so, return, logging an exception
+        * clear the lists that collect pupil samples: :attr:`._frames` and :attr:`._pupils`
+        * :meth:`.next_sound` to parameterize the next sound, returning a :class:`.types.sound.Sound` object, based on the
+          output of the :meth:`.Audiogram_Model.next` method
+        * :meth:`.probe` to deliver the sound and collect the response. Within the probe method:
 
-        * :meth:`.next_sound` to parameterize the next sound
-        * :meth:`.probe` to deliver the sound and collect the response
-        * :meth:`.update_model` to update the psychoacoutic model for stimulus generation
+            * the :attr:`.Picamera_Process.collecting` flag is set to indicate that it should dump frames into its queue
+            * the sound is played with :meth:`.play_sound`
+            * the :meth:`.await_response` method spawns a :attr:`._collecting_thread`, which calls
+              :meth:`._collect_frames` to pull frames from :attr:`.Picamera_Process.q` and process them with
+              :attr:`.pupil_extractor` until the queue is empty. :class:`.types.video.Frame` s and
+              :class:`.types.pupil.Pupil` s are appended to the :attr:`._frames` and :attr:`._pupils` collectors
+            * once the thread finishes, the picamera's collection event is cleared, and the :class:`.types.pupil.Pupil_Params`, which set the threshold of dilation that
+              constitutes a positive response to the sound is updated with :meth:`._update_pupil_params`
+            * The :class:`~.types.pupil.Pupil_Params`, :class:`~.types.sound.Sound`, and list of
+              :class:`~.types.pupil.Pupil` objects are collected into a :class:`~.types.pupil.Dilation` object and returned
+
+        * the :meth:`.probe` method then combines the :class:`~.types.sound.Sound` and :class:`~.types.pupil.Dilation` objects into
+          a :class:`~.types.psychophys.Sample` object, which is then appended to the :attr:`.samples` attr
+        * Finally, the :attr:`.model` is updated with the :meth:`.update_model`
 
         Stores the :class:`~.types.psychophys.Samples` in :attr:`.samples`, which also
         include the parameterizations and timestamps of the presented sounds
@@ -251,7 +272,6 @@ class Patient(Runtime):
             # collect pupils and frames into a Dilation
             dilation = Dilation(
                 params=pupil_params,
-                sound = sound,
                 pupils = self._pupils.copy(),
                 timestamps = [t.timestamp for t in self._frames]
             )

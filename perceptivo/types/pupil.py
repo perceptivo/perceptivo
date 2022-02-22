@@ -64,7 +64,6 @@ class Dilation:
     """
 
     params: Pupil_Params
-    sound: Sound
     pupils: typing.List[Pupil]
     timestamps: typing.List[datetime]
 
