@@ -1,5 +1,5 @@
 import typing
-from dataclasses import field
+from dataclasses import field, InitVar
 from pydantic.dataclasses import dataclass
 from pydantic import Field, BaseModel, PrivateAttr
 from datetime import datetime
@@ -33,10 +33,18 @@ class Sample:
     dilation: Dilation
     sound: Sound
     timestamp: datetime = field(default_factory=datetime.now)
+    response: InitVar[bool] = None
+
+    def __post_init__(self, response):
+        self._response = response
 
     @property
     def response(self) -> bool:
-        return self.dilation.response
+        if self._response is not None:
+            # we were passed a manual response object
+            return self._response
+        else:
+            return self.dilation.response
 
 @dataclass(init=False)
 class Samples:
