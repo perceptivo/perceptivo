@@ -11,7 +11,7 @@ import numpy as np
 
 
 from perceptivo.util import download
-from perceptivo.prefs import Directories
+from perceptivo import Directories
 from perceptivo.video.pupil import EnsembleExtractor
 from perceptivo.types.video import Frame
 

@@ -12,16 +12,14 @@ any time by instantiating the object with no arguments and using save, eg.::
 
 
 """
-import pdb
 import typing
 from enum import Enum
 from pathlib import Path
-from dataclasses import dataclass
-import shutil
 import multiprocessing as mp
 from pydantic import BaseModel
 
-from perceptivo.types import sound, psychophys, video, pupil, patient
+from perceptivo import Directories
+from perceptivo.types import sound, psychophys, video, patient
 from perceptivo.video.pupil import Pupil_Extractors, EllipseExtractor_Params
 
 _LOCK = mp.Lock()
@@ -29,11 +27,6 @@ _LOCK = mp.Lock()
 Lock read/write access to prefs to avoid corruption/races
 """
 
-@dataclass
-class Directories:
-    user_dir: Path = Path().home() / '.perceptivo/'
-    prefs_file: Path = user_dir / "prefs.json"
-    log_dir: Path = user_dir / 'logs/'
 
 class Runtimes(Enum):
     patient = 'patient'
@@ -77,7 +70,7 @@ class Patient_Prefs(Prefs):
     collection_params : patient.Collection_Params = patient.Collection_Params()
 
 
-def get(field:str, file:Path=Directories.prefs_file):
+def get(field:str, file:Path= Directories.prefs_file):
     with _LOCK:
         prefs = Prefs.load(file)
 

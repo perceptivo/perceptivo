@@ -12,7 +12,7 @@ from logging.handlers import RotatingFileHandler
 from threading import Lock
 import warnings
 
-from perceptivo import prefs
+from perceptivo import Directories
 
 _LOGGERS = [] # type: list
 """
@@ -133,7 +133,7 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
             ## file handler
             # base filename is the module_name + '.log
-            base_filename = (Path(prefs.Directories.log_dir) / module_name).with_suffix('.log')
+            base_filename = (Path(Directories.log_dir) / module_name).with_suffix('.log')
 
             # if directory doesn't exist, try to make it
             if not base_filename.parent.exists():

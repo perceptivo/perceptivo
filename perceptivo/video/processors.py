@@ -23,7 +23,7 @@ from scipy.ndimage import label
 from perceptivo.root import Perceptivo_Object
 from perceptivo.types.video import Frame
 from perceptivo.types.units import Ellipse
-from perceptivo.prefs import Directories
+from perceptivo import Directories
 from perceptivo.util import download
 
 

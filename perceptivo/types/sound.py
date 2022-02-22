@@ -9,7 +9,8 @@ import uuid
 from datetime import datetime
 
 from perceptivo.sound import sounds
-from autopilot.stim.sound.jackclient import JackClient
+# from autopilot.stim.sound.jackclient import JackClient
+from autopilot.stim.sound.base import Sound
 
 
 def _find_jackd() -> Path:
@@ -107,7 +108,7 @@ class Sound(BaseModel):
     duration: float = 0.5
     sound_type: SOUND_TYPES = "Gammatone"
     timestamp: typing.Optional[datetime] = None
-    jack_client: typing.Optional[JackClient] = None
+    # jack_client: typing.Optional[JackClient] = None
     uuid: str = Field(default_factory=uuid.uuid4)
 
     class Config:
@@ -140,7 +141,7 @@ class Sound(BaseModel):
         }
 
     @property
-    def sound_class(self) -> 'autopilot.stim.sound.sounds.Jack_Sound':
+    def sound_class(self) -> Sound:
         """
         The sound class that corresponds to the :attr:`.sound_type` retrieved from
         the :mod:`perceptivo.sound.sounds` module.

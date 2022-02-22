@@ -11,8 +11,9 @@ from queue import Empty
 
 import soundcard as sc
 
-from perceptivo.prefs import Directories, Patient_Prefs
-from perceptivo.root import Runtime
+from perceptivo.prefs import Patient_Prefs
+from perceptivo import Directories
+from perceptivo.runtimes.runtime import Runtime
 from perceptivo.sound import server
 from perceptivo.video.cameras import Picamera_Process
 from perceptivo.video.pupil import Pupil_Extractors, EllipseExtractor_Params, get_extractor
