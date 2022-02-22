@@ -17,7 +17,7 @@ __version__ = version('perceptivo')
 import os
 os.environ['AUTOPILOT_NO_PREFS_MANAGER'] = '1'
 
-from perceptivo.prefs import Directories
+from perceptivo.prefs import Directories, Prefs
 
 # make directories if they don't exist
 # and dump a default version oif prefs

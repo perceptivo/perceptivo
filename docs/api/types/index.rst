@@ -79,6 +79,10 @@ show how they relate in order to derive a patient's audiogram
 
     }
 
+.. todo::
+
+    Replace this with an ``inheritance-diagram`` directive, as this is hard to keep up to date.
+
 
 .. automodule:: perceptivo.types
    :members:

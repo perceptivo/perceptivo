@@ -2,8 +2,10 @@
 Types specifically for carrying and manipulating pupil measurements
 """
 import typing
-from dataclasses import dataclass
+# from dataclasses import dataclass
 from datetime import datetime
+
+from pydantic.dataclasses import dataclass
 
 import numpy as np
 

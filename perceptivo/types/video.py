@@ -1,4 +1,7 @@
-from dataclasses import dataclass, field
+from dataclasses import field
+from enum import Enum
+from pydantic.dataclasses import dataclass
+from pydantic import BaseModel, Field
 from datetime import datetime
 import typing
 
@@ -6,8 +9,8 @@ import numpy as np
 import cv2
 
 
-@dataclass
-class Frame:
+
+class Frame(BaseModel):
     """
     Single video frame container
 
@@ -18,9 +21,10 @@ class Frame:
             if ``True``, RGB Color.
     """
     frame: np.ndarray
-    timestamp: datetime = field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory=datetime.now)
     color: bool = True
     cropped: typing.Optional['Frame'] = None
+
 
     def __post_init__(self):
         self._color = None
@@ -81,12 +85,26 @@ class Frame:
 
         return self.cropped
 
+    class Config:
+        arbitrary_types_allowed:bool = True
 
-@dataclass
-class Picamera_Params:
+
+class Color_Mode(Enum):
+    rgb = 'rgb'
+    grayscale = 'grayscale'
+
+
+class Picamera_Params(BaseModel):
     """
     Configuration for a :class:`perceptivo.video.cameras.PiCamera`
     """
+    sensor_mode: int = 0
+    resolution: typing.Tuple[int, int] = (1280, 720)
+    fps: int = 30
+    format: Color_Mode = 'grayscale'
+
+
+
 
 @dataclass
 class Camera_Calibration:

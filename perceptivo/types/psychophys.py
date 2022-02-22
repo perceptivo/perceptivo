@@ -1,5 +1,7 @@
 import typing
-from dataclasses import dataclass, field
+from dataclasses import field
+from pydantic.dataclasses import dataclass
+from pydantic import Field, BaseModel, PrivateAttr
 from datetime import datetime
 from sklearn.gaussian_process.kernels import RBF
 import pandas as pd
@@ -221,8 +223,7 @@ class Audiogram:
 # Model types
 # --------------------------------------------------
 
-@dataclass
-class Default_Kernel:
+class Kernel(BaseModel):
     """
     Default kernel to use with :class:`.psychophys.model.Gaussian_Process`
 
@@ -231,7 +232,22 @@ class Default_Kernel:
     """
     length_scale: typing.Tuple[float, float] = (100.0, 200.0)
     length_scale_bounds: typing.Tuple[float, float] = (1, 1e5)
-    kernel: RBF = RBF(length_scale=length_scale, length_scale_bounds=length_scale_bounds)
+    _kernel: typing.Optional[RBF] = PrivateAttr()
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self._kernel = None
+
+    @property
+    def kernel(self) -> RBF:
+        if self._kernel is None:
+            self._kernel = RBF(length_scale=self.length_scale,
+                               length_scale_bounds=self.length_scale_bounds)
+        return self._kernel
+
+
+    class Config:
+        arbitrary_types_allowed = True
 
 MODEL_TYPES = typing.Literal["Gaussian_Process"]
 

@@ -162,13 +162,13 @@ class Gaussian_Process(Audiogram_Model):
     def kernel(self) -> Kernel:
         """
         Kernel used in the gaussian process model. If ``None`` is given on init,
-        use the :class:`.types.psychophys.Default_Kernel`
+        use the :class:`.types.psychophys.Kernel`
 
         Returns:
             :class:`sklearn.gaussian_process.kernels.Kernel`
         """
         if self._kernel is None:
-            self._kernel = types.psychophys.Default_Kernel().kernel
+            self._kernel = types.psychophys.Kernel().kernel
         return self._kernel
 
     @property

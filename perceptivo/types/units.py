@@ -1,7 +1,8 @@
 """
 Very basic units or unit-like things
 """
-from dataclasses import dataclass
+# from dataclasses import dataclass
+from pydantic.dataclasses import dataclass
 import typing
 from skimage.draw import ellipse
 import numpy as np

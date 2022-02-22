@@ -1,11 +1,15 @@
 import shutil
-from dataclasses import dataclass, field
+from dataclasses import field
+from pydantic import Field
+from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 from pathlib import Path
 import typing
 import uuid
 from datetime import datetime
 
 from perceptivo.sound import sounds
+from autopilot.stim.sound.jackclient import JackClient
 
 
 def _find_jackd() -> Path:
@@ -25,6 +29,7 @@ class Audio_Config:
         fs (int): Sampling rate in Hz, default 44100
     """
     fs: int = 44100
+
 
 @dataclass
 class Jackd_Config(Audio_Config):
@@ -84,8 +89,8 @@ class Jackd_Config(Audio_Config):
 
 SOUND_TYPES = typing.Literal['Gammatone']
 
-@dataclass
-class Sound:
+
+class Sound(BaseModel):
     """
     Parameterization of an abstract probe sound
 
@@ -102,8 +107,11 @@ class Sound:
     duration: float = 0.5
     sound_type: SOUND_TYPES = "Gammatone"
     timestamp: typing.Optional[datetime] = None
-    jack_client: typing.Optional['autopilot.stim.sound.jackclient.JackClient'] = None
-    uuid: str = field(default_factory=uuid.uuid4)
+    jack_client: typing.Optional[JackClient] = None
+    uuid: str = Field(default_factory=uuid.uuid4)
+
+    class Config:
+        arbitrary_types_allowed:bool = True
 
     def stamp_time(self):
         """
@@ -121,6 +129,9 @@ class Sound:
         Returns:
             dict of arguments
         """
+        if not hasattr(self, 'jack_client'):
+            self.jack_client = None
+
         return {
             'frequency': self.frequency,
             'amplitude': self.amplitude,
@@ -138,6 +149,9 @@ class Sound:
             :class:`autopilot.stim.sound.sounds.Jack_Sound` - The sound class!
         """
         return getattr(sounds, self.sound_type)
+
+
+
 
 
 
