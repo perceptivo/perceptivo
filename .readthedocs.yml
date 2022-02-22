@@ -10,8 +10,6 @@ formats:
 
 build:
   os: ubuntu-20.04
-  apt_packages:
-    - pulseaudio
   tools:
     python: "3.9"
 

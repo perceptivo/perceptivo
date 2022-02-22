@@ -123,7 +123,7 @@ class Gaussian_Process(Audiogram_Model):
 
             for i in range(100):
                 sound = model.next()
-                sample = Sample(response=oracle(sound), sound=sound)
+                sample = Sample(dilation='',response=oracle(sound), sound=sound)
                 model.update(sample)
 
             model.plot()
