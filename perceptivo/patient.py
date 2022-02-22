@@ -5,15 +5,25 @@ import typing
 from typing import Optional
 from time import sleep
 from pathlib import Path
+import threading
+from datetime import datetime, timedelta
+from queue import Empty
 
 import soundcard as sc
 
 from perceptivo.prefs import Directories, Patient_Prefs
 from perceptivo.root import Runtime
 from perceptivo.sound import server
+from perceptivo.video.cameras import Picamera_Process
+from perceptivo.video.pupil import Pupil_Extractors, EllipseExtractor_Params, get_extractor
+from perceptivo.psychophys import model
+
 from perceptivo.types.sound import Jackd_Config, Audio_Config, Sound
 from perceptivo.types.psychophys import Sample, Samples, Psychoacoustic_Model, Kernel
-from perceptivo.psychophys import model
+from perceptivo.types.video import Picamera_Params, Frame
+from perceptivo.types.pupil import Pupil, Pupil_Params, Dilation
+from perceptivo.types.patient import Collection_Params
+
 from dataclasses import asdict
 
 from autopilot import prefs
@@ -47,9 +57,18 @@ class Patient(Runtime):
     def __init__(self,
                  audio_config: Audio_Config = Audio_Config(),
                  audiogram_model: Optional[Psychoacoustic_Model] = None,
+                 picamera_params: Optional[Picamera_Params] = None,
                  oracle: typing.Optional[callable]=None,
+                 pupil_extractor: typing.Optional[Pupil_Extractors] = None,
+                 pupil_extractor_params: typing.Optional[EllipseExtractor_Params] = None,
+                 collection_params: typing.Optional[Collection_Params] = None,
+                 prefs_file: Path = Directories.prefs_file,
                  **kwargs):
         super(Patient, self).__init__(**kwargs)
+        self.prefs_file = prefs_file
+
+        self.prefs = self.load_prefs(self.prefs_file) # type: Patient_Prefs
+
 
         if audio_config is None:
             self.audio_config = self.prefs.Audio_Config
@@ -61,12 +80,54 @@ class Patient(Runtime):
         else:
             self.audiogram_model = audiogram_model
 
+        if picamera_params is None:
+            self.picamera_params = self.prefs.Picamera_Params
+        else:
+            self.picamera_params = picamera_params
+
+        if pupil_extractor is None:
+            self.pupil_extractor = self.prefs.pupil_extractor
+        else:
+            self.pupil_extractor = pupil_extractor
+
+        if pupil_extractor_params is None:
+            self.pupil_extractor_params = self.prefs.pupil_extractor_params
+        else:
+            self.pupil_extractor_params = pupil_extractor_params
+
+        if collection_params is None:
+            self.collection_params = self.prefs.collection_params
+        else:
+            self.collection_params = collection_params
+
         self.oracle = oracle
+
+        # --------------------------------------------------
+        # Private Attrs
+        # --------------------------------------------------
+        self._collecting = threading.Event()
+        """Event that is set while the picam is collecting frames & they are being processed"""
+        self._collecting_thread = None # type: typing.Optional[threading.Thread]
+        self._frames = [] # type: typing.List[Frame]
+        """Frames for the current sample"""
+        self._pupils = [] # type: typing.List[Pupil]
+        """Pupils for the current sample!"""
+        self._trial_active = threading.Event()
+        """Event that's set while a trial is running!"""
+
+        # --------------------------------------------------
+        # Init Hardware/resources
+        # --------------------------------------------------
 
         self.samples = Samples() # type: Samples
 
         self.server = self._init_audio() # type: typing.Union[server.jackclient.JackClient, sc.pulseaudio._Speaker]
         self.model = self._init_model(self.audiogram_model) # type: model.Audiogram_Model
+        self.picam = self._init_picam(self.picamera_params)
+        self.pupil_extractor = self._init_pupil_extractor(pupil_extractor, pupil_extractor_params)
+        self.picam.start()
+
+
 
     def trial(self):
         """
@@ -82,6 +143,16 @@ class Patient(Runtime):
         include the parameterizations and timestamps of the presented sounds
 
         """
+        if self._trial_active.is_set():
+            self.logger.exception('Previous trial still running')
+            return
+
+        # clear trialwise collectors
+        self._frames = []
+        self._pupils = []
+
+        self._trial_active.set()
+
         sound = self.next_sound()
         self.logger.debug('got next sound')
 
@@ -91,6 +162,7 @@ class Patient(Runtime):
         self.samples.append(sample)
         self.model.update(sample)
         self.logger.debug(f'Sample collected - {sample}')
+        self._trial_active.clear()
 
     def next_sound(self) -> Sound:
         """
@@ -116,11 +188,15 @@ class Patient(Runtime):
         Returns
             :class:`perceptivo.types.psychophys.Sample`
         """
+        # start the picam capturing
+        self.picam.collecting.set()
+        self.logger.debug('Picamera started collecting')
+
         sound = self.play_sound(sound)
         self.logger.debug(f'played sound {sound}, awaiting response')
-        response = self.await_response(sound)
-        self.logger.debug(f'got response {response} for sound {sound}')
-        return Sample(response=response, sound=sound)
+        dilation = self.await_response(sound)
+        self.logger.debug(f'got dilation {dilation} for sound {sound}')
+        return Sample(dilation=dilation, sound=sound)
 
     def play_sound(self, sound: Sound) -> Sound:
         """
@@ -152,7 +228,7 @@ class Patient(Runtime):
             self.server.play(_sound.table, samplerate=self.audio_config.fs)
         return sound
 
-    def await_response(self, sound:Sound) -> bool:
+    def await_response(self, sound:Sound) -> Dilation:
         """
         Wait until we are given a pupil from the picamera process
 
@@ -162,8 +238,70 @@ class Patient(Runtime):
         if self.oracle is not None:
             return self.oracle(sound)
         else:
-            # TODO: implement picamera pupil extraction
-            pass
+            self._collecting.clear()
+            self._collecting_thread = threading.Thread(
+                target = self._collect_frames,
+                args= (sound.timestamp,)
+            )
+            self._collecting_thread.start()
+            self._collecting.wait()
+
+            # update the pupil_params from collected samples
+            pupil_params = self._update_pupil_params(self._pupils)
+            # collect pupils and frames into a Dilation
+            dilation = Dilation(
+                params=pupil_params,
+                sound = sound,
+                pupils = self._pupils.copy(),
+                timestamps = [t.timestamp for t in self._frames]
+            )
+            return dilation
+
+
+    def _collect_frames(self, start_time:datetime):
+        """
+        Collect frames from the picamera for one sample
+        """
+        end_time = start_time + timedelta(seconds=self.collection_params.collection_wait)
+        finished = False
+        try:
+            while not finished:
+                if datetime.now() > end_time:
+                    self.picam.collecting.clear()
+
+                # grab a frame
+                try:
+                    frame = self.picam.q.get_nowait()
+                except Empty:
+                    finished = True
+                    continue
+
+                # process frame
+                pupil = self.pupil_extractor.process(frame)
+                self._frames.append(frame)
+                self._pupils.append(pupil)
+
+
+        finally:
+            self._collecting.set()
+
+
+
+    def _update_pupil_params(self, pupils: typing.List[Pupil]) -> Pupil_Params:
+        """
+
+        .. todo::
+
+            How to update pupil parameters?
+
+        Args:
+            pupils ():
+
+        Returns:
+
+        """
+        params = Pupil_Params(threshold=10, max_diameter=20)
+        return params
 
 
     def _init_audio(self) -> typing.Union[server.jackclient.JackClient, sc.pulseaudio._Speaker]:
@@ -195,6 +333,20 @@ class Patient(Runtime):
         model_class = getattr(model, model_params.model_type)
         return model_class(*model_params.args, **model_params.kwargs)
 
+    def _init_picam(self, picam_params: Picamera_Params) -> Picamera_Process:
+        picam_proc = Picamera_Process(
+            picam_params,
+            queue_size=self.prefs.picam_queue_size
+        )
+        return picam_proc
+
+    def _init_pupil_extractor(
+            self,
+            pupil_extractor: Pupil_Extractors,
+            pupil_extractor_params: typing.Union[EllipseExtractor_Params]):
+
+        extractor = get_extractor(pupil_extractor)
+        return extractor(**pupil_extractor_params.dict())
 
 
 

@@ -1,6 +1,7 @@
 import typing
 from dataclasses import dataclass, field
 from datetime import date
+from pydantic import BaseModel
 
 from perceptivo.types.psychophys import Samples, Audiogram
 
@@ -20,3 +21,10 @@ class Patient:
     biography: Biography
     samples: Samples
     audiogram: Audiogram
+
+
+class Collection_Params(BaseModel):
+    collection_wait: float = 5
+    """
+    Total duration to wait to collect pupil frames, starting when the sound does.
+    """

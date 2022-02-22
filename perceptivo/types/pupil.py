@@ -6,6 +6,7 @@ import typing
 from datetime import datetime
 
 from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 
 import numpy as np
 
@@ -17,10 +18,10 @@ from perceptivo.types.video import Frame
 @dataclass
 class Pupil:
     """
-    A single measurement of a pupil
+    A single-frame measurement of a pupil
 
     Attributes:
-        dilation (:class:`.Dilation`): Dilation timeseries
+        ellipse (:class:`.Ellipse`): Fit ellipse given frame
         params (:class:`.Pupil_Params`): Pupil parameterization!
     """
     ellipse: Ellipse
@@ -84,3 +85,4 @@ class Dilation:
     @property
     def response(self) -> bool:
         return (self.max_diameter / self.params.max_diameter) > self.params.threshold
+

@@ -12,7 +12,8 @@ import shutil
 import multiprocessing as mp
 from pydantic import BaseModel
 
-from perceptivo.types import sound, psychophys, video
+from perceptivo.types import sound, psychophys, video, pupil, patient
+from perceptivo.video.pupil import Pupil_Extractors, EllipseExtractor_Params
 
 _LOCK = mp.Lock()
 """
@@ -61,8 +62,12 @@ class Patient_Prefs(Prefs):
     Picamera_Params: video.Picamera_Params = video.Picamera_Params()
     picamera_process: bool = True
     """
-    Run the picamera in 
+    Run the picamera in a separate Process (using :class:`.cameras.Picamera_Process` . Only True supported for now!
     """
+    picam_queue_size:int = 1024
+    pupil_extractor: Pupil_Extractors = 'simple'
+    pupil_extractor_params: typing.Union[EllipseExtractor_Params] = EllipseExtractor_Params()
+    collection_params : patient.Collection_Params = patient.Collection_Params()
 
 
 def get(field:str, file:Path=Directories.prefs_file):

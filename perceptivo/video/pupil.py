@@ -17,6 +17,8 @@ Sketch of default strategy:
 import typing
 from abc import abstractmethod
 from typing import Union, Optional, List, Dict
+from enum import Enum
+from pydantic import BaseModel
 
 import numpy as np
 
@@ -121,6 +123,10 @@ class Preprocessor(Perceptivo_Object):
 # --------------------------------------------------
 # Extractors
 # --------------------------------------------------
+
+class EllipseExtractor_Params(BaseModel):
+    footprint_size:int = 5
+    search_scale:float = 1.5
 
 class EllipseExtractor(PupilExtractor):
     """
@@ -301,20 +307,6 @@ class EllipseExtractor(PupilExtractor):
         return ells[lowest_idx]
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class EnsembleExtractor_NonIR(PupilExtractor):
     """
     Extractor that uses an ensemble of techniques to track a pupil.
@@ -429,3 +421,30 @@ class EnsembleExtractor_NonIR(PupilExtractor):
         pmask = pmask_x ** 2 + pmask_y ** 2 <= rad ** 2
 
         return pmask
+
+
+
+class Pupil_Extractors(Enum):
+    simple = EllipseExtractor
+
+
+
+def get_extractor(extractor = Pupil_Extractors) -> Union[typing.Type[EllipseExtractor]]:
+    """
+
+    .. todo::
+
+        Incorporate preprocessing and filter params!
+
+    Args:
+        extractor (str, :class:`.Pupil_Extractors`) : str corresponding to one of the
+            entries in :class:`.Pupil_Extractors`, eg ``'simple'``
+
+    Returns:
+
+    """
+
+    if extractor == Pupil_Extractors.simple.name:
+        return Pupil_Extractors.simple.value
+    else:
+        raise ValueError(f'Dont know what extractor you mean by {extractor}, needs to be one of Pupil_Extractors')

@@ -2,13 +2,13 @@
 Root Perceptivo Object from which others inherit
 
 """
-from typing import List, Type, Optional
+from typing import List, Type, Optional, Union
 from pathlib import Path
 import subprocess
 from logging import Logger
 from perceptivo.data.logging import init_logger
 from abc import ABC, abstractmethod
-from perceptivo.prefs import Directories, Prefs
+from perceptivo.prefs import Directories, Prefs, Patient_Prefs
 
 class Perceptivo_Object(ABC):
     @property
@@ -29,11 +29,8 @@ class Runtime(Perceptivo_Object):
     """
 
 
-    def __init__(self, prefs_file:Path=Directories.prefs_file):
+    def __init__(self, **kwargs):
         super(Runtime, self).__init__()
-        self.prefs_file = prefs_file
-
-        self.prefs = self.load_prefs()
 
         self._procs = [] # type: List[subprocess.Popen]
 
@@ -62,7 +59,7 @@ class Runtime(Perceptivo_Object):
     def prefs_class(self) -> Type[Prefs]:
         pass
 
-    def load_prefs(self, prefs_file:Optional[Path] = None) -> Prefs:
+    def load_prefs(self, prefs_file:Optional[Path] = None) -> Union[Prefs, Patient_Prefs]:
         """
         Load prefs file. If defaults haven't already been dumped to a ``prefs.json`` file,
         do so.
