@@ -24,7 +24,7 @@ from perceptivo.types.psychophys import Sample, Samples, Psychoacoustic_Model, K
 from perceptivo.types.video import Picamera_Params, Frame
 from perceptivo.types.pupil import Pupil, Pupil_Params, Dilation
 from perceptivo.types.patient import Collection_Params
-from perceptivo.types.networking import Patient_Networking
+from perceptivo.types.networking import Patient_Networking, Socket
 
 from autopilot import prefs
 
@@ -359,9 +359,10 @@ class Patient(Runtime):
         model_class = getattr(model, model_params.model_type)
         return model_class(*model_params.args, **model_params.kwargs)
 
-    def _init_picam(self, picam_params: Picamera_Params) -> Picamera_Process:
+    def _init_picam(self, picam_params: Picamera_Params, networking:Socket) -> Picamera_Process:
         picam_proc = Picamera_Process(
             picam_params,
+            networking,
             queue_size=self.prefs.picam_queue_size
         )
         return picam_proc

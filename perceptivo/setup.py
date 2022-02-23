@@ -27,7 +27,10 @@ apt_requirements = {
         'libsndfile1-dev',
         'libreadline-dev',
         'libasound2-dev',
-        'liblo-dev'
+        'liblo-dev',
+        'libavformat-dev',
+        'libswscale-dev',
+        'pulseaudio'
     ]
 }
 """
