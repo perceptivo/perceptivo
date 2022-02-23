@@ -2,9 +2,10 @@ import subprocess
 from abc import abstractmethod
 from pathlib import Path
 from typing import List, Type, Optional, Union
+import argparse
 
 from perceptivo import Directories
-from perceptivo.prefs import Prefs, Patient_Prefs
+from perceptivo.prefs import Prefs, Patient_Prefs, Clinician_Prefs
 from perceptivo.root import Perceptivo_Object
 
 
@@ -48,7 +49,7 @@ class Runtime(Perceptivo_Object):
     def prefs_class(self) -> Type['Prefs']:
         pass
 
-    def load_prefs(self, prefs_file:Optional[Path] = None) -> Union[Prefs, Patient_Prefs]:
+    def load_prefs(self, prefs_file:Optional[Path] = None) -> Union[Prefs, Patient_Prefs, Clinician_Prefs]:
         """
         Load prefs file. If defaults haven't already been dumped to a ``prefs.json`` file,
         do so.
@@ -79,3 +80,13 @@ class Runtime(Perceptivo_Object):
         else:
             prefs = self.prefs_class.load(prefs_file)
         return prefs
+
+
+def base_args(parser:argparse.ArgumentParser) -> argparse.ArgumentParser:
+    parser.add_argument(
+        '-f', '--prefs',
+        default=Directories.prefs_file,
+        type=Path,
+        help="Location of the prefs.json file, (usually ~/.perceptivo/prefs.json)"
+    )
+    return parser

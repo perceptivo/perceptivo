@@ -35,8 +35,8 @@ pydantic = "^1.9.0"
 pytest = "^5.2"
 
 [tool.poetry.scripts]
-patient = 'perceptivo.patient:main'
-clinician = 'perceptivo.clinician:main'
+patient = 'perceptivo.runtimes.patient:main'
+clinician = 'perceptivo.runtimes.clinician:main'
 
 [tool.poetry.extras]
 docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex", "matplotlib", "SoundCard"]

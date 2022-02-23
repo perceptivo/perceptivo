@@ -7,7 +7,9 @@ from queue import Empty, Full
 from autopilot.hardware.cameras import PiCamera
 import multiprocessing as mp
 from perceptivo.types.video import Picamera_Params, Frame
+from perceptivo.types.networking import Socket
 from perceptivo.root import Perceptivo_Object
+from perceptivo.networking.node import Node
 from datetime import datetime
 
 class Picamera_Process(mp.Process, Perceptivo_Object):
@@ -17,10 +19,12 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
 
     def __init__(self,
                  params:Picamera_Params = Picamera_Params(),
+                 networking: Optional[Socket] = None,
                  queue_size:int = 1024,
                  **kwargs):
         super(Picamera_Process, self).__init__(**kwargs)
         self.params = params
+        self.networking = networking
 
         self.queue_size = queue_size
 
@@ -40,7 +44,15 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
 
         self.cam = None # type: typing.Optional[PiCamera]
 
+        self.node = None # type: Optional[Node]
+
     def run(self):
+        if self.networking is not None:
+            self.node = Node(
+
+            )
+
+
 
         self.cam = PiCamera(**self.params.dict())
         self.cam.queue(self.queue_size)
@@ -74,6 +86,15 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
 
                 else:
                     self.cam.queueing.clear()
+                    # just make a frame to stream if we can
+                    timestamp, frame = self.cam.frame
+                    frame = Frame(
+                        frame = frame,
+                        timestamp = datetime.fromisoformat(timestamp),
+                        color=color
+                    )
+                if self.node is not None:
+                    self.node.send(frame)
 
         finally:
             # deinitialize camera

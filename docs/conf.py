@@ -19,8 +19,8 @@ sys.path.insert(0, os.path.abspath('../'))
 # -- Project information -----------------------------------------------------
 
 project = 'perceptivo'
-copyright = '2021, Jonny L Saunders, Avinash Singh'
-author = 'Jonny L Saunders, Avinash Singh'
+copyright = '2021, Jonny L Saunders, Avinash Singh Bala'
+author = 'Jonny L Saunders, Avinash Singh Bala'
 
 # The full version, including alpha/beta/rc tags
 release = pkg_resources.get_distribution('perceptivo').version

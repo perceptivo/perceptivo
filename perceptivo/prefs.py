@@ -19,7 +19,7 @@ import multiprocessing as mp
 from pydantic import BaseModel
 
 from perceptivo import Directories
-from perceptivo.types import sound, psychophys, video, patient
+from perceptivo.types import sound, psychophys, video, patient, networking
 from perceptivo.video.pupil import Pupil_Extractors, EllipseExtractor_Params
 
 _LOCK = mp.Lock()
@@ -68,6 +68,11 @@ class Patient_Prefs(Prefs):
     pupil_extractor: Pupil_Extractors = 'simple'
     pupil_extractor_params: typing.Union[EllipseExtractor_Params] = EllipseExtractor_Params()
     collection_params : patient.Collection_Params = patient.Collection_Params()
+    networking: networking.Patient_Networking = networking.Patient_Networking()
+
+
+class Clinician_Prefs(Prefs):
+    networking: networking.Clinician_Networking = networking.Clinician_Networking()
 
 
 def get(field:str, file:Path= Directories.prefs_file):

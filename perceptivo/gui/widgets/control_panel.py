@@ -11,7 +11,7 @@ from perceptivo.gui.widgets.components import Range_Setter
 from perceptivo.gui import params, styles
 from perceptivo.root import Perceptivo_Object
 
-class Control_Panel(QtWidgets.QGroupBox, Perceptivo_Object):
+class Control_Panel(QtWidgets.QGroupBox):
 
     valueChanged = Signal(GUI_Param)
     scaleChanged = Signal(GUI_Param)

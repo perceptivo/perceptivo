@@ -67,6 +67,8 @@ class Node(Perceptivo_Object):
         socket.setsockopt_string(zmq.IDENTITY, self.id)
 
         if self.mode == 'bind':
+            if self.ip == '':
+                self.ip = '*'
             socket.bind(self.address)
         elif self.mode == 'connect':
             socket.connect(self.address)

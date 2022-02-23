@@ -24,6 +24,7 @@ from perceptivo.types.psychophys import Sample, Samples, Psychoacoustic_Model, K
 from perceptivo.types.video import Picamera_Params, Frame
 from perceptivo.types.pupil import Pupil, Pupil_Params, Dilation
 from perceptivo.types.patient import Collection_Params
+from perceptivo.types.networking import Patient_Networking
 
 from autopilot import prefs
 
@@ -66,13 +67,13 @@ class Patient(Runtime):
                  pupil_extractor: typing.Optional[Pupil_Extractors] = None,
                  pupil_extractor_params: typing.Optional[EllipseExtractor_Params] = None,
                  collection_params: typing.Optional[Collection_Params] = None,
+                 networking: typing.Optional[Patient_Networking] = None,
                  prefs_file: Path = Directories.prefs_file,
                  **kwargs):
         super(Patient, self).__init__(**kwargs)
         self.prefs_file = prefs_file
 
         self.prefs = self.load_prefs(self.prefs_file) # type: Patient_Prefs
-
 
         if audio_config is None:
             self.audio_config = self.prefs.Audio_Config
@@ -104,6 +105,12 @@ class Patient(Runtime):
         else:
             self.collection_params = collection_params
 
+        if networking is None:
+            self.networking_prefs = self.prefs.networking
+        else:
+            self.networking_prefs = networking
+
+
         self.oracle = oracle
 
         # --------------------------------------------------
@@ -127,7 +134,7 @@ class Patient(Runtime):
 
         self.server = self._init_audio() # type: typing.Union[server.jackclient.JackClient, sc.pulseaudio._Speaker]
         self.model = self._init_model(self.audiogram_model) # type: model.Audiogram_Model
-        self.picam = self._init_picam(self.picamera_params)
+        self.picam = self._init_picam(self.picamera_params, self.networking_prefs.eyecam)
         self.pupil_extractor = self._init_pupil_extractor(pupil_extractor, pupil_extractor_params)
         self.picam.start()
 
@@ -371,4 +378,4 @@ class Patient(Runtime):
 
 
 def main():
-    print('hey what up')
+    Patient()
