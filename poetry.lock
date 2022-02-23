@@ -360,25 +360,6 @@ url = "https://www.piwheels.org/simple"
 reference = "piwheels"
 
 [[package]]
-name = "jack-client"
-version = "0.5.3"
-description = "JACK Audio Connection Kit (JACK) Client for Python"
-category = "main"
-optional = true
-python-versions = ">=3"
-
-[package.dependencies]
-CFFI = ">=1.0"
-
-[package.extras]
-numpy = ["numpy"]
-
-[package.source]
-type = "legacy"
-url = "https://www.piwheels.org/simple"
-reference = "piwheels"
-
-[[package]]
 name = "jinja2"
 version = "3.0.3"
 description = "A very fast and expressive template engine."
@@ -640,14 +621,19 @@ reference = "piwheels"
 
 [[package]]
 name = "opencv-python-headless"
-version = "4.5.4.60"
+version = "4.5.5.62"
 description = "Wrapper package for OpenCV python bindings."
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-numpy = ">=1.14.5"
+numpy = [
+    {version = ">=1.21.2", markers = "python_version >= \"3.6\" and platform_system == \"Darwin\" and platform_machine == \"arm64\""},
+    {version = ">=1.19.3", markers = "python_version >= \"3.6\" and platform_system == \"Linux\" and platform_machine == \"aarch64\" or python_version >= \"3.9\""},
+    {version = ">=1.14.5", markers = "python_version >= \"3.7\""},
+    {version = ">=1.17.3", markers = "python_version >= \"3.8\""},
+]
 
 [package.source]
 type = "legacy"
@@ -1475,7 +1461,7 @@ plotting = ["matplotlib"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.10"
-content-hash = "b834524513e3574f98825ceb9e1a3c4b7bcba790a0d355e7f5d66ebd975b4adf"
+content-hash = "2df8157f95d8523c76ad6442a85e26c05918b8aa610714238c8dfd30e1d0d37e"
 
 [metadata.files]
 alabaster = [
@@ -1551,9 +1537,6 @@ importlib-metadata = [
 inputs = [
     {file = "inputs-0.5-py2.py3-none-any.whl", hash = "sha256:13f894564e52134cf1e3862b1811da034875eb1f2b62e6021e3776e9669a96ec"},
 ]
-jack-client = [
-    {file = "JACK_Client-0.5.3-py3-none-any.whl", hash = "sha256:0214d9366e0a65bf0a99866990aae5a443afb3c283006d236d8cebcb769a59b8"},
-]
 jinja2 = [
     {file = "Jinja2-3.0.3-py3-none-any.whl", hash = "sha256:0e1bdc65702c1085d9485108aca9724f8761f022c93ba86e18132bb9e51a8b6e"},
 ]
@@ -1615,8 +1598,10 @@ numpy = [
     {file = "numpy-1.22.2-cp39-cp39-linux_armv7l.whl", hash = "sha256:c90ed70414781886980df6c110bdaa7d5d7c9e30a2b5370c1cef7d656fb15511"},
 ]
 opencv-python-headless = [
-    {file = "opencv_python_headless-4.5.4.60-cp37-cp37m-linux_armv6l.whl", hash = "sha256:3af4f775418a0c3bc87ff28a3e15453de79e481d57983be35eff45db54f860a3"},
-    {file = "opencv_python_headless-4.5.4.60-cp37-cp37m-linux_armv7l.whl", hash = "sha256:3af4f775418a0c3bc87ff28a3e15453de79e481d57983be35eff45db54f860a3"},
+    {file = "opencv_python_headless-4.5.5.62-cp37-cp37m-linux_armv6l.whl", hash = "sha256:122d1e1e7e293eba68e33cde8ffeaef45b4a044021cdd2c73d8b508e57b89cf1"},
+    {file = "opencv_python_headless-4.5.5.62-cp37-cp37m-linux_armv7l.whl", hash = "sha256:122d1e1e7e293eba68e33cde8ffeaef45b4a044021cdd2c73d8b508e57b89cf1"},
+    {file = "opencv_python_headless-4.5.5.62-cp39-cp39-linux_armv6l.whl", hash = "sha256:bebbaf2c46221a99ad21a6f72b888755c6393dd6fc4fb1342e015bb9aee39667"},
+    {file = "opencv_python_headless-4.5.5.62-cp39-cp39-linux_armv7l.whl", hash = "sha256:bebbaf2c46221a99ad21a6f72b888755c6393dd6fc4fb1342e015bb9aee39667"},
 ]
 packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:36bb3108f8e33f88e52e7985b4068e2585b67e5b7b3a0fa2817f9852bc39d2ef"},
