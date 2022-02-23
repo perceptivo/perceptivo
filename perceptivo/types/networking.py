@@ -1,5 +1,7 @@
 import typing
-from dataclasses import dataclass, field
+from dataclasses import field
+from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 
 ZMQ_SOCKET = typing.Literal['REQ', 'REP', 'PUB', 'SUB', 'PAIR', 'DEALER', 'ROUTER', 'PULL', 'PUSH']
 ZMQ_PROTOCOL = typing.Literal['tcp', 'ipc', 'inproc']
@@ -13,29 +15,27 @@ class Socket:
     protocol: ZMQ_PROTOCOL
     mode: ZMQ_MODE
     port: int
-    ip: str = field(default='')
+    ip: str = '*'
 
 
-@dataclass
-class Clinician_Networking:
+class Clinician_Networking(BaseModel):
     """
     Default networking properties for the Clinician computer
     """
-    ip: str = field(default='')
-    patient_ip: str = field(default='')
+    ip: str = ''
+    patient_ip: str = ''
     eyecam: Socket = Socket(
         id='clinician_eyecam',
         socket_type = 'PULL',
         protocol='tcp',
         mode='bind',
-        port=5500,
-        ip=ip
+        port=5500
     )
 
-@dataclass
-class Patient_Networking:
-    ip: str = field(default='')
-    clinician_ip: str = field(default='')
+
+class Patient_Networking(BaseModel):
+    ip: str = ''
+    clinician_ip: str = ''
     eyecam: Socket = Socket(
         id='patient_eyecam',
         socket_type='PUSH',

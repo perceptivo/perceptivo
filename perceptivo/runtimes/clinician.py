@@ -33,6 +33,7 @@ def clinician_parser(manual_args:Optional[List[str]] = None) -> argparse.Namespa
 
 
 class Clinician(Runtime):
+    prefs_class = Clinician_Prefs
 
     def __init__(
             self,
@@ -49,7 +50,8 @@ class Clinician(Runtime):
         else:
             self.networking_prefs = networking
 
-    def _init_gui(self):
+
+    def init_gui(self):
         app = QApplication(sys.argv)
         gui = Perceptivo_Clinician(
             prefs=self.prefs,
@@ -62,4 +64,5 @@ def main():
     prefs_file = args.prefs
 
     clin = Clinician(prefs_file=prefs_file)
+    clin.init_gui()
 

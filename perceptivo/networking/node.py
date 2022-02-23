@@ -97,9 +97,9 @@ class Node(Perceptivo_Object):
         Returns:
             str
         """
-        if self.mode == 'tcp':
+        if self.protocol == 'tcp':
             return f"tcp://{self.ip}:{self.port}"
-        elif self.mode == 'ipc':
+        elif self.protocol == 'ipc':
             return f"ipc:///tmp/{self.port}"
         else:
             raise NotImplementedError('Only tcp and ipc modes are implemented!')

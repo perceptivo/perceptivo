@@ -128,6 +128,7 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
             super(Perceptivo_Clinician.Frame_Receiver, self).__init__(parent)
             self.socket_prefs = socket_prefs
             self.quitting = threading.Event()
+            self.logger = init_logger(self)
 
         def run(self):
             self.socket = Node(
@@ -139,6 +140,9 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
                     try:
                         frame = self.socket.socket.recv()
                         self.frame.emit(frame)
+                    except Exception as e:
+                        self.logger.debug(f'Exception getting frame, {e}')
+
             finally:
                 self.socket.release()
 
