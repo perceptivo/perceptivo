@@ -35,8 +35,8 @@ class Runtimes(Enum):
     clinician = 'clinician'
     stimuli = 'stimuli'
 
-def json_dumps_pretty(v):
-    return json.dumps(v, indent=4,separators=(',', ": "))
+def json_dumps_pretty(v, *, default):
+    return json.dumps(v, indent=4,separators=(',', ": "), default=default)
 
 class Prefs(BaseModel):
 
