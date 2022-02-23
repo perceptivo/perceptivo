@@ -78,7 +78,7 @@ terminal = ["pyopengl", "pyqtgraph (>=0.11.0rc0)", "pyside2"]
 type = "git"
 url = "https://github.com/wehr-lab/autopilot.git"
 reference = "dev"
-resolved_reference = "3788e9f051ede290f2047cec708fdf9dc8570a20"
+resolved_reference = "acc306168370ed1af826c7fa3fc034ae1c60f381"
 
 [[package]]
 name = "babel"
@@ -675,6 +675,24 @@ pytz = ">=2020.1"
 
 [package.extras]
 test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "picamera"
+version = "1.13"
+description = "A pure Python interface for the Raspberry Pi camera module."
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.extras]
+array = ["numpy"]
+doc = ["sphinx"]
+test = ["coverage", "pytest", "mock", "pillow", "numpy"]
 
 [package.source]
 type = "legacy"
@@ -1455,13 +1473,13 @@ reference = "piwheels"
 [extras]
 clinician = ["PySide6", "pyqtgraph"]
 docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex", "matplotlib", "SoundCard"]
-patient = ["SoundCard"]
+patient = ["SoundCard", "picamera"]
 plotting = ["matplotlib"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.10"
-content-hash = "2df8157f95d8523c76ad6442a85e26c05918b8aa610714238c8dfd30e1d0d37e"
+content-hash = "15f3ad9984d9e8b547d8736ba7e283dcfdf1f2b790c83c0f7660567c5adb204d"
 
 [metadata.files]
 alabaster = [
@@ -1609,6 +1627,9 @@ packaging = [
 pandas = [
     {file = "pandas-1.4.1-cp39-cp39-linux_armv6l.whl", hash = "sha256:6f44f63c91881ba1189e668c348e506f36be605fdb2ee328ce0f44259b4057f3"},
     {file = "pandas-1.4.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:6f44f63c91881ba1189e668c348e506f36be605fdb2ee328ce0f44259b4057f3"},
+]
+picamera = [
+    {file = "picamera-1.13-py3-none-any.whl", hash = "sha256:122e792bb944973cdf2e810a8cbfc405d5c154083943ef75a5cc9f57ee4058f5"},
 ]
 pillow = [
     {file = "Pillow-9.0.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:834cf8f41fae68122c73f7a0a89100477bb5c2b6828997b5f0f35cd48a8b3106"},

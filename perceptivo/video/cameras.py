@@ -91,7 +91,6 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
                     try:
                         timestamp, frame = self.cam.frame
                     except TypeError:
-                        self.logger.debug('No frames from picam yet, continuing')
                         continue
                     frame = Frame(
                         frame = frame,

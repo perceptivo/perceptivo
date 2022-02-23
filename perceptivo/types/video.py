@@ -89,9 +89,7 @@ class Frame(BaseModel):
         arbitrary_types_allowed:bool = True
 
 
-class Color_Mode(Enum):
-    rgb = 'rgb'
-    grayscale = 'grayscale'
+Color_Mode = typing.Literal['rgb', 'grayscale']
 
 
 class Picamera_Params(BaseModel):
