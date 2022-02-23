@@ -27,6 +27,7 @@ requests = "^2.27.1"
 tqdm = "^4.62.3"
 scikit-image = "^0.19.1"
 pydantic = "^1.9.0"
+picamera = {version = "^1.13", optional = true}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -37,7 +38,7 @@ clinician = 'perceptivo.runtimes.clinician:main'
 
 [tool.poetry.extras]
 docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex", "matplotlib", "SoundCard"]
-patient = ["SoundCard"]
+patient = ["SoundCard", "picamera"]
 clinician = ["PySide6", "pyqtgraph"]
 plotting = ["matplotlib"]
 

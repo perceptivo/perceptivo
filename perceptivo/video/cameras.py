@@ -88,7 +88,11 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
                 else:
                     self.cam.queueing.clear()
                     # just make a frame to stream if we can
-                    timestamp, frame = self.cam.frame
+                    try:
+                        timestamp, frame = self.cam.frame
+                    except TypeError:
+                        self.logger.debug('No frames from picam yet, continuing')
+                        continue
                     frame = Frame(
                         frame = frame,
                         timestamp = datetime.fromisoformat(timestamp),
