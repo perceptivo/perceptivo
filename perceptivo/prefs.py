@@ -71,6 +71,9 @@ class Patient_Prefs(Prefs):
     collection_params : patient.Collection_Params = patient.Collection_Params()
     networking: Patient_Networking = Patient_Networking()
 
+    class Config:
+        use_enum_values = True
+
 
 class Clinician_Prefs(Prefs):
     networking: Clinician_Networking = Clinician_Networking()
