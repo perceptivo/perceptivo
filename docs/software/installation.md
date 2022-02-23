@@ -66,15 +66,19 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source ~/.bashrc
 ```
 
-Install poetry:
-```bash
-pip install poetry
-```
-
 You may need to add the local bin folder to PATH
 ```bash
 echo 'export PATH=/home/pi/.local/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
 ```
+
+Install poetry:
+```bash
+pip install --upgrade pip
+pip install poetry
+```
+
+
 
 ### Install perceptivo
 

@@ -13,12 +13,11 @@ scikit-learn = "^1.0.1"
 matplotlib = {version=">=3.4.3", optional=true}
 PySide6 = {version = "^6.1.2", optional=true}
 pyqtgraph = {version = "^0.12", optional=true}
-JACK-Client = {version="^0.5.3", optional=true}
 sphinx = {version = "^4.2", optional=true}
 furo = {version = "^2022", optional=true}
 myst-parser = {version ="^0.16", optional=true}
 sphinxcontrib-bibtex = {version="^2.4.1", optional=true}
-numpy = ">=1.18,<1.22"
+numpy = ">=1.18,<=1.22.2"
 importlib-metadata = {version="^4.10", python="~3.7"}
 typing-extensions = {version="^4.0", python="~3.7"}
 SoundCard = {version="^0.4", python=">=3.8", optional=true}
@@ -40,14 +39,13 @@ clinician = 'perceptivo.runtimes.clinician:main'
 
 [tool.poetry.extras]
 docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex", "matplotlib", "SoundCard"]
-patient = ["JACK-Client", "SoundCard"]
+patient = ["SoundCard"]
 clinician = ["PySide6", "pyqtgraph"]
 plotting = ["matplotlib"]
 
 [[tool.poetry.source]]
-name = "piwheels.org"
+name = "piwheels"
 url = "https://www.piwheels.org/simple"
-secondary = true
 
 [build-system]
 requires = ["poetry>=1.0"]

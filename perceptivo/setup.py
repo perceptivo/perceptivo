@@ -7,6 +7,7 @@ import typing
 import argparse
 import subprocess
 from autopilot.setup.run_script import run_scripts, call_series
+from autopilot import prefs
 
 hifiberry_dacplus = [
     {'command': 'sudo adduser pi i2c', 'optional': True},
