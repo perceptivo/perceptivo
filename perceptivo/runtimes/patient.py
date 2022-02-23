@@ -135,7 +135,7 @@ class Patient(Runtime):
         self.server = self._init_audio() # type: typing.Union[server.jackclient.JackClient, sc.pulseaudio._Speaker]
         self.model = self._init_model(self.audiogram_model) # type: model.Audiogram_Model
         self.picam = self._init_picam(self.picamera_params, self.networking_prefs.eyecam)
-        self.pupil_extractor = self._init_pupil_extractor(pupil_extractor, pupil_extractor_params)
+        self.pupil_extractor = self._init_pupil_extractor(self.pupil_extractor, self.pupil_extractor_params)
         self.picam.start()
 
 
