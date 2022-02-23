@@ -49,7 +49,8 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
     def run(self):
         if self.networking is not None:
             self.node = Node(
-
+                self.networking,
+                poll_mode=Node.Poll_Mode.NONE,
             )
 
 

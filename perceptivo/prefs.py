@@ -17,6 +17,7 @@ from enum import Enum
 from pathlib import Path
 import multiprocessing as mp
 from pydantic import BaseModel
+import json
 
 from perceptivo import Directories
 from perceptivo.types import sound, psychophys, video, patient
@@ -34,8 +35,13 @@ class Runtimes(Enum):
     clinician = 'clinician'
     stimuli = 'stimuli'
 
+def json_dumps_pretty(v):
+    return json.dumps(v, indent=4,separators=(',', ": "))
 
 class Prefs(BaseModel):
+
+    class Config:
+        json_dumps = json_dumps_pretty
 
     def save(self, file: Path = Directories.prefs_file):
         with open(file, 'w') as pfile:
@@ -66,7 +72,7 @@ class Patient_Prefs(Prefs):
     Run the picamera in a separate Process (using :class:`.cameras.Picamera_Process` . Only True supported for now!
     """
     picam_queue_size:int = 1024
-    pupil_extractor: Pupil_Extractors = 'simple'
+    pupil_extractor: str = 'simple'
     pupil_extractor_params: typing.Union[EllipseExtractor_Params] = EllipseExtractor_Params()
     collection_params : patient.Collection_Params = patient.Collection_Params()
     networking: Patient_Networking = Patient_Networking()
