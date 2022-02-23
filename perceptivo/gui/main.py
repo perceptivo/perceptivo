@@ -22,6 +22,7 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
     """
     GUI container for the Perceptivo clinician interface
     """
+    quitting = Signal()
 
     def __init__(self,
                  prefs: Clinician_Prefs,
@@ -95,6 +96,7 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         self.control_panel.startToggled.connect(self.setStarted)
 
         self.frame_receiver.frame.connect(self.drawFrame)
+        self.quitting.connect(self.frame_receiver.quitting)
 
     def update_grid(self, value):
         pass
@@ -115,6 +117,13 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         self.vid_pupil.setImage(frame.frame)
         self.logger.debug(f'got frame {frame}')
 
+    def closeEvent(self, event):
+        self.quitting.emit()
+        self.frame_receiver.exit()
+        self.frame_receiver.quitting_evt.set()
+        self.frame_receiver.wait(5)
+        event.accept()
+
 
     class Frame_Receiver(QThread):
         """
@@ -127,16 +136,19 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
                      socket_prefs:Socket):
             super(Perceptivo_Clinician.Frame_Receiver, self).__init__(parent)
             self.socket_prefs = socket_prefs
-            self.quitting = threading.Event()
             self.logger = init_logger(self)
 
+            self.quitting_evt = threading.Event()
+
         def run(self):
+
+            self.logger.debug('starting frame receiver thread')
             self.socket = Node(
                 socket=self.socket_prefs,
                 poll_mode=Node.Poll_Mode.NONE,
             )
             try:
-                while not self.quitting.is_set():
+                while not self.quitting_evt.is_set():
                     try:
                         frame = self.socket.socket.recv()
                         self.frame.emit(frame)
@@ -144,11 +156,14 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
                         self.logger.debug(f'Exception getting frame, {e}')
 
             finally:
+                self.logger.debug('releasing socket')
                 self.socket.release()
 
+
         @Slot()
-        def quit(self):
-            self.quitting.set()
+        def quitting(self):
+            self.logger.debug('got quit signal')
+            self.quitting_evt.set()
 
 
 

@@ -61,7 +61,7 @@ def install_apt(packages: typing.List[str]) -> bool:
 def setup_patient():
     # install jackd audio and do performance tweaks
     install_apt(apt_requirements['patient'])
-    run_scripts(['jackd_source', 'performance'])
+    run_scripts(['performance'])
     call_series(hifiberry_dacplus, 'hifiberry dacplus')
 
 

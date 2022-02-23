@@ -2,17 +2,8 @@
 
 ## Imaging RaspiOS
 
-```{eval-rst}
-.. attention::
-
-    Due to incompatibilities between jack audio and the latest version of 
-    RaspiOS, you will need to use a "legacy" version of RaspiOS based on
-    Debian Buster for the patient raspi. See `jack2 issue #815 <https://github.com/jackaudio/jack2/issues/815>`_
-
-```
-
 * Download the RaspiOS image from the [Download Page](https://www.raspberrypi.com/software/operating-systems/)
-  * For Patient, download Raspi OS Lite (legacy) - [HTTP](https://downloads.raspberrypi.org/raspios_oldstable_lite_armhf/images/raspios_oldstable_lite_armhf-2021-12-02/2021-12-02-raspios-buster-armhf-lite.zip), [.torrent](https://downloads.raspberrypi.org/raspios_oldstable_lite_armhf/images/raspios_oldstable_lite_armhf-2021-12-02/2021-12-02-raspios-buster-armhf-lite.zip.torrent)
+  * For Patient, download Raspi OS Lite - [HTTP](https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2022-01-28/2022-01-28-raspios-bullseye-arm64-lite.zip), [.torrent](https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2022-01-28/2022-01-28-raspios-bullseye-arm64-lite.zip.torrent)
   * For Clinician, download Raspi OS with Desktop - [HTTP](https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2021-11-08/2021-10-30-raspios-bullseye-armhf.zip), [.torrent](https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2021-11-08/2021-10-30-raspios-bullseye-armhf.zip.torrent)
 
 
@@ -47,13 +38,6 @@ On all raspberry pis, after installing the operating system you should...
 
 ### Install system packages
 
-```{eval-rst}
-.. attention::
-    
-    On the Legacy version of RaspiOS, the prepackaged python is version 3.7, and so we need to install a more recent version
-    of python ourselves. The easiest way to do that is to use pyenv. See `Installing Python with PyEnv <pyenv>`
-
-```
 
 Install the following system packages from apt:
 
