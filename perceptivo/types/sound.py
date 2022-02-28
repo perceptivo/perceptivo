@@ -9,7 +9,8 @@ import uuid
 from datetime import datetime
 
 from perceptivo.sound import sounds
-# from autopilot.stim.sound.jackclient import JackClient
+if typing.TYPE_CHECKING:
+    from autopilot.stim.sound.jackclient import JackClient
 from autopilot.stim.sound.base import Sound
 
 
@@ -107,7 +108,7 @@ class Sound(BaseModel):
     duration: float = 0.5
     sound_type: SOUND_TYPES = "Gammatone"
     timestamp: typing.Optional[datetime] = None
-    # jack_client: typing.Optional[JackClient] = None
+    jack_client: typing.Optional['JackClient'] = None
     uuid: str = Field(default_factory=uuid.uuid4)
 
     class Config:
