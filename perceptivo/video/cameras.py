@@ -23,7 +23,7 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
                  networking: Optional[Socket] = None,
                  queue_size:int = 1024,
                  **kwargs):
-        super(Picamera_Process, self).__init__(**kwargs)
+        super(Picamera_Process, self).__init__(daemon=True,**kwargs)
         self.params = params
         self.networking = networking
 

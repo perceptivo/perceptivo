@@ -4,6 +4,7 @@ Logging and debugging tools
 
 import os
 import logging
+import typing
 import re
 import multiprocessing as mp
 import inspect
@@ -13,6 +14,7 @@ from threading import Lock
 import warnings
 
 from perceptivo import Directories
+from perceptivo.prefs import get_global
 
 _LOGGERS = [] # type: list
 """
@@ -22,7 +24,7 @@ List of instantiated loggers, used in :func:`.init_logger` to return existing lo
 _INIT_LOCK = Lock() # type: Lock
 
 
-def init_logger(instance=None, module_name=None, class_name=None, object_name=None) -> logging.Logger:
+def init_logger(instance=None, module_name=None, class_name=None, object_name=None, loglevel:typing.Optional[str]=None) -> logging.Logger:
     """
     Initialize a logger
 
@@ -50,6 +52,14 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
     Returns:
         :class:`logging.logger`
     """
+
+    # try to get global prefs for loglevel
+    if loglevel is None:
+        globalprefs = get_global()
+        if globalprefs is not None:
+            loglevel = globalprefs.loglevel
+    loglevel = getattr(logging, loglevel)
+
 
     # --------------------------------------------------
     # gather variables
@@ -125,7 +135,6 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
         if MAKE_NEW:
             parent_logger = logging.getLogger(module_name)
-            loglevel = getattr(logging, 'DEBUG')
             parent_logger.setLevel(loglevel)
 
             # make formatter that includes name

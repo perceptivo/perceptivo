@@ -5,7 +5,7 @@ from typing import List, Type, Optional, Union
 import argparse
 
 from perceptivo import Directories
-from perceptivo.prefs import Prefs, Patient_Prefs, Clinician_Prefs
+from perceptivo.prefs import Prefs, Patient_Prefs, Clinician_Prefs, set_global
 from perceptivo.root import Perceptivo_Object
 
 
@@ -79,6 +79,9 @@ class Runtime(Perceptivo_Object):
             prefs.save(prefs_file)
         else:
             prefs = self.prefs_class.load(prefs_file)
+
+        set_global(prefs)
+
         return prefs
 
 

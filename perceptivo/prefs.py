@@ -29,16 +29,22 @@ _LOCK = mp.Lock()
 Lock read/write access to prefs to avoid corruption/races
 """
 
+_PREFS = None # type: typing.Optional['Prefs']
+
 
 class Runtimes(Enum):
     patient = 'patient'
     clinician = 'clinician'
     stimuli = 'stimuli'
 
+LOGLEVELS = typing.Literal['DEBUG', 'INFO', 'WARNING', 'ERROR']
+
 def json_dumps_pretty(v, *, default):
     return json.dumps(v, indent=4,separators=(',', ": "), default=default)
 
 class Prefs(BaseModel):
+
+    loglevel:LOGLEVELS = 'DEBUG'
 
     class Config:
         json_dumps = json_dumps_pretty
@@ -92,6 +98,11 @@ def get(field:str, file:Path= Directories.prefs_file):
     return prefs.dict()[field]
 
 
+def set_global(prefs:Prefs):
+    globals()['_PREFS'] = prefs
+
+def get_global() -> Prefs:
+    return globals()['_PREFS']
 
 
 

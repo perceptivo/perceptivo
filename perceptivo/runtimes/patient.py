@@ -70,10 +70,12 @@ class Patient(Runtime):
                  networking: typing.Optional[Patient_Networking] = None,
                  prefs_file: Path = Directories.prefs_file,
                  **kwargs):
-        super(Patient, self).__init__(**kwargs)
-        self.prefs_file = prefs_file
 
+        self.prefs_file = prefs_file
         self.prefs = self.load_prefs(self.prefs_file) # type: Patient_Prefs
+
+        super(Patient, self).__init__(**kwargs)
+
 
         if audio_config is None:
             self.audio_config = self.prefs.Audio_Config
