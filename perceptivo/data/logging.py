@@ -14,7 +14,6 @@ from threading import Lock
 import warnings
 
 from perceptivo import Directories
-from perceptivo.prefs import get_global
 
 _LOGGERS = [] # type: list
 """
@@ -54,6 +53,7 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
     """
 
     # try to get global prefs for loglevel
+    from perceptivo.prefs import get_global
     if loglevel is None:
         globalprefs = get_global()
         if globalprefs is not None:
