@@ -1,11 +1,18 @@
 """
 Utility functions! everyone's favorite!
 """
-
+import sys
 import typing
 from typing import Union
 from pathlib import Path
+from datetime import datetime
+import importlib
+import pdb
+
+import numpy as np
 from tqdm import tqdm
+import msgpack
+from pydantic.main import ModelMetaclass
 
 import requests
 
@@ -35,4 +42,87 @@ def download(url:str, file_name:typing.Union[Path,str]) -> bool:
     return True
 
 
+def pack_array(array) -> dict:
+    return {
+        '__numpy__': True,
+        'shape': array.shape,
+        'dtype': str(array.dtype),
+        'array': array.data
+    }
 
+def unpack_array(shape:tuple, dtype:np.dtype, array:bytes) -> np.ndarray:
+    return np.ndarray(
+        shape,
+        dtype,
+        array
+    )
+
+def serialize(array: typing.Union[np.ndarray, typing.Any]) -> typing.Union[dict, typing.Any]:
+    """
+    Serialization for use with ``msgpack.packb`` as ``default``
+
+    Returns:
+        dict like::
+
+            {
+                '__numpy__': True,
+                'shape': array.shape,
+                'dtype': str(array.dtype),
+                'array': array.data
+            }
+
+    """
+    if isinstance(array, np.ndarray):
+        return pack_array(array)
+    elif isinstance(type(array), ModelMetaclass):
+        # pdb.set_trace()
+        return {
+            '__perceptivo_type__': True,
+            'module': type(array).__module__,
+            'type': type(array).__name__,
+            'value':array.dict()
+        }
+    elif isinstance(array, datetime):
+        return {
+            '__datetime__': True,
+            'value': array.isoformat()
+        }
+    else:
+        return array
+
+
+def deserialize(obj):
+    if b'__numpy__' in obj:
+        return unpack_array(
+            obj[b'shape'],
+            np.dtype(obj[b'dtype'].decode('utf-8')),
+            obj[b'array']
+        )
+    elif '__numpy__' in obj:
+        return unpack_array(
+            obj['shape'],
+            np.dtype(obj['dtype']),
+            obj['array']
+        )
+    elif '__datetime__' in obj:
+        return datetime.fromisoformat(obj['value'])
+    elif '__perceptivo_type__' in obj:
+        # make sure it's imported
+        if obj['module'] not in sys.modules:
+            spec = importlib.util.find_spec(obj['module'])
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[obj['module']] = module
+            spec.loader.exec_module(module)
+        type_class = getattr(sys.modules[obj['module']], obj['type'])
+        return type_class(**obj['value'])
+    else:
+        return obj
+
+
+def msgpack_loads(msg):
+    """Wrapper of the msgpack """
+    return msgpack.unpackb(msg, object_hook=deserialize)
+
+
+def msgpack_dumps(msg, *, default=None):
+    return msgpack.packb(msg, default=serialize).decode('utf-8')

@@ -5,12 +5,13 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 import typing
 
+
 import numpy as np
 import cv2
 
+from perceptivo.types.root import PerceptivoType
 
-
-class Frame(BaseModel):
+class Frame(PerceptivoType):
     """
     Single video frame container
 
