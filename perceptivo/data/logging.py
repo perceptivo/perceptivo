@@ -176,7 +176,8 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             parent_logger.addHandler(fh)
 
             sh = logging.StreamHandler()
-            sh.setLevel(logging.DEBUG)
+            fh.setFormatter(log_formatter)
+            sh.setLevel(loglevel)
             parent_logger.addHandler(sh)
 
             ## log creation
