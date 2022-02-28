@@ -105,7 +105,7 @@ class Node(Perceptivo_Object):
         else:
             raise NotImplementedError('Only tcp and ipc modes are implemented!')
 
-    def send(self, msg:typing.Optional[Message] = None, **kwargs):
+    def send(self, msg:Optional[Message] = None, **kwargs):
         """for now just wrapping the socket"""
         if msg is None:
             if len(kwargs) == 0:
