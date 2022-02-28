@@ -13,6 +13,7 @@ from tornado.ioloop import IOLoop
 
 from perceptivo.root import Perceptivo_Object
 from perceptivo.types.networking import Socket
+from perceptivo.networking.messages import Message
 
 
 class Node(Perceptivo_Object):
@@ -104,9 +105,13 @@ class Node(Perceptivo_Object):
         else:
             raise NotImplementedError('Only tcp and ipc modes are implemented!')
 
-    def send(self, msg, *args, **kwargs):
+    def send(self, msg:typing.Optional[Message] = None, **kwargs):
         """for now just wrapping the socket"""
-        self.socket.send(msg, *args, **kwargs)
+        if msg is None:
+            if len(kwargs) == 0:
+                raise ValueError(f'Need a message or kwargs that can be used to create a message')
+            msg = Message(**kwargs)
+        self.socket.send(msg.serialize())
 
     def _start_ioloop(self, loop:IOLoop):
         """spawn a tornado ioloop"""
@@ -119,7 +124,7 @@ class Node(Perceptivo_Object):
     def _start_polling(self):
         """spawn a thread to poll the socket and add incoming messages to the queue"""
         while not self._stopping.is_set():
-            msg = self.socket.recv()
+            msg = Message.from_serialized(self.socket.recv())
             self.deque.append(msg)
 
     def release(self):

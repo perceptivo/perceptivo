@@ -10,6 +10,7 @@ from perceptivo.types.video import Picamera_Params, Frame
 from perceptivo.types.networking import Socket
 from perceptivo.root import Perceptivo_Object
 from perceptivo.networking.node import Node
+from perceptivo.networking.messages import Message
 from datetime import datetime
 
 class Picamera_Process(mp.Process, Perceptivo_Object):
@@ -98,7 +99,7 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
                         color=color
                     )
                 if self.node is not None:
-                    self.node.send(frame)
+                    self.node.send(Message(frame=frame))
 
         finally:
             # deinitialize camera

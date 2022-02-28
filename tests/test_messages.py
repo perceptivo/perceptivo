@@ -10,6 +10,7 @@ def compare_dict(a, b):
         if isinstance(val, np.ndarray):
             np.testing.assert_array_equal(val, b[key])
         elif isinstance(type(val), ModelMetaclass):
+            assert type(val) == type(b[key])
             compare_dict(val.dict(), b[key].dict())
         else:
             assert val == b[key]
