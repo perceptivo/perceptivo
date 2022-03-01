@@ -192,7 +192,7 @@ class Patient(Runtime):
             self.samples.append(sample)
             self.model.update(sample)
             self.logger.debug(f'Sample collected - {sample}')
-            
+
         self._trial_active.clear()
 
     def next_sound(self) -> Sound:
@@ -313,7 +313,7 @@ class Patient(Runtime):
                     frame = self.picam.q.get_nowait()
                 except Empty:
                     finished = True
-                    continue
+                    break
 
                 # process frame
                 pupil = self.pupil_extractor.process(frame)
@@ -325,6 +325,7 @@ class Patient(Runtime):
 
 
         finally:
+            self.logger.debug('Setting collection finished flag')
             self._collecting.set()
 
 
