@@ -184,6 +184,8 @@ class EllipseExtractor(PupilExtractor):
         self.search_scale = search_scale
         self.footprint = morphology.disk(self.footprint_size)
         self._mask_arr = None
+        self._filter_arr = None
+        self._edge_arr = None
 
     @property
     def footprint_size(self) -> int:
@@ -205,22 +207,28 @@ class EllipseExtractor(PupilExtractor):
 
     def _process(self, frame:Frame) -> Pupil:
 
-        # make a local copy of the grayscale image to process
-        frame_proc = frame.gray.copy()
+        # preallocate for speed!
+        if self._filter_arr is None or self._filter_arr.shape != frame.frame.shape:
+            self._filter_arr = np.zeros_like(frame.frame)
 
-        # median filter
-        frame_proc = filters.rank.median(frame_proc, footprint=self.footprint, out=frame_proc)
+        if self._edge_arr is None or self._edge_arr.shape != frame.frame.shape:
+            self._edge_arr = np.zeros_like(frame.frame)
+
+
+
+        # median filter (always copies, so we dont' need to)
+        self._filter_arr[:] = filters.rank.median(frame.gray, footprint=self.footprint)
 
         # scharr to detect edges, then filter and skeletonize to 1px wide
-        edges = filters.scharr(frame_proc)
-        thresh = filters.threshold_otsu(edges)
-        edges = morphology.skeletonize(edges>thresh)
-        edges = morphology.label(edges)
+        self._edge_arr[:] = filters.scharr(self._filter_arr)
+        thresh = filters.threshold_otsu(self._edge_arr)
+        self._edge_arr[:] = morphology.skeletonize(self._edge_arr>thresh)
+        self._edge_arr[:] = morphology.label(self._edge_arr)
 
         # if we have a previous ellipse, then use it to remove extraneous edges
-        edges = self.filter_edges(edges)
+        self._edge_arr[:] = self.filter_edges(self._edge_arr)
 
-        ellipse = self.choose_ellipse(edges, frame_proc)
+        ellipse = self.choose_ellipse(self._edge_arr, self._filter_arr)
 
         # create and return our pupil object
         pupil = Pupil(
