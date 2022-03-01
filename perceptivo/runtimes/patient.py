@@ -176,6 +176,9 @@ class Patient(Runtime):
             self.logger.exception('Previous trial still running')
             return
 
+        self.logger.debug('-------------------')
+        self.logger.debug('new trial started')
+
         # clear trialwise collectors
         self._frames = []
         self._pupils = []
@@ -328,7 +331,10 @@ class Patient(Runtime):
                 else:
                     self._frames.append(frame)
                     self._pupils.append(pupil)
+                    self.logger.debug(f'processed {len(self._pupils)} frames')
 
+        except Exception as e:
+            self.logger.exception(f'Got exception processing frames, {e}')
 
         finally:
             self.logger.debug('Setting collection finished flag')

@@ -209,31 +209,37 @@ class EllipseExtractor(PupilExtractor):
 
 
     def _process(self, frame:Frame) -> typing.Union[Pupil, None]:
-
+        self.logger.debug('process start')
         # preallocate for speed!
         if self._filter_arr is None or self._filter_arr.shape != frame.frame.shape:
             self._filter_arr = np.zeros_like(frame.frame)
 
         if self._edge_arr is None or self._edge_arr.shape != frame.frame.shape:
             self._edge_arr = np.zeros_like(frame.frame)
-
-
+        self.logger.debug('arrays allocated')
 
         # median filter (always copies, so we dont' need to)
         self._filter_arr[:] = filters.rank.median(frame.gray, footprint=self.footprint)
+        self.logger.debug('median filter completed')
 
         # scharr to detect edges, then filter and skeletonize to 1px wide
         self._edge_arr[:] = filters.scharr(self._filter_arr)
+        self.logger.debug('scharr filter completed')
         thresh = filters.threshold_otsu(self._edge_arr)
         self._edge_arr[:] = morphology.skeletonize(self._edge_arr>thresh)
+        self.logger.debug('skeletonize completed')
         self._edge_arr[:] = morphology.label(self._edge_arr)
+        self.logger.debug('label completed')
 
         # if we have a previous ellipse, then use it to remove extraneous edges
         self._edge_arr[:] = self.filter_edges(self._edge_arr)
+        self.logger.debug('filtered edges')
 
         ellipse = self.choose_ellipse(self._edge_arr, self._filter_arr)
+        self.logger.debug('ellipse chosen')
 
         if ellipse is None:
+            self.logger.debug('No ellipses found in image')
             return None
 
         # create and return our pupil object
