@@ -25,22 +25,38 @@ class Clinician_Networking(BaseModel):
     ip: str = ''
     patient_ip: str = ''
     eyecam: Socket = Socket(
-        id='clinician_eyecam',
+        id='clinician:eyecam',
         socket_type = 'PULL',
         protocol='tcp',
         mode='bind',
         port=5500
     )
+    control: Socket = Socket(
+        id="clinician:control",
+        socket_type = 'ROUTER',
+        protocol='tcp',
+        mode='bind',
+        port=5600
+    )
+
 
 
 class Patient_Networking(BaseModel):
     ip: str = ''
     clinician_ip: str = ''
     eyecam: Socket = Socket(
-        id='patient_eyecam',
+        id='patient:eyecam',
         socket_type='PUSH',
         protocol='tcp',
         mode='connect',
         port=5500,
+        ip=clinician_ip
+    )
+    control: Socket = Socket(
+        id='patient:control',
+        socket_type='DEALER',
+        protocol='tcp',
+        mode='connect',
+        port=5600,
         ip=clinician_ip
     )

@@ -2,6 +2,8 @@
 Plot displaying audiogram options, current estimate of audiogram
 
 """
+import typing
+from typing import Optional, Tuple
 
 from PySide6 import QtWidgets, QtCore
 import pyqtgraph as pg
@@ -9,18 +11,20 @@ import pyqtgraph as pg
 import numpy as np
 from perceptivo.data.logging import init_logger
 
-from perceptivo.types.gui import GUI_Param
+from perceptivo.types.gui import GUI_Control
 
 
 class Audiogram(QtWidgets.QGroupBox):
-    def __init__(self):
+    def __init__(self,
+                 default_amplitudes:Tuple[float]=tuple(),
+                 default_frequencies:Tuple[float]=tuple()):
         super(Audiogram, self).__init__('Audiogram')
         self.logger = init_logger(self)
 
         self.log = (False, False)
 
-        self.frequencies = tuple()
-        self.amplitudes = tuple()
+        self.frequencies = default_frequencies
+        self.amplitudes = default_amplitudes
 
         self.plot = pg.PlotWidget(self)
         self.plot.plotItem.getAxis('bottom').setLabel('Frequency (Hz)')
@@ -34,22 +38,23 @@ class Audiogram(QtWidgets.QGroupBox):
         self.setLayout(self.layout)
 
 
-    @QtCore.Slot(GUI_Param)
-    def gridChanged(self, value: GUI_Param):
+    @QtCore.Slot(GUI_Control)
+    def gridChanged(self, value: GUI_Control):
         if value.key not in ('frequencies', 'amplitudes'):
+            self.logger.warning(f'Invalid control value: {GUI_Control}')
             return
-        self.logger.debug(f'Grid Changed: {GUI_Param}')
+        self.logger.debug(f'Grid Changed: {GUI_Control}')
         if value.key == 'frequencies':
             self.frequencies = value.value
         elif value.key == 'amplitudes':
             self.amplitudes = value.value
         else:
-            raise ValueError(f'Need a GUI_Param with key == frequencies or amplitudes, got {value}')
+            raise ValueError(f'Need a GUI_Control with key == frequencies or amplitudes, got {value}')
 
         self._drawGrid()
 
     @QtCore.Slot(str)
-    def scaleChanged(self, value: GUI_Param):
+    def scaleChanged(self, value: GUI_Control):
         if value.key == 'log_x':
             self.log = (value.value, self.log[1])
         elif value.key == 'log_y':

@@ -1,7 +1,20 @@
 import typing
-from dataclasses import dataclass, field
+from pydantic import Field
 
-GUI_PARAM_KEY = typing.Literal['frequencies', 'amplitudes', 'log_x', 'log_y', 'extra_amplitude','amplitude_step', 'max_amplitude']
+from perceptivo.types.root import PerceptivoType
+
+GUI_PARAM_KEY = typing.Literal[
+    'frequencies',
+    'amplitudes',
+    'log_x',
+    'log_y',
+    'extra_amplitude',
+    'amplitude_step',
+    'amplitude_range',
+    'max_amplitude',
+    'frequency_step',
+    'frequency_range'
+]
 """
 Possible keys for GUI parameters. 
 
@@ -24,9 +37,21 @@ Widget types that correspond to particular Qt Widgets
 """
 
 
+class GUI_Control(PerceptivoType):
+    """Container for GUI_Params in transit"""
+    key: GUI_PARAM_KEY
+    value: typing.Union[str, float, tuple]
 
-@dataclass
-class GUI_Param_Type:
+class GUI_Range(PerceptivoType):
+    """
+    Range for :class:`.widgets.components.Range_Setter`
+    """
+    min:float
+    max:float
+    n:int
+
+
+class GUI_Param(PerceptivoType):
     """
     Parameterization for a GUI Parameter itself. ie. How a particular parameter should be represented.
 
@@ -43,13 +68,61 @@ class GUI_Param_Type:
     key: GUI_PARAM_KEY
     name: str
     widget_type: GUI_WIDGET_TYPE
-    default: typing.Any = field(default=None)
-    args: list = field(default_factory=list)
-    kwargs: dict = field(default_factory=dict)
+    default: typing.Any = Field(default=None)
+    args: list = Field(default_factory=list)
+    kwargs: dict = Field(default_factory=dict)
+
+# --------------------------------------------------
+# Defaults and parameters for control panel widgets
+# --------------------------------------------------
+
+class Control_Panel_Params(PerceptivoType):
+    """
+    Defaults and parameters for :class:`perceptivo.gui.widgets.Control_Panel`
+
+    """
+    # amplitude_step = GUI_Param(
+    #     key='amplitude_step',
+    #     name='Amplitude Step Size (dBSPL)',
+    #     widget_type='int',
+    #     default=5,
+    #     kwargs={'step':5, 'limits':(5,10)}
+    # )
+    amplitude_range = GUI_Param(
+        key='amplitude_range',
+        name='Amplitude Range (dBSPL)',
+        widget_type='range',
+        default=GUI_Range(min=0, max=80, n=8),
+        kwargs={'limits': (0, 100)}
+    )
+    # frequency_step = GUI_Param(
+    #     key='frequency_step',
+    #     name='Frequency Step Size (Hz)',
+    #     widget_type='int',
+    #     default=1000,
+    #     kwargs={'step': 500, 'limits':(100,5000)}
+    # )
+    frequency_range = GUI_Param(
+        key='frequency_range',
+        name='Frequency Range (Hz)',
+        widget_type='range',
+        default=GUI_Range(min=0,max=8000,n=17),
+        kwargs={'limits':(0,20000)}
+    )
 
 
-@dataclass
-class GUI_Param:
-    """Container for GUI_Params in transit"""
-    key: GUI_PARAM_KEY
-    value: typing.Union[str, float, tuple]
+class GUI_Params(PerceptivoType):
+    """
+    Container for all parameters to be given to the GUI on init
+    """
+    control_panel: Control_Panel_Params = Control_Panel_Params()
+
+
+
+
+# CONTROL_PANEL = odict({
+#     # 'frequencies': Param('frequencies', 'Frequencies', 'range', kwargs={'limits':(0,20000)}),
+#     # 'amplitudes': Param('amplitudes', 'Amplitudes', 'range', kwargs={'limits':(0,1), 'round':3}),
+#     #'extra_amplitude': Param('extra_amplitude', 'Extra Amplitude', 'bool'),
+#     # 'max_amplitude': Param('max_amplitude', 'Max Amplitude (dBSPL)', 'int', 80, )
+# })

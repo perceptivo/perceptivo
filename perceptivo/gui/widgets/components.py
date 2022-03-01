@@ -9,7 +9,7 @@ from PySide6.QtCore import Signal, Slot
 
 import numpy as np
 
-from perceptivo.types.gui import GUI_Param
+from perceptivo.types.gui import GUI_Param, GUI_Range, GUI_Control, GUI_PARAM_KEY
 from perceptivo.data.logging import init_logger
 
 class Range_Setter(QtWidgets.QWidget):
@@ -17,11 +17,17 @@ class Range_Setter(QtWidgets.QWidget):
     Buttons and text fields to parameterize a linearly or logarithmically spaced array of values
     """
 
-    valueChanged = Signal(GUI_Param)
-    buttonClicked = Signal(GUI_Param)
+    valueChanged = Signal(GUI_Control)
+    buttonClicked = Signal(GUI_Control)
     scaleChanged = Signal(str)
 
-    def __init__(self, key: str, name: str, round:int=0, limits:typing.Tuple[int, int]=(0, 100), step:float=1., *args, **kwargs):
+    def __init__(self,
+                 key: GUI_PARAM_KEY,
+                 name: str,
+                 round:int=0,
+                 limits:typing.Tuple[int, int]=(0, 100),
+                 default:GUI_Range=GUI_Range(min=0, max=100, n=10),
+                 *args, **kwargs):
         """
         Args:
             key (str): key of value that is set by this widget, likely one of :data:`.types.GUI_PARAM_KEY`
@@ -34,15 +40,21 @@ class Range_Setter(QtWidgets.QWidget):
         super(Range_Setter, self).__init__(*args, **kwargs)
         self.logger = init_logger(self)
 
-        self.key = str(key)
+        self.key = key # type: GUI_PARAM_KEY
         self.name = str(name)
         self.round = int(round)
         self.limits = limits
-        self.step = float(step)
+        self.default = default
 
         self._init_ui()
 
         self._init_signals()
+
+        # set defaults
+        self.minbox.setValue(self.default.min)
+        self.maxbox.setValue(self.default.max)
+        self.nbox.setValue(self.default.n)
+
 
 
     def _init_ui(self):
@@ -110,12 +122,12 @@ class Range_Setter(QtWidgets.QWidget):
 
 
     def _valueChanged(self):
-        param = GUI_Param(self.key, self.value())
+        param = GUI_Control(key=self.key, value=self.value())
         self.valueChanged.emit(param)
         self.logger.debug(f'Value Changed: {param}')
 
     def _buttonClicked(self):
-        param = GUI_Param(self.key, self.value())
+        param = GUI_Control(key=self.key, value=self.value())
         self.buttonClicked.emit(param)
         self.logger.debug(f'Value Changed: {param}')
 
@@ -140,5 +152,11 @@ class Range_Setter(QtWidgets.QWidget):
             seq = np.linspace(min, max, n)
 
         return tuple(seq.tolist())
+
+    def setMaximum(self, value:float):
+        pass
+
+    def setMinimum(self, value:float):
+        pass
 
 

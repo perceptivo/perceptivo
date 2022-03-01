@@ -2,4 +2,4 @@
 # from perceptivo.sound import sounds
 
 from autopilot import prefs
-prefs.set('AUDIOSERVER', 'jack')
+prefs.set('AUDIOSERVER', 'dummy')

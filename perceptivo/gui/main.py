@@ -3,6 +3,7 @@ Main Gui container for Perceptivo Clinician interface
 
 
 """
+import sys
 from typing import Optional
 from PySide6 import QtWidgets
 from PySide6.QtCore import Signal, Slot, QThread
@@ -23,6 +24,7 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
     GUI container for the Perceptivo clinician interface
     """
     quitting = Signal()
+    launched = Signal()
 
     def __init__(self,
                  prefs: Clinician_Prefs,
@@ -56,6 +58,7 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
 
 
         self.show()
+        self.launched.emit()
 
 
 
@@ -69,8 +72,11 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         self.setWindowTitle(f'Perceptivo - v{version("perceptivo")}')
 
         # add widgets!
-        self.control_panel = widgets.Control_Panel()
-        self.audiogram = widgets.Audiogram()
+        self.control_panel = widgets.Control_Panel(self.prefs.gui.control_panel)
+        self.audiogram = widgets.Audiogram(
+            default_amplitudes=self.control_panel.widgets['amplitude_range'].value(),
+            default_frequencies=self.control_panel.widgets['frequency_range'].value()
+        )
         self.pupil_ts = widgets.Pupil()
         self.vid_pupil = widgets.Video()
         self.vid_patient = widgets.Video()
@@ -86,8 +92,9 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         self.layout.setColumnStretch(2, 1)
 
     def _init_networking(self):
-        self.frame_receiver = self.Frame_Receiver(self, self.networking.eyecam)
-        self.frame_receiver.start()
+        if 'pytest' not in sys.modules:
+            self.frame_receiver = self.Frame_Receiver(self, self.networking.eyecam)
+            self.frame_receiver.start()
 
     def _init_signals(self):
         self.control_panel.valueChanged.connect(self.audiogram.gridChanged)
@@ -95,8 +102,10 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
 
         self.control_panel.startToggled.connect(self.setStarted)
 
-        self.frame_receiver.frame.connect(self.drawFrame)
-        self.quitting.connect(self.frame_receiver.quitting)
+        if 'pytest' not in sys.modules:
+            self.frame_receiver.frame.connect(self.drawFrame)
+            self.quitting.connect(self.frame_receiver.quitting)
+
 
     def update_grid(self, value):
         pass

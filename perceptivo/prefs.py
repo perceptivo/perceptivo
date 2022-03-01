@@ -23,6 +23,7 @@ from perceptivo import Directories
 from perceptivo.types import sound, psychophys, video, patient
 from perceptivo.types.networking import Clinician_Networking, Patient_Networking
 from perceptivo.video.pupil import Pupil_Extractors, EllipseExtractor_Params
+from perceptivo.types.gui import GUI_Params
 
 _LOCK = mp.Lock()
 """
@@ -84,9 +85,13 @@ class Patient_Prefs(Prefs):
     class Config:
         use_enum_values = True
 
+# --------------------------------------------------
+# Clinician prefs
+# --------------------------------------------------
 
 class Clinician_Prefs(Prefs):
     networking: Clinician_Networking = Clinician_Networking()
+    gui: GUI_Params = GUI_Params()
 
 
 def get(field:str, file:Path= Directories.prefs_file):

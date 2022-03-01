@@ -6,19 +6,22 @@ import typing
 from PySide6 import QtWidgets
 from PySide6.QtCore import Signal, Slot
 
-from perceptivo.types.gui import GUI_Param
+import perceptivo.gui.widgets
+import perceptivo.types.gui
+from perceptivo.types.gui import GUI_Param, Control_Panel_Params, GUI_Control
 from perceptivo.gui.widgets.components import Range_Setter
-from perceptivo.gui import params, styles
+from perceptivo.gui import styles
 from perceptivo.root import Perceptivo_Object
 
 class Control_Panel(QtWidgets.QGroupBox):
 
-    valueChanged = Signal(GUI_Param)
-    scaleChanged = Signal(GUI_Param)
-    startToggled = Signal(GUI_Param)
+    valueChanged = Signal(GUI_Control)
+    scaleChanged = Signal(GUI_Control)
+    startToggled = Signal(GUI_Control)
 
-    def __init__(self):
+    def __init__(self, params:Control_Panel_Params):
         super(Control_Panel, self).__init__('Control Panel')
+        self.params = params
 
         self.widgets:typing.Dict[str,QtWidgets.QWidget] = {}
         self.buttons:typing.Dict[str,QtWidgets.QPushButton] = {}
@@ -56,12 +59,12 @@ class Control_Panel(QtWidgets.QGroupBox):
 
     def _init_params(self):
 
-        for i, param in enumerate(params.CONTROL_PANEL.values()):
+        for i, (field, param) in enumerate(self.params):
             i += 1
-            widget_class = params.WIDGET_MAP[param.widget_type]
+            widget_class = perceptivo.gui.widgets.WIDGET_MAP[param.widget_type]
             if param.widget_type == "range":
                 # handle custom range widget separately
-                widget = widget_class(**param.kwargs)
+                widget = widget_class(key=param.key, name=param.name,default=param.default,**param.kwargs)
             else:
                 widget = widget_class(parent=self)
 
@@ -69,7 +72,7 @@ class Control_Panel(QtWidgets.QGroupBox):
 
             # store reference to widget
             if param.key in self.widgets.keys():
-                self.logger.warning(f"Already have a widget for key {param.key}, overlapping gui param keys will cause unexpected behavior! check gui/params.py")
+                self.logger.exception(f"Already have a widget for key {param.key}, overlapping gui param keys will cause unexpected behavior! check prefs.json and types/gui.py")
             self.widgets[param.key] = widget
 
             if param.widget_type == 'range':
@@ -98,7 +101,7 @@ class Control_Panel(QtWidgets.QGroupBox):
                 elif param.widget_type in ('bool',):
                     widget.setChecked(param.default)
                 else:
-                    self.logger.exception(f'Dont know how to apply default for widget_type {param.widget_type}')
+                    self.logger.exception(f'Dont know how to apply default for widget_type {param["widget_type"]}')
 
             # --------------------------------------------------
             # add to layout
@@ -136,18 +139,18 @@ class Control_Panel(QtWidgets.QGroupBox):
 
 
 
-    def _valueChanged(self, value: GUI_Param):
-        if not isinstance(value, GUI_Param):
-            value = GUI_Param(key=self.sender().objectName(), value=value)
+    def _valueChanged(self, value: GUI_Control):
+        if not isinstance(value, GUI_Control):
+            value = GUI_Control(key=self.sender().objectName(), value=value)
 
         self.logger.debug(f'emitting {value}')
         self.valueChanged.emit(value)
 
     def _scaleChanged(self, value):
         sender = self.sender().key
-        if sender == params.CONTROL_PANEL['frequencies'].key:
+        if sender == perceptivo.types.gui.CONTROL_PANEL['frequencies'].key:
             key = 'log_x'
-        elif sender == params.CONTROL_PANEL['amplitudes'].key:
+        elif sender == perceptivo.types.gui.CONTROL_PANEL['amplitudes'].key:
             key = 'log_y'
         else:
             raise ValueError(f'Not sure who send the scale value, dont know how to parameterize it!')
@@ -156,12 +159,12 @@ class Control_Panel(QtWidgets.QGroupBox):
         if value == 'log':
             set_to = True
 
-        self.scaleChanged.emit(GUI_Param(key, set_to))
+        self.scaleChanged.emit(GUI_Control(key, set_to))
 
     def _gridChanged(self):
         pass
 
-    @Slot(GUI_Param)
-    def setValue(self, value: GUI_Param):
+    @Slot(GUI_Control)
+    def setValue(self, value: GUI_Control):
         pass
 

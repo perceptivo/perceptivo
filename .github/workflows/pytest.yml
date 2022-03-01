@@ -1,0 +1,47 @@
+name: pytest
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PYTEST_QT_API: pyside6
+
+jobs:
+  pytest:
+    runs-on: "ubuntu-20.04"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install Apt Packages
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: openssl build-essential libssl-dev libffi-dev libjpeg-dev zlib1g-dev gfortran libhdf5-dev cmake ninja-build libopenjp2-7 libtiff5
+          version: 1.0
+      - name: Install xvfb packages
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: xvfb x11-utils libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 xdotool
+          version: 1.0
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root --extras "tests"
+      - name: Install Perceptivo
+        run: poetry install --no-interaction --extras "tests"
+      - name: Run Tests
+        run: poetry run xvfb-run --auto-servernum pytest tests
+
+
+

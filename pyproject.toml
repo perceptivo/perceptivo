@@ -29,9 +29,10 @@ scikit-image = "^0.19.1"
 pydantic = "^1.9.0"
 picamera = {version="^1.13", markers="platform_machine=='armv7l'", optional=true}
 msgpack = "^1.0.3"
+pytest = {version = "^7.0.1", optional = true}
+pytest-qt = {version = "^4.0.2", optional = true}
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
 
 [tool.poetry.scripts]
 patient = 'perceptivo.runtimes.patient:main'
@@ -42,6 +43,7 @@ docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex", "matplotlib", "
 patient = ["SoundCard", 'picamera']
 clinician = ["PySide6", "pyqtgraph"]
 plotting = ["matplotlib"]
+tests = ["pytest", "pytest-qt", "PySide6", "pyqtgraph"]
 
 [[tool.poetry.source]]
 name = "piwheels"

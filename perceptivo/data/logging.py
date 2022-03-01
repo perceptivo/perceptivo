@@ -58,6 +58,8 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
         globalprefs = get_global()
         if globalprefs is not None:
             loglevel = globalprefs.loglevel
+        else:
+            loglevel = 'WARNING'
     loglevel = getattr(logging, loglevel)
 
 
