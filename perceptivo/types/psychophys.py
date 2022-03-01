@@ -270,6 +270,6 @@ class Psychoacoustic_Model:
     """
     model_type: MODEL_TYPES = "Gaussian_Process"
     args:typing.Optional[list] = field(default_factory=list)
-    kwargs:typing.Optional[dict] = field(default_factory=dict)
+    kwargs:typing.Optional[typing.Dict[str, Kernel]] = field(default_factory=lambda: {'kernel':Kernel()})
 
 

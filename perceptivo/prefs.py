@@ -69,9 +69,7 @@ class Prefs(BaseModel):
 class Patient_Prefs(Prefs):
     runtime: Runtimes = 'patient'
     Audio_Config: sound.Audio_Config = sound.Audio_Config()
-    Audiogram_Model: psychophys.Psychoacoustic_Model = psychophys.Psychoacoustic_Model(
-                       'Gaussian_Process',
-                       kwargs={'kernel': psychophys.Kernel()})
+    Audiogram_Model: psychophys.Psychoacoustic_Model = psychophys.Psychoacoustic_Model('Gaussian_Process')
     Picamera_Params: video.Picamera_Params = video.Picamera_Params()
     picamera_process: bool = True
     """

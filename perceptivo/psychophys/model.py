@@ -145,7 +145,6 @@ class Gaussian_Process(Audiogram_Model):
         if kernel is None:
             kernel = Kernel_Type()
         self._kernel = kernel
-        self._kernel = kernel
         self._samples = [] # type: typing.List[types.psychophys.Sample]
         self._started_fitting = False
 
@@ -176,7 +175,7 @@ class Gaussian_Process(Audiogram_Model):
         elif isinstance(self._kernel, Kernel):
             return self._kernel
         else:
-            raise ValueError(f'Lost our kernel somehow! self._kernel needs to be a psychophys.Kernel or else a scikit-learn kernel')
+            raise ValueError(f'Dont know how to use kernel {self._kernel} self._kernel needs to be a psychophys.Kernel or else a scikit-learn kernel')
 
     @property
     def samples(self) -> types.psychophys.Samples:
