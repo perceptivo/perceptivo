@@ -112,6 +112,7 @@ class Node(Perceptivo_Object):
                 raise ValueError(f'Need a message or kwargs that can be used to create a message')
             msg = Message(**kwargs)
         self.socket.send(msg.serialize())
+        self.logger.debug(f'Sent message number {msg.message_number}')
 
     def _start_ioloop(self, loop:IOLoop):
         """spawn a tornado ioloop"""

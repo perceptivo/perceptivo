@@ -152,7 +152,7 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
                 fh = RotatingFileHandler(
                     str(base_filename),
                     mode='a',
-                    maxBytes=2**16,
+                    maxBytes=2**24,
                     backupCount=4
                 )
             except PermissionError as e:

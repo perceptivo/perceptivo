@@ -71,7 +71,7 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
                 if self.collecting.is_set():
                     self.cam.queueing.set()
                     try:
-                        timestamp, frame = self.cam.q.get_nowait()
+                        timestamp, frame = self.cam.q.get(timeout=1/self.params.fps)
                     except Empty:
                         self.logger.debug('Queue was empty!')
                         continue
