@@ -142,7 +142,7 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
             ## file handler
             # base filename is the module_name + '.log
-            base_filename = (Path(Directories.log_dir) / module_name).with_suffix('.log')
+            base_filename = Path(Directories.log_dir) / (module_name + '.log')
 
             # if directory doesn't exist, try to make it
             if not base_filename.parent.exists():
