@@ -173,7 +173,7 @@ class IterativeGPC(GaussianProcessClassifier):
         Returns:
             self
         """
-        if self.kernel is None or self.kernel.requires_vector_input:
+        if self.kernel is None:
             X, y = self._validate_data(
                 X, y, multi_output=False, ensure_2d=True, dtype="numeric"
             )
