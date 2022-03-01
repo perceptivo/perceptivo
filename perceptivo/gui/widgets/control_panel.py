@@ -12,6 +12,7 @@ from perceptivo.types.gui import GUI_Param, Control_Panel_Params, GUI_Control
 from perceptivo.gui.widgets.components import Range_Setter
 from perceptivo.gui import styles
 from perceptivo.root import Perceptivo_Object
+from perceptivo.data.logging import init_logger
 
 class Control_Panel(QtWidgets.QGroupBox):
 
@@ -21,6 +22,7 @@ class Control_Panel(QtWidgets.QGroupBox):
 
     def __init__(self, params:Control_Panel_Params):
         super(Control_Panel, self).__init__('Control Panel')
+        self.logger = init_logger(self)
         self.params = params
 
         self.widgets:typing.Dict[str,QtWidgets.QWidget] = {}

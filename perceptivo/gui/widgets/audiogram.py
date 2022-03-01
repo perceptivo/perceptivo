@@ -37,16 +37,18 @@ class Audiogram(QtWidgets.QGroupBox):
         self.layout.addWidget(self.plot)
         self.setLayout(self.layout)
 
+        self._drawGrid()
+
 
     @QtCore.Slot(GUI_Control)
     def gridChanged(self, value: GUI_Control):
-        if value.key not in ('frequencies', 'amplitudes'):
+        if value.key not in ('frequencies', 'amplitudes', 'frequency_range', 'amplitude_range'):
             self.logger.warning(f'Invalid control value: {GUI_Control}')
             return
         self.logger.debug(f'Grid Changed: {GUI_Control}')
-        if value.key == 'frequencies':
+        if value.key in ('frequencies', 'frequency_range'):
             self.frequencies = value.value
-        elif value.key == 'amplitudes':
+        elif value.key in ('amplitudes', 'amplitude_range'):
             self.amplitudes = value.value
         else:
             raise ValueError(f'Need a GUI_Control with key == frequencies or amplitudes, got {value}')

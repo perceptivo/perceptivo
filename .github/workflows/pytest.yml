@@ -7,6 +7,8 @@ on:
 
 env:
   PYTEST_QT_API: pyside6
+  DISPLAY: ":99.0"
+  QT_DEBUG_PLUGINS: 1
 
 jobs:
   pytest:
@@ -47,7 +49,9 @@ jobs:
           source .venv/bin/activate
           pip install .[tests]
       - name: Run Tests
-        run: xvfb-run --auto-servernum pytest tests
+        run: |
+          Xvfb -ac :99 -screen 0 1280x1024x16 &
+          pytest tests
 
 
 
