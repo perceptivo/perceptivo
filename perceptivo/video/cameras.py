@@ -11,6 +11,7 @@ from perceptivo.types.networking import Socket
 from perceptivo.root import Perceptivo_Object
 from perceptivo.networking.node import Node
 from perceptivo.networking.messages import Message
+from perceptivo.data.logging import init_logger
 from datetime import datetime
 
 class Picamera_Process(mp.Process, Perceptivo_Object):
@@ -48,6 +49,9 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
         self.node = None # type: Optional[Node]
 
     def run(self):
+        # reinint logger
+        self._logger = init_logger(self)
+
         if self.networking is not None:
             self.node = Node(
                 self.networking,
