@@ -74,6 +74,8 @@ def serialize(array: typing.Union[np.ndarray, typing.Any]) -> typing.Union[dict,
     """
     if isinstance(array, np.ndarray):
         return pack_array(array)
+    elif isinstance(array, np.dtype):
+        return str(array)
     elif isinstance(type(array), ModelMetaclass):
         # pdb.set_trace()
         return {
