@@ -5,6 +5,7 @@ import numpy as np
 import typing
 from perceptivo import types
 import warnings
+from perceptivo.types.psychophys import Kernel as Kernel_Type
 
 PLOTTING = False
 try:
@@ -137,10 +138,13 @@ class Gaussian_Process(Audiogram_Model):
 
     """
 
-    def __init__(self, kernel:typing.Optional[Kernel]=None,
+    def __init__(self, kernel:typing.Optional[typing.Union[Kernel, Kernel_Type]]=None,
                  *args, **kwargs):
         super(Gaussian_Process, self).__init__(*args, **kwargs)
 
+        if kernel is None:
+            kernel = Kernel_Type()
+        self._kernel = kernel
         self._kernel = kernel
         self._samples = [] # type: typing.List[types.psychophys.Sample]
         self._started_fitting = False
@@ -167,9 +171,12 @@ class Gaussian_Process(Audiogram_Model):
         Returns:
             :class:`sklearn.gaussian_process.kernels.Kernel`
         """
-        if self._kernel is None:
-            self._kernel = types.psychophys.Kernel().kernel
-        return self._kernel
+        if isinstance(self._kernel, Kernel_Type):
+            return self._kernel.kernel
+        elif isinstance(self._kernel, Kernel):
+            return self._kernel
+        else:
+            raise ValueError(f'Lost our kernel somehow! self._kernel needs to be a psychophys.Kernel or else a scikit-learn kernel')
 
     @property
     def samples(self) -> types.psychophys.Samples:
