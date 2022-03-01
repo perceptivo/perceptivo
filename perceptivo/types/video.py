@@ -1,7 +1,7 @@
 from dataclasses import field
 from enum import Enum
 from pydantic.dataclasses import dataclass
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 from datetime import datetime
 import typing
 
@@ -23,19 +23,33 @@ class Frame(PerceptivoType):
     """
     frame: np.ndarray
     timestamp: datetime = Field(default_factory=datetime.now)
-    color: bool = True
+    color: typing.Optional[bool] = None
     cropped: typing.Optional['Frame'] = None
+    _color: typing.Optional[np.ndarray] = None
+    _gray: typing.Optional[np.ndarray] = None
+    _norm: typing.Optional[np.ndarray] = None
+    dtype: typing.Optional[np.dtype] = None
 
+    def __init__(self, **data):
+        super().__init__(**data)
 
-    def __post_init__(self):
         self._color = None
         self._gray = None
         self._norm = None
         self.dtype = self.frame.dtype
+        # try to infer if it wasn't passed specifically
+        if self.color is None:
+            if len(self.frame.shape) == 3 and self.frame.shape[2] == 3:
+                self.color = True
+            else:
+                self.color = False
+
         if self.color:
             self._color = self.frame
+            self._gray = None
         else:
             self._gray = self.frame
+            self._color = None
 
 
     def set_color(self, color):

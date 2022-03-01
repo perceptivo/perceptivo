@@ -10,3 +10,4 @@ class PerceptivoType(BaseModel):
             np.ndarray: pack_array,
             datetime: lambda v: v.isoformat()
         }
+        underscore_attrs_are_private = True
