@@ -36,13 +36,16 @@ jobs:
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Make venv
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: python -m virtualenv .venv
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root --extras "tests"
-      - name: Install Perceptivo
-        run: poetry install --no-interaction --extras "tests"
+        run: |
+          source .venv/bin/activate
+          pip install .[tests]
       - name: Run Tests
-        run: poetry run xvfb-run --auto-servernum pytest tests
+        run: xvfb-run --auto-servernum pytest tests
 
 
 
