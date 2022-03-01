@@ -45,7 +45,7 @@ class PupilExtractor(Perceptivo_Object):
         self.preprocessor = preprocessor
         self.filter = filter
 
-    def process(self, frame:Frame) -> Pupil:
+    def process(self, frame:Frame) -> typing.Union[Pupil, None]:
         """
         Call :meth:`.preprocess` and then :meth:`._process`, returning a Pupil estimate
 
@@ -59,6 +59,9 @@ class PupilExtractor(Perceptivo_Object):
             frame = self.preprocessor.process(frame)
 
         pupil = self._process(frame)
+
+        if pupil is None:
+            return None
 
         if self.filter is not None:
             pupil = self.filter.process(pupil)
@@ -205,7 +208,7 @@ class EllipseExtractor(PupilExtractor):
 
 
 
-    def _process(self, frame:Frame) -> Pupil:
+    def _process(self, frame:Frame) -> typing.Union[Pupil, None]:
 
         # preallocate for speed!
         if self._filter_arr is None or self._filter_arr.shape != frame.frame.shape:
@@ -229,6 +232,9 @@ class EllipseExtractor(PupilExtractor):
         self._edge_arr[:] = self.filter_edges(self._edge_arr)
 
         ellipse = self.choose_ellipse(self._edge_arr, self._filter_arr)
+
+        if ellipse is None:
+            return None
 
         # create and return our pupil object
         pupil = Pupil(
@@ -264,7 +270,7 @@ class EllipseExtractor(PupilExtractor):
 
         return edges
 
-    def choose_ellipse(self, edges:np.ndarray, frame:np.ndarray) -> 'measure.EllipseModel':
+    def choose_ellipse(self, edges:np.ndarray, frame:np.ndarray) -> typing.Union['measure.EllipseModel', None]:
         """
         Given an array of edge labels (from :func:`skimage.morphology.label`), usually
         from :meth:`._process`, return an :class:`skimage.measure.EllipseModel` , choose
@@ -309,6 +315,9 @@ class EllipseExtractor(PupilExtractor):
             # take median of points within ellipse and stash
             med_values.append(np.median(np.ravel(frame[rr,cc])))
             ells.append(model)
+
+        if len(med_values) == 0:
+            return None
 
         # pick the one with the lowest median value!
         lowest_idx = np.argmin(med_values)

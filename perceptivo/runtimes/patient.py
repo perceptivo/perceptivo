@@ -188,9 +188,11 @@ class Patient(Runtime):
         sample = self.probe(sound)
         self.logger.debug('probed')
 
-        self.samples.append(sample)
-        self.model.update(sample)
-        self.logger.debug(f'Sample collected - {sample}')
+        if sample is not None:
+            self.samples.append(sample)
+            self.model.update(sample)
+            self.logger.debug(f'Sample collected - {sample}')
+            
         self._trial_active.clear()
 
     def next_sound(self) -> Sound:
@@ -206,7 +208,7 @@ class Patient(Runtime):
         self.logger.debug(f'got next sound {sound}')
         return sound
 
-    def probe(self, sound:Sound) -> Sample:
+    def probe(self, sound:Sound) -> typing.Union[Sample, None]:
         """
         One loop of
 
@@ -224,8 +226,11 @@ class Patient(Runtime):
         sound = self.play_sound(sound)
         self.logger.debug(f'played sound {sound}, awaiting response')
         dilation = self.await_response(sound)
-        self.logger.debug(f'got dilation {dilation} for sound {sound}')
-        return Sample(dilation=dilation, sound=sound)
+        if dilation is None:
+            return None
+        else:
+            self.logger.debug(f'got dilation {dilation} for sound {sound}')
+            return Sample(dilation=dilation, sound=sound)
 
     def play_sound(self, sound: Sound) -> Sound:
         """
@@ -257,7 +262,7 @@ class Patient(Runtime):
             self.server.play(_sound.table, samplerate=self.audio_config.fs)
         return sound
 
-    def await_response(self, sound:Sound) -> Dilation:
+    def await_response(self, sound:Sound) -> typing.Union[Dilation, None]:
         """
         Wait until we are given a pupil from the picamera process
 
@@ -275,6 +280,10 @@ class Patient(Runtime):
             self._collecting_thread.start()
             self._collecting.wait()
 
+            if len(self._pupils) == 0:
+                self.logger.warning('No pupil detected! check collection parameters')
+                return None
+
             # update the pupil_params from collected samples
             pupil_params = self._update_pupil_params(self._pupils)
             # collect pupils and frames into a Dilation
@@ -290,6 +299,8 @@ class Patient(Runtime):
         """
         Collect frames from the picamera for one sample
         """
+        self._pupils = []
+        self._frame = []
         end_time = start_time + timedelta(seconds=self.collection_params.collection_wait)
         finished = False
         try:
@@ -306,8 +317,11 @@ class Patient(Runtime):
 
                 # process frame
                 pupil = self.pupil_extractor.process(frame)
-                self._frames.append(frame)
-                self._pupils.append(pupil)
+                if pupil is None:
+                    self.logger.debug('No pupil detected')
+                else:
+                    self._frames.append(frame)
+                    self._pupils.append(pupil)
 
 
         finally:
