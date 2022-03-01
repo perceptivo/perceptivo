@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - pi
 
 env:
   PYTEST_QT_API: pyside6
