@@ -4,6 +4,7 @@ from pydantic.dataclasses import dataclass
 from pydantic import BaseModel, Field, PrivateAttr
 from datetime import datetime
 import typing
+from pathlib import Path
 
 
 import numpy as np
@@ -115,6 +116,7 @@ class Picamera_Params(BaseModel):
     resolution: typing.Tuple[int, int] = (1280, 720)
     fps: int = 30
     format: Color_Mode = 'grayscale'
+    output_file: typing.Optional[Path] = None
 
 
 

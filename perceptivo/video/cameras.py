@@ -58,11 +58,15 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
                 poll_mode=Node.Poll_Mode.NONE,
             )
 
-
-
         self.cam = PiCamera(**self.params.dict())
         self.cam.queue(self.queue_size)
         self.cam.queueing.clear()
+
+        if self.params.output_file is not None:
+            if self.params.output_file.exists():
+                self.logger.debug('Prior output file exists, deleting...')
+                self.params.output_file.unlink()
+                self.cam.write(str(self.params.output_file))
         self.cam.capture()
 
         if self.params.format == "grayscale":
@@ -92,6 +96,13 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
 
                 else:
                     self.cam.queueing.clear()
+
+                    # passively clear q so when we start capturing again we're not processing stale frames
+                    try:
+                        _ = self.cam.q.get_nowait()
+                    except Empty:
+                        pass
+
                     # just make a frame to stream if we can
                     try:
                         timestamp, frame = self.cam.frame
@@ -102,6 +113,7 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
                         timestamp = datetime.fromisoformat(timestamp),
                         color=color
                     )
+
                 if self.node is not None:
                     self.node.send(Message(frame=frame))
 

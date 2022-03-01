@@ -303,17 +303,23 @@ class Patient(Runtime):
         self._frame = []
         end_time = start_time + timedelta(seconds=self.collection_params.collection_wait)
         finished = False
+        passed_wait_time = False
         try:
             while not finished:
                 if datetime.now() > end_time:
+                    passed_wait_time = True
                     self.picam.collecting.clear()
 
                 # grab a frame
                 try:
                     frame = self.picam.q.get_nowait()
                 except Empty:
-                    finished = True
-                    break
+                    if passed_wait_time:
+                        finished = True
+                        break
+                    else:
+                        self.logger.debug('Queue was empty in collect_frames')
+                        continue
 
                 # process frame
                 pupil = self.pupil_extractor.process(frame)
