@@ -76,9 +76,10 @@ class Runtime(Perceptivo_Object):
         if not prefs_file.exists():
             prefs_class = self.prefs_class
             prefs = prefs_class()
-            prefs.save(prefs_file)
         else:
             prefs = self.prefs_class.load(prefs_file)
+
+        prefs.save(prefs_file)
 
         set_global(prefs)
 
