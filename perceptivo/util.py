@@ -75,7 +75,9 @@ def serialize(array: typing.Union[np.ndarray, typing.Any]) -> typing.Union[dict,
     if isinstance(array, np.ndarray):
         return pack_array(array)
     elif isinstance(array, np.dtype):
-        return str(array)
+        return {
+            '__dtype__': str(array)
+        }
     elif isinstance(type(array), ModelMetaclass):
         # pdb.set_trace()
         return {
@@ -106,6 +108,8 @@ def deserialize(obj):
             np.dtype(obj['dtype']),
             obj['array']
         )
+    elif '__dtype__' in obj:
+        return np.dtype(obj['__dtype__'])
     elif '__datetime__' in obj:
         return datetime.fromisoformat(obj['value'])
     elif '__perceptivo_type__' in obj:
