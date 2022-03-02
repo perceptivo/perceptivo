@@ -117,7 +117,7 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
                     )
 
                 if self.node is not None:
-                    _, jpg_buf = cv2.imencode(frame.frame)
+                    _, jpg_buf = cv2.imencode('.jpg', frame.frame)
                     self.node.socket.send(jpg_buf)
 
         finally:
