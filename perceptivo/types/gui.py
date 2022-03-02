@@ -68,7 +68,7 @@ class GUI_Param(PerceptivoType):
     key: GUI_PARAM_KEY
     name: str
     widget_type: GUI_WIDGET_TYPE
-    default: typing.Any = Field(default=None)
+    default: typing.Optional[typing.Union[float, int, GUI_Range, tuple]] = Field(default=None)
     args: list = Field(default_factory=list)
     kwargs: dict = Field(default_factory=dict)
 

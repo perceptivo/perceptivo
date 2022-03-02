@@ -20,6 +20,12 @@ __version__ = version('perceptivo')
 import os
 os.environ['AUTOPILOT_NO_PREFS_MANAGER'] = '1'
 
+try:
+    import pyqtgraph
+    pyqtgraph.setConfigOption('useOpenGL', True)
+except ImportError:
+    pass
+
 @dataclass
 class Directories:
     user_dir: Path = Path().home() / '.perceptivo/'
