@@ -18,6 +18,8 @@ from perceptivo.sound import server
 from perceptivo.video.cameras import Picamera_Process
 from perceptivo.video.pupil import Pupil_Extractors, EllipseExtractor_Params, get_extractor
 from perceptivo.psychophys import model
+from perceptivo.networking.node import Node
+from perceptivo.networking.messages import Message
 
 from perceptivo.types.sound import Jackd_Config, Audio_Config, Sound
 from perceptivo.types.psychophys import Sample, Samples, Psychoacoustic_Model, Kernel
@@ -112,7 +114,6 @@ class Patient(Runtime):
         else:
             self.networking_prefs = networking
 
-
         self.oracle = oracle
 
         # --------------------------------------------------
@@ -129,6 +130,14 @@ class Patient(Runtime):
         """Event that's set while a trial is running!"""
 
         # --------------------------------------------------
+        # Networking callbacks
+        # --------------------------------------------------
+        self.callbacks = {
+            ''
+        }
+
+
+        # --------------------------------------------------
         # Init Hardware/resources
         # --------------------------------------------------
 
@@ -138,6 +147,7 @@ class Patient(Runtime):
         self.model = self._init_model(self.audiogram_model) # type: model.Audiogram_Model
         self.picam = self._init_picam(self.picamera_params, self.networking_prefs.eyecam)
         self.pupil_extractor = self._init_pupil_extractor(self.pupil_extractor, self.pupil_extractor_params)
+        self.node = self._init_networking(self.prefs.networking.control)
         self.picam.start()
 
 
@@ -341,6 +351,17 @@ class Patient(Runtime):
             self._collecting.set()
 
 
+    def handle_message(self, message):
+        """
+        Handle a message by calling some method according to its ``key`` attribute
+
+        Args:
+            message (bytes): a serialized :class:`.networking.messages.Message` object
+        """
+        message = Message.from_serialized(message)
+
+
+
 
     def _update_pupil_params(self, pupils: typing.List[Pupil]) -> Pupil_Params:
         """
@@ -403,6 +424,18 @@ class Patient(Runtime):
 
         extractor = get_extractor(pupil_extractor)
         return extractor(**pupil_extractor_params.dict())
+
+    def _init_networking(self, socket:Socket) -> Node:
+        node = Node(
+            socket,
+            poll_mode=Node.Poll_Mode.IOLOOP,
+            callback=self.handle_message
+        )
+        msg = Message(key='CONNECT', id=node.id)
+        node.send(msg)
+
+
+        return node
 
 
 

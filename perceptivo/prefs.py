@@ -92,6 +92,7 @@ class Patient_Prefs(Prefs):
 class Clinician_Prefs(Prefs):
     networking: Clinician_Networking = Clinician_Networking()
     gui: GUI_Params = GUI_Params()
+    update_period:float = 0.05
 
 
 def get(field:str, file:Path= Directories.prefs_file):

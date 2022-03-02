@@ -17,7 +17,11 @@ class Message(Perceptivo_Object):
     """
     counter = count()
 
-    def __init__(self, message_number:typing.Optional[int]=None, timestamp:typing.Optional[datetime]=None, **kwargs):
+    def __init__(self,
+                 message_number:typing.Optional[int]=None,
+                 timestamp:typing.Optional[datetime]=None,
+                 key:str='',
+                 **kwargs):
         """
         Args:
             **kwargs (dict): key/value pairs stored in :attr:`.Message.value`
@@ -39,11 +43,14 @@ class Message(Perceptivo_Object):
         else:
             self.timestamp = timestamp
 
+        self.key = key
+
     def serialize(self, msg:typing.Optional[dict]=None) -> bytes:
         if msg is None:
             msg = self.value
         msg['message_number'] = self.message_number
         msg['timestamp'] = self.timestamp
+        msg['key'] = self.key
         return msgpack.packb(msg, default=serialize)
 
     @classmethod

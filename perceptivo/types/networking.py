@@ -16,6 +16,7 @@ class Socket:
     mode: ZMQ_MODE
     port: int
     ip: str = '*'
+    to: typing.Optional[str] = None
 
 
 class Clinician_Networking(BaseModel):
@@ -58,5 +59,6 @@ class Patient_Networking(BaseModel):
         protocol='tcp',
         mode='connect',
         port=5600,
-        ip=clinician_ip
+        ip=clinician_ip,
+        to='clinician:control'
     )

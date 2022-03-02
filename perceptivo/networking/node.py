@@ -27,6 +27,7 @@ class Node(Perceptivo_Object):
                  socket:Socket,
                  poll_mode:Poll_Mode = Poll_Mode.IOLOOP,
                  callback:Optional[Callable]=None,
+                 to:Optional[str]=None,
                  deque_size: int  = 256):
         """
         Wrapper around zmq sockets to send and receive messages
@@ -53,6 +54,7 @@ class Node(Perceptivo_Object):
         self.poll_mode = poll_mode
         self.callback = callback
         self.deque = deque(maxlen=deque_size)
+        self.to = to
 
         super(Node, self).__init__()
 
@@ -105,13 +107,25 @@ class Node(Perceptivo_Object):
         else:
             raise NotImplementedError('Only tcp and ipc modes are implemented!')
 
-    def send(self, msg:Optional[Message] = None, **kwargs):
+    def send(self, msg:Optional[Message] = None, to:Optional[str]=None, **kwargs):
         """for now just wrapping the socket"""
         if msg is None:
             if len(kwargs) == 0:
                 raise ValueError(f'Need a message or kwargs that can be used to create a message')
             msg = Message(**kwargs)
-        self.socket.send(msg.serialize())
+
+        if self.socket_type in ('ROUTER','DEALER'):
+            if to is None and self.to is None:
+                error_msg = 'With Router/Dealer sockets, need to explicitly pass "to" in send or init'
+                self.logger.exception(error_msg)
+                raise ValueError(error_msg)
+            elif to is None:
+                to = self.to
+
+            multipart = [to.encode('utf-8'), msg.serialize()]
+            self.socket.send_multipart(multipart)
+        else:
+            self.socket.send(msg.serialize())
         self.logger.debug(f'Sent message number {msg.message_number}')
 
     def _start_ioloop(self, loop:IOLoop):

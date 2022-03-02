@@ -6,7 +6,7 @@ Main Gui container for Perceptivo Clinician interface
 import sys
 from typing import Optional
 from PySide6 import QtWidgets
-from PySide6.QtCore import Signal, Slot, QThread
+from PySide6.QtCore import Signal, Slot, QThread, QTimer
 from importlib.metadata import version
 import threading
 
@@ -14,6 +14,7 @@ from perceptivo.gui import widgets
 from perceptivo.root import Perceptivo_Object
 from perceptivo.prefs import Clinician_Prefs
 from perceptivo.networking.node import Node
+from perceptivo.networking.messages import Message
 from perceptivo.data.logging import init_logger
 
 from perceptivo.types.networking import Clinician_Networking, Socket
@@ -28,10 +29,17 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
 
     def __init__(self,
                  prefs: Clinician_Prefs,
-                 networking: Clinician_Networking):
+                 networking: Clinician_Networking,
+                 update_period:Optional[float]=None):
         super(Perceptivo_Clinician, self).__init__()
         self.prefs = prefs
         self.networking = networking
+
+        if update_period is not None:
+            self.update_period = update_period
+        else:
+            self.update_period = self.prefs.update_period
+
         self.logger = init_logger(self)
 
         self._settings = None
@@ -52,14 +60,26 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
             'amplitudes': tuple()
         }
 
+        self.callbacks = {
+            'CONNECT': self.cb_connect
+        }
+
+        self.senders = []
+
         self._init_ui()
         self._init_networking()
         self._init_signals()
 
+        # make timer to check for messages
+        self.msg_timer = QTimer()
+        self.msg_timer.setSingleShot(True)
+        self.msg_timer.timeout.connect(self.receive_messages)
+        self.msg_timer.setInterval(self.update_period*1000)
+
 
         self.show()
         self.launched.emit()
-
+        self.receive_messages()
 
 
     def _init_ui(self):
@@ -96,6 +116,11 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
             self.frame_receiver = self.Frame_Receiver(self, self.networking.eyecam)
             self.frame_receiver.start()
 
+        self.node = Node(
+            self.networking.control,
+            poll_mode=Node.Poll_Mode.NONE
+        )
+
     def _init_signals(self):
         self.control_panel.valueChanged.connect(self.audiogram.gridChanged)
         self.control_panel.scaleChanged.connect(self.audiogram.scaleChanged)
@@ -126,10 +151,36 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         self.vid_pupil.setImage(frame.frame)
         self.logger.debug(f'got frame {frame}')
 
+
+    def receive_messages(self):
+
+        try:
+            msg = self.node.socket.recv_multipart()
+            msg = Message.from_serialized(msg[-1])
+
+            self.logger.debug(f'Received message: {msg}')
+
+
+        finally:
+            self.msg_timer.start()
+
+    def cb_connect(self, msg:Message):
+        """
+
+        Args:
+            msg ():
+
+        Returns:
+
+        """
+        self.senders.append(msg.value['id'])
+        self.logger.info(f'Received connection from {msg.value["id"]}')
+
     def closeEvent(self, event):
         self.quitting.emit()
         self.frame_receiver.exit()
         self.frame_receiver.quitting_evt.set()
+        self.msg_timer.stop()
         self.frame_receiver.wait(5)
         event.accept()
 
