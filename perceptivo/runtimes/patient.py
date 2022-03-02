@@ -1,6 +1,7 @@
 """
 entrypoint for patient interface
 """
+import sys
 import typing
 from typing import Optional
 from time import sleep
@@ -149,6 +150,9 @@ class Patient(Runtime):
         self.pupil_extractor = self._init_pupil_extractor(self.pupil_extractor, self.pupil_extractor_params)
         self.node = self._init_networking(self.prefs.networking.control)
         self.picam.start()
+        self.quitting = threading.Event()
+        self.quitting.clear()
+
 
 
 
@@ -441,4 +445,9 @@ class Patient(Runtime):
 
 
 def main():
-    Patient()
+    try:
+        patient = Patient()
+        patient.quitting.wait()
+    except KeyboardInterrupt:
+        patient.quitting.set()
+        sys.exit()
