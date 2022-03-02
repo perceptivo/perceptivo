@@ -54,7 +54,10 @@ class Node(Perceptivo_Object):
         self.poll_mode = poll_mode
         self.callback = callback
         self.deque = deque(maxlen=deque_size)
-        self.to = to
+        if to is None:
+            self.to = socket.to
+        else:
+            self.to = to
 
         super(Node, self).__init__()
 
