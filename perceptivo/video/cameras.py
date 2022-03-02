@@ -4,6 +4,8 @@ Picamera capture. Easy enough with Autopilot
 import typing
 from typing import Optional
 from queue import Empty, Full
+
+import cv2
 from autopilot.hardware.cameras import PiCamera
 import multiprocessing as mp
 from perceptivo.types.video import Picamera_Params, Frame
@@ -115,7 +117,8 @@ class Picamera_Process(mp.Process, Perceptivo_Object):
                     )
 
                 if self.node is not None:
-                    self.node.send(Message(frame=frame))
+                    _, jpg_buf = cv2.imencode(frame.frame)
+                    self.node.socket.send(jpg_buf)
 
         finally:
             # deinitialize camera

@@ -5,12 +5,14 @@ Main Gui container for Perceptivo Clinician interface
 """
 import sys
 from typing import Optional
+import cv2
+
+import numpy as np
 from PySide6 import QtWidgets
 from PySide6.QtCore import Signal, Slot, QThread, QTimer
 from importlib.metadata import version
 import threading
 import zmq
-from collections import deque
 
 from perceptivo.gui import widgets
 from perceptivo.root import Perceptivo_Object
@@ -56,7 +58,6 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         self.audiogram = None # type: Optional[widgets.Audiogram]
 
         self.frame_receiver = None # type: Optional[Perceptivo_Clinician.Frame_Receiver]
-        self.frames = deque(maxlen=5)
 
         self.state = {
             'frequencies': tuple(),
@@ -150,27 +151,21 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         return self._settings
 
     @Slot(Frame)
-    def drawFrame(self, frame:Frame):
-        frame = Message.from_serialized(frame).value['frame']
-        self.vid_pupil.setImage(frame.frame)
+    def drawFrame(self, frame):
+        frame = np.frombuffer(frame, dtype='uint8')
+        self.vid_pupil.setImage(cv2.imdecode(frame, -1))
+        # frame = Message.from_serialized(frame).value['frame']
+        # self.vid_pupil.setImage(frame.frame)
 
 
     def receive_messages(self):
 
         try:
 
-            try:
-                frame = Message.from_serialized(self.frames.pop()).value['frame'].frame
-                self.vid_pupil.setImage(frame)
-            except Exception as e:
-                # self.logger.debug(f'exception in getting frame {e}')
-                pass
-
             msg = self.node.socket.recv_multipart(flags=zmq.NOBLOCK)
             msg = Message.from_serialized(msg[-1])
 
             self.logger.debug(f'Received message: {msg}')
-
 
         except zmq.ZMQError as e:
             if str(e) == 'Resource temporarily unavailable':
@@ -229,9 +224,7 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
                 while not self.quitting_evt.is_set():
                     try:
                         frame = self.socket.socket.recv()
-                        self.parent().frames.append(frame)
-                        # self.parent().vid_pupil.setImage(Message.from_serialized(frame).value['frame'].frame)
-                        # self.frame.emit(frame)
+                        self.frame.emit(frame)
                     except Exception as e:
                         self.logger.debug(f'Exception getting frame, {e}')
 

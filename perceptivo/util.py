@@ -9,6 +9,7 @@ from datetime import datetime
 import importlib
 import pdb
 import blosc2
+import cv2
 
 import numpy as np
 from tqdm import tqdm
@@ -75,7 +76,9 @@ def serialize(array: typing.Union[np.ndarray, typing.Any]) -> typing.Union[dict,
     """
     if isinstance(array, np.ndarray):
         # return pack_array(array)
-        return {'__numpy__':blosc2.pack(array, 5)}
+        # return {'__numpy__':blosc2.pack(array, 5)}
+        _, jpg_buf = cv2.imencode('.jpg', array)
+        return {'__numpy__':jpg_buf}
     elif isinstance(array, np.dtype):
         return {
             '__dtype__': str(array)
@@ -99,18 +102,23 @@ def serialize(array: typing.Union[np.ndarray, typing.Any]) -> typing.Union[dict,
 
 def deserialize(obj):
     if b'__numpy__' in obj:
+        pass
         # return unpack_array(
         #     obj[b'shape'],
         #     np.dtype(obj[b'dtype'].decode('utf-8')),
         #     obj[b'array']
         # )
-        return blosc2.unpack(obj['__numpy__'])
+        # return blosc2.unpack(obj[b'__numpy__'])
+
     elif '__numpy__' in obj:
-        return unpack_array(
-            obj['shape'],
-            np.dtype(obj['dtype']),
-            obj['array']
-        )
+        # return unpack_array(
+        #     obj['shape'],
+        #     np.dtype(obj['dtype']),
+        #     obj['array']
+        # )
+        # return blosc2.unpack(obj['__numpy__'])
+        arr = np.frombuffer(obj['__numpy__'], dtype='uint8')
+        return cv2.imdecode(arr, -1)
     elif '__dtype__' in obj:
         return np.dtype(obj['__dtype__'])
     elif '__datetime__' in obj:
