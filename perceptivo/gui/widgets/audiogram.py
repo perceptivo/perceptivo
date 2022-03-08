@@ -45,7 +45,7 @@ class Audiogram(QtWidgets.QGroupBox):
         if value.key not in ('frequencies', 'amplitudes', 'frequency_range', 'amplitude_range'):
             self.logger.warning(f'Invalid control value: {GUI_Control}')
             return
-        self.logger.debug(f'Grid Changed: {GUI_Control}')
+        self.logger.debug(f'Grid Changed: {value}')
         if value.key in ('frequencies', 'frequency_range'):
             self.frequencies = value.value
         elif value.key in ('amplitudes', 'amplitude_range'):

@@ -1,3 +1,4 @@
+import typing
 import perceptivo.types.psychophys
 from perceptivo.root import Perceptivo_Object
 from abc import abstractmethod
@@ -6,6 +7,7 @@ import typing
 from perceptivo import types
 import warnings
 from perceptivo.types.psychophys import Kernel as Kernel_Type
+from perceptivo.types.exam import Exam_Params
 
 PLOTTING = False
 try:
@@ -71,18 +73,20 @@ class Audiogram_Model(Perceptivo_Object):
 
     def __init__(self, freq_range:typing.Tuple[float,float]=(125,8500),
                  amplitude_range:typing.Tuple[float,float]=(5,60),
+                 exam_params: typing.Optional[Exam_Params] = None,
                  *args, **kwargs):
         super(Audiogram_Model, self).__init__(*args, **kwargs)
 
         self._audiogram = None
         self._samples = None
+        self._last_sound = None # type: typing.Optional[types.sound.Sound]
 
         self.audiogram: perceptivo.types.psychophys.Audiogram
         self.samples: perceptivo.types.psychophys.Samples
 
         self.freq_range = freq_range
         self.amplitude_range = amplitude_range
-
+        self.exam_params = exam_params
 
     @abstractmethod
     def update(self, sample:types.psychophys.Sample):
@@ -94,6 +98,9 @@ class Audiogram_Model(Perceptivo_Object):
     def next(self) -> types.sound.Sound:
         """
         Generate parameters for the next :class:`~.types.sound.Sound` to be presented
+
+        Next should generate samples that respect the frequencies and amplitudes set in :attr:`.exam_params`, if present.
+        As well as ``allow_repeats``
         """
 
 class Gaussian_Process(Audiogram_Model):
@@ -138,7 +145,8 @@ class Gaussian_Process(Audiogram_Model):
 
     """
 
-    def __init__(self, kernel:typing.Optional[typing.Union[Kernel, Kernel_Type]]=None,
+    def __init__(self,
+                 kernel:typing.Optional[typing.Union[Kernel, Kernel_Type]]=None,
                  *args, **kwargs):
         super(Gaussian_Process, self).__init__(*args, **kwargs)
 
@@ -205,6 +213,39 @@ class Gaussian_Process(Audiogram_Model):
         x = np.column_stack([df.frequency, df.amplitude])
         self.model.fit(x, df.response)
 
+    def _get_params(self) -> typing.Tuple[float, float]:
+        """
+        Generate sound params
+
+        Returns:
+            a tuple of freq, amp
+        """
+        if len(self._samples) < 10:
+            if self.exam_params is not None:
+                # select from one of the possible sounds
+                freq = np.random.choice(self.exam_params.frequencies)
+                amp = np.random.choice(self.exam_params.amplitudes)
+            else:
+                freq = np.random.rand() * (self.freq_range[1] - self.freq_range[0]) + self.freq_range[0]
+                amp = np.random.rand() * (self.amplitude_range[1] - self.amplitude_range[0]) + self.amplitude_range[0]
+        else:
+            if self.exam_params is not None:
+                _xx, _yy = np.meshgrid(
+                    self.exam_params.frequencies,
+                    self.exam_params.amplitudes
+                )
+                _y = np.c_[_xx.ravel(), _yy.ravel()]
+            else:
+                _y = self._y
+
+            Z = self.model.predict_proba(_y)
+            Z = Z[:, 1]
+            uncertain = np.argmin(np.abs(0.5 - Z))
+            freq = _y[uncertain,0] # type: float
+            amp = _y[uncertain,1] # type: float
+
+        return freq, amp
+
     def next(self) -> types.sound.Sound:
         """
         Generate parameters for the next sound to present
@@ -212,20 +253,22 @@ class Gaussian_Process(Audiogram_Model):
         Returns:
             :class:`~.types.sound.Sound`
         """
-        if len(self._samples) < 10:
-            freq = np.random.rand()*(self.freq_range[1]-self.freq_range[0])+self.freq_range[0]
-            amp = np.random.rand()*(self.amplitude_range[1]-self.amplitude_range[0])+self.amplitude_range[0]
-            return types.sound.Sound(
-                frequency=freq,
-                amplitude=amp)
+        freq, amp = self._get_params()
+        if self._last_sound is not None:
+            # keep getting new sounds until we get different sounds
+            loops = 0
+            while freq == self._last_sound.frequency and amp == self._last_sound.amplitude:
+                freq, amp = self._get_params()
+                loops += 1
+                if loops > 5:
+                    self.logger.exception(f'Had to break getting new stim params because looping >5 times')
+                    break
 
-        Z = self.model.predict_proba(self._y)
-        Z = Z[:,1]
-        uncertain = np.argmin(np.abs(0.5-Z))
-        return types.sound.Sound(
-            frequency=self._y[uncertain,0],
-            amplitude=self._y[uncertain,1]
-        )
+        sound = types.sound.Sound(
+            frequency=freq,
+            amplitude=amp)
+        self._last_sound = sound
+        return sound
 
 
 

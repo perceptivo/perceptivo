@@ -92,6 +92,7 @@ show how they relate in order to derive a patient's audiogram
 
 .. toctree::
 
+   exam
    gui
    networking
    patient

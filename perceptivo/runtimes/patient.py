@@ -9,6 +9,7 @@ from pathlib import Path
 import threading
 from datetime import datetime, timedelta
 from queue import Empty
+import numpy as np
 
 import soundcard as sc
 
@@ -28,6 +29,8 @@ from perceptivo.types.video import Picamera_Params, Frame
 from perceptivo.types.pupil import Pupil, Pupil_Params, Dilation
 from perceptivo.types.patient import Collection_Params
 from perceptivo.types.networking import Patient_Networking, Socket
+from perceptivo.types.gui import GUI_Control
+from perceptivo.types.exam import Exam_Params
 
 from autopilot import prefs
 
@@ -69,7 +72,6 @@ class Patient(Runtime):
                  oracle: typing.Optional[callable]=None,
                  pupil_extractor: typing.Optional[Pupil_Extractors] = None,
                  pupil_extractor_params: typing.Optional[EllipseExtractor_Params] = None,
-                 collection_params: typing.Optional[Collection_Params] = None,
                  networking: typing.Optional[Patient_Networking] = None,
                  prefs_file: Path = Directories.prefs_file,
                  **kwargs):
@@ -105,11 +107,6 @@ class Patient(Runtime):
         else:
             self.pupil_extractor_params = pupil_extractor_params
 
-        if collection_params is None:
-            self.collection_params = self.prefs.collection_params
-        else:
-            self.collection_params = collection_params
-
         if networking is None:
             self.networking_prefs = self.prefs.networking
         else:
@@ -129,12 +126,20 @@ class Patient(Runtime):
         """Pupils for the current sample!"""
         self._trial_active = threading.Event()
         """Event that's set while a trial is running!"""
+        self._exam_params = None # type: typing.Optional[Exam_Params]
+        """Paramters that govern the audiometry exam!"""
+        self._exam_active = threading.Event()
+        """
+        Event that's set while an exam is running
+        """
 
         # --------------------------------------------------
         # Networking callbacks
         # --------------------------------------------------
         self.callbacks = {
-            ''
+            'CONTROL': self.cb_control,
+            'START': self.cb_start,
+            'STOP': self.cb_stop
         }
 
 
@@ -156,7 +161,7 @@ class Patient(Runtime):
 
 
 
-    def trial(self):
+    def trial(self) -> Sample:
         """
         One complete loop through a probe cycle. In order:
 
@@ -188,7 +193,7 @@ class Patient(Runtime):
         """
         if self._trial_active.is_set():
             self.logger.exception('Previous trial still running')
-            return
+            raise RuntimeError('Previous trial still running')
 
         self.logger.debug('-------------------')
         self.logger.debug('new trial started')
@@ -211,6 +216,7 @@ class Patient(Runtime):
             self.logger.debug(f'Sample collected - {sample}')
 
         self._trial_active.clear()
+        return sample
 
     def next_sound(self) -> Sound:
         """
@@ -318,7 +324,7 @@ class Patient(Runtime):
         """
         self._pupils = []
         self._frame = []
-        end_time = start_time + timedelta(seconds=self.collection_params.collection_wait)
+        end_time = start_time + timedelta(seconds=self._exam_params.collection_wait)
         finished = False
         passed_wait_time = False
         try:
@@ -363,8 +369,85 @@ class Patient(Runtime):
             message (bytes): a serialized :class:`.networking.messages.Message` object
         """
         message = Message.from_serialized(message)
+        if message.key in self.callbacks.keys():
+            self.logger.debug(f'Calling callback for {message.key} with {message.value}')
+            self.callbacks[message.key](message.value)
+        else:
+            raise ValueError(f'No callback for message key {message.key}')
 
 
+
+    def cb_control(self, control:typing.Union[GUI_Control, typing.Dict[str, GUI_Control]]):
+        """
+        Handle GUI Control messages.
+
+        Args:
+            control ():
+
+        Returns:
+
+        """
+        if isinstance(control, dict):
+            control = control['control']
+
+        if control.key == 'amplitude_range':
+            pass
+        elif control.key == 'frequency_range':
+            pass
+        else:
+            raise ValueError(f'Dont know how to handle control type {control.key}')
+
+    def cb_start(self, params:typing.Union[Exam_Params, typing.Dict[str, Exam_Params]]):
+        """
+        Start the exam!
+
+        Args:
+            params (:class:`.types.exam.Exam_Params`): Parameters to run the exam!
+        """
+        if isinstance(params, dict):
+            params = params['params']
+
+        if self._exam_active.is_set():
+            self.logger.exception("Cannot start exam while another is already active!")
+            return
+        self._exam_active.set()
+
+        # make new model
+        self.model = self._init_model(self.audiogram_model, params)
+
+        while self._exam_active.is_set():
+            kernel = None
+            if isinstance(self.model, model.Gaussian_Process):
+                kernel = self.model.model.clone_kernel()
+
+            sample = self.trial()
+            msg = Message(
+                key='DATA',
+                sample=sample,
+                kernel=kernel
+            )
+            self.node.send(msg, to='clinician:control')
+            self.logger.info(f'Sent data from trial back to clinician')
+
+            waitfor = params.iti + ((np.random.rand()-0.5)*params.iti_jitter*params.iti)
+            self.logger.debug(f"Waiting for {waitfor} seconds")
+            sleep(waitfor)
+
+
+
+
+    def cb_stop(self, value=None):
+        """
+        Stop the exam
+        Args:
+            value ():
+
+        Returns:
+
+        """
+        if not self._exam_active.is_set():
+            self.logger.warning('Requested exam stop, but no exam is running')
+        self._exam_active.clear()
 
 
     def _update_pupil_params(self, pupils: typing.List[Pupil]) -> Pupil_Params:
@@ -408,10 +491,11 @@ class Patient(Runtime):
 
         return client
 
-    def _init_model(self, model_params: Psychoacoustic_Model) -> model.Audiogram_Model:
+    def _init_model(self, model_params: Psychoacoustic_Model,
+                    exam_params:typing.Optional[Exam_Params]=None) -> model.Audiogram_Model:
         # get model class
         model_class = getattr(model, model_params.model_type)
-        return model_class(*model_params.args, **model_params.kwargs)
+        return model_class(*model_params.args, **model_params.kwargs, exam_params=exam_params)
 
     def _init_picam(self, picam_params: Picamera_Params, networking:Socket) -> Picamera_Process:
         picam_proc = Picamera_Process(

@@ -13,7 +13,9 @@ GUI_PARAM_KEY = typing.Literal[
     'amplitude_range',
     'max_amplitude',
     'frequency_step',
-    'frequency_range'
+    'frequency_range',
+    'iti',
+    'iti_jitter'
 ]
 """
 Possible keys for GUI parameters. 
@@ -109,6 +111,19 @@ class Control_Panel_Params(PerceptivoType):
         default=GUI_Range(min=0,max=8000,n=17),
         kwargs={'limits':(0,20000)}
     )
+    iti = GUI_Param(
+        key='iti',
+        name="Inter-Trial Interval (s)",
+        widget_type='float',
+        default=5,
+    )
+    iti_jitter = GUI_Param(
+        key='iti_jitter',
+        name='Inter-Trial Jitter (proportion of ITI)',
+        widget_type='float',
+        default=0.1
+    )
+
 
 
 class GUI_Params(PerceptivoType):

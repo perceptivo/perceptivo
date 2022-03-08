@@ -4,7 +4,7 @@ Main Gui container for Perceptivo Clinician interface
 
 """
 import sys
-from typing import Optional
+from typing import Optional, Dict
 import cv2
 
 import numpy as np
@@ -23,6 +23,9 @@ from perceptivo.data.logging import init_logger
 
 from perceptivo.types.networking import Clinician_Networking, Socket
 from perceptivo.types.video import Frame
+from perceptivo.types.gui import GUI_Control
+from perceptivo.types.psychophys import Samples
+from perceptivo.types.exam import Exam_Params
 
 class Perceptivo_Clinician(QtWidgets.QMainWindow):
     """
@@ -30,6 +33,7 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
     """
     quitting = Signal()
     launched = Signal()
+    controlChanged = Signal(GUI_Control)
 
     def __init__(self,
                  prefs: Clinician_Prefs,
@@ -56,6 +60,8 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         self.vid_pupil = None # type: Optional[widgets.Video]
         self.vid_patient = None # type: Optional[widgets.Video]
         self.audiogram = None # type: Optional[widgets.Audiogram]
+        self.samples = None # type: Optional[Samples]
+        self._started = False
 
         self.frame_receiver = None # type: Optional[Perceptivo_Clinician.Frame_Receiver]
 
@@ -65,7 +71,8 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         }
 
         self.callbacks = {
-            'CONNECT': self.cb_connect
+            'CONNECT': self.cb_connect,
+            'DATA': self.cb_data
         }
 
         self.senders = []
@@ -126,23 +133,77 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         )
 
     def _init_signals(self):
+        # signals coming into the GUI
         self.control_panel.valueChanged.connect(self.audiogram.gridChanged)
         self.control_panel.scaleChanged.connect(self.audiogram.scaleChanged)
 
+        self.control_panel.valueChanged.connect(self.changeControl)
+
+
         self.control_panel.startToggled.connect(self.setStarted)
+
+        # Signals leaving the GUI
 
         if 'pytest' not in sys.modules:
             self.frame_receiver.frame.connect(self.drawFrame)
             self.quitting.connect(self.frame_receiver.quitting)
 
+    @Slot(GUI_Control)
+    def changeControl(self, value:GUI_Control):
+        """
+        Receive changed control settings from widgets, etc. and emit them to
+        the patient.
 
-    def update_grid(self, value):
-        pass
+        Also emits from the :attr:`.controlChanged` signal
+
+        Args:
+            value (:class:`.types.gui.GUI_Control`): Control value that changed
+        """
+        # create a message to send to patient
+        msg = Message(control=value, key="CONTROL")
+        self.node.send(
+            to="patient:control",
+            msg=msg
+        )
+        self.controlChanged.emit(value)
 
 
     @Slot(bool)
     def setStarted(self, value:bool):
         self.logger.debug(f"Setting start value to {value}")
+        if value:
+            # starting!
+            if self._started:
+                self.logger.exception("Already started exam")
+                return
+            self._start_exam()
+            self._started = True
+        else:
+            # stopping!
+            if not self._started:
+                self.logger.exception("Exam not started, cant stop")
+                return
+            self._stop_exam()
+            self._started = False
+
+    @property
+    def exam_params(self) -> Exam_Params:
+        return Exam_Params(
+            frequencies=self.control_panel.widgets['frequency_range'].value(),
+            amplitudes=self.control_panel.widgets['amplitude_range'].value(),
+            iti=self.control_panel.widgets['iti'].value(),
+            iti_jitter=self.control_panel.widgets['iti'].value()
+        )
+
+
+    def _start_exam(self):
+        msg = Message(key='START', params=self.exam_params)
+        self.node.send(msg=msg, to='patient:control')
+
+
+    def _stop_exam(self):
+        self.node.send(Message(key='STOP'), to="patient:control")
+        self.logger.debug('sent stop message to patient')
 
     @property
     def settings(self):
@@ -167,6 +228,10 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
 
             self.logger.debug(f'Received message: {msg}')
 
+            if msg.key in self.callbacks.keys():
+                self.callbacks[msg.key](msg)
+                self.logger.debug(f"Called callback for key {msg.key}")
+
         except zmq.ZMQError as e:
             if str(e) == 'Resource temporarily unavailable':
                 pass
@@ -188,6 +253,17 @@ class Perceptivo_Clinician(QtWidgets.QMainWindow):
         """
         self.senders.append(msg.value['id'])
         self.logger.info(f'Received connection from {msg.value["id"]}')
+
+    def cb_data(self, msg:Message):
+        """
+        Receive data from the patient during an exam
+
+        Message that contains a :class:`.types.psychophys.Sample`
+        """
+        sample = msg.value['sample']
+        kernel = msg.value['kernel']
+
+
 
     def closeEvent(self, event):
         self.quitting.emit()

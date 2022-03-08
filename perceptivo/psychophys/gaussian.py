@@ -4,7 +4,7 @@ Refactoring of :class:`sklearn.gaussian_process.GaussianProcessClassifier` to al
 
 from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.gaussian_process._gpc import _BinaryGaussianProcessClassifierLaplace
-from sklearn.gaussian_process.kernels import RBF, CompoundKernel, ConstantKernel as C
+from sklearn.gaussian_process.kernels import RBF, CompoundKernel, ConstantKernel as C, Kernel
 from sklearn.utils import check_random_state
 from sklearn.utils.validation import check_is_fitted
 from sklearn.utils.optimize import _check_optimize_result
@@ -192,3 +192,7 @@ class IterativeGPC(GaussianProcessClassifier):
         )
 
         return self
+
+    def clone_kernel(self) -> Kernel:
+        k = clone(self.kernel_) # type: Kernel
+        return k
