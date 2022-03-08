@@ -8,7 +8,6 @@ from pathlib import Path
 from datetime import datetime
 import importlib
 import pdb
-import blosc2
 import cv2
 
 import numpy as np
