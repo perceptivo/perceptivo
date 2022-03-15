@@ -16,4 +16,6 @@
 
 ## Documentation
 
-- 
+- Preferences and how they interact with the different runtimes.
+- How to use logging
+- Directory structure within the repository
