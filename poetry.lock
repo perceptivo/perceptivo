@@ -70,6 +70,23 @@ reference = "dev"
 resolved_reference = "0a2f081369b794920e62c1afee9e8cbf2e681dd6"
 
 [[package]]
+name = "autodoc-pydantic"
+version = "1.8.0"
+description = "Seamlessly integrate pydantic models in your Sphinx documentation."
+category = "main"
+optional = true
+python-versions = ">=3.6,<4.0.0"
+
+[package.dependencies]
+pydantic = ">=1.5"
+Sphinx = ">=3.4"
+
+[package.extras]
+dev = ["coverage (>=5,<6)", "flake8 (>=3,<4)", "pytest (>=6,<7)", "sphinx-copybutton (>=0.4,<0.5)", "sphinx-rtd-theme (>=1.0,<2.0)", "sphinx-tabs (>=3,<4)", "sphinxcontrib-mermaid (>=0.7,<0.8)", "tox (>=3,<4)"]
+docs = ["sphinx-copybutton (>=0.4,<0.5)", "sphinx-rtd-theme (>=1.0,<2.0)", "sphinx-tabs (>=3,<4)", "sphinxcontrib-mermaid (>=0.7,<0.8)"]
+test = ["coverage (>=5,<6)", "pytest (>=6,<7)"]
+
+[[package]]
 name = "babel"
 version = "2.9.1"
 description = "Internationalization utilities"
@@ -295,14 +312,6 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
-name = "jsonpointer"
-version = "2.3"
-description = "Identify specific nodes in a JSON document (RFC 6901)"
-category = "main"
-optional = true
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-
-[[package]]
 name = "kiwisolver"
 version = "1.3.2"
 description = "A fast implementation of the Cassowary constraint solver"
@@ -371,19 +380,19 @@ setuptools_scm = ">=4"
 
 [[package]]
 name = "mdit-py-plugins"
-version = "0.3.0"
+version = "0.3.1"
 description = "Collection of plugins for markdown-it-py"
 category = "main"
 optional = true
-python-versions = "~=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 markdown-it-py = ">=1.0.0,<3.0.0"
 
 [package.extras]
-code-style = ["pre-commit (==2.6)"]
-rtd = ["myst-parser (>=0.14.0,<0.15.0)", "sphinx-book-theme (>=0.1.0,<0.2.0)"]
-testing = ["coverage", "pytest (>=3.6,<4)", "pytest-cov", "pytest-regressions"]
+code-style = ["pre-commit"]
+rtd = ["attrs", "myst-parser (>=0.16.1,<0.17.0)", "sphinx-book-theme (>=0.1.0,<0.2.0)"]
+testing = ["coverage", "pytest", "pytest-cov", "pytest-regressions"]
 
 [[package]]
 name = "mdurl"
@@ -403,25 +412,26 @@ python-versions = "*"
 
 [[package]]
 name = "myst-parser"
-version = "0.16.1"
+version = "0.18.1"
 description = "An extended commonmark compliant parser, with bridges to docutils & sphinx."
 category = "main"
 optional = true
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
-docutils = ">=0.15,<0.18"
+docutils = ">=0.15,<0.20"
 jinja2 = "*"
 markdown-it-py = ">=1.0.0,<3.0.0"
-mdit-py-plugins = ">=0.3.0,<0.4.0"
+mdit-py-plugins = ">=0.3.1,<0.4.0"
 pyyaml = "*"
-sphinx = ">=3.1,<5"
+sphinx = ">=4,<6"
+typing-extensions = "*"
 
 [package.extras]
 code-style = ["pre-commit (>=2.12,<3.0)"]
 linkify = ["linkify-it-py (>=1.0,<2.0)"]
-rtd = ["ipython", "sphinx-book-theme (>=0.1.0,<0.2.0)", "sphinx-panels (>=0.5.2,<0.6.0)", "sphinxcontrib-bibtex (>=2.1,<3.0)", "sphinxcontrib.mermaid (>=0.6.3,<0.7.0)", "sphinxext-opengraph (>=0.4.2,<0.5.0)", "sphinxext-rediraffe (>=0.2,<1.0)"]
-testing = ["beautifulsoup4", "coverage", "docutils (>=0.17.0,<0.18.0)", "pytest (>=3.6,<4)", "pytest-cov", "pytest-regressions"]
+rtd = ["ipython", "sphinx-book-theme", "sphinx-design", "sphinxcontrib.mermaid (>=0.7.1,<0.8.0)", "sphinxext-opengraph (>=0.6.3,<0.7.0)", "sphinxext-rediraffe (>=0.2.7,<0.3.0)"]
+testing = ["beautifulsoup4", "coverage[toml]", "pytest (>=6,<7)", "pytest-cov", "pytest-param-files (>=0.3.4,<0.4.0)", "pytest-regressions", "sphinx (<5.2)", "sphinx-pytest"]
 
 [[package]]
 name = "networkx"
@@ -942,32 +952,6 @@ lint = ["docutils-stubs", "flake8 (>=3.5.0)", "isort", "mypy (>=0.931)", "types-
 test = ["cython", "html5lib", "pytest", "pytest-cov", "typed-ast"]
 
 [[package]]
-name = "sphinx-jsonschema"
-version = "1.19.1"
-description = "Sphinx extension to display JSON Schema"
-category = "main"
-optional = true
-python-versions = "*"
-
-[package.dependencies]
-docutils = "*"
-jsonpointer = "*"
-pyyaml = "*"
-requests = "*"
-
-[[package]]
-name = "sphinx-pydantic"
-version = "0.1.1"
-description = "Generate Sphinx documentation from PyDantic objects."
-category = "main"
-optional = true
-python-versions = ">=3.6.0"
-
-[package.dependencies]
-pydantic = "*"
-sphinx-jsonschema = "*"
-
-[[package]]
 name = "sphinxcontrib-applehelp"
 version = "1.0.2"
 description = "sphinxcontrib-applehelp is a sphinx extension which outputs Apple help books"
@@ -1172,7 +1156,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 
 [extras]
 clinician = ["PySide6", "pyqtgraph"]
-docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex", "matplotlib", "SoundCard"]
+docs = ["sphinx", "furo", "myst-parser", "sphinxcontrib-bibtex", "matplotlib", "SoundCard", "autodoc_pydantic"]
 patient = ["SoundCard", "picamera"]
 plotting = ["matplotlib"]
 tests = ["pytest", "pytest-qt", "PySide6", "pyqtgraph"]
@@ -1180,7 +1164,7 @@ tests = ["pytest", "pytest-qt", "PySide6", "pyqtgraph"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9"
-content-hash = "4a19c9b0dc19b9feccbae81fc11731281f556de7de91b70b6c550f715a62dd90"
+content-hash = "af3b8fd343518cdf851845111908fcff91dc8629d400e540a07a95bcaa5672e7"
 
 [metadata.files]
 alabaster = [
@@ -1196,6 +1180,10 @@ attrs = [
     {file = "attrs-21.4.0.tar.gz", hash = "sha256:626ba8234211db98e869df76230a137c4c40a12d72445c45d5f5b716f076e2fd"},
 ]
 auto-pi-lot = []
+autodoc-pydantic = [
+    {file = "autodoc_pydantic-1.8.0-py3-none-any.whl", hash = "sha256:f1bf9318f37369fec906ab523ebe65c1894395a6fc859dbc6fd02ffd90d3242f"},
+    {file = "autodoc_pydantic-1.8.0.tar.gz", hash = "sha256:77da1cbbe4434fa9963f85a1555c63afff9a4acec06b318dc4f54c4f28a04f2c"},
+]
 babel = [
     {file = "Babel-2.9.1-py2.py3-none-any.whl", hash = "sha256:ab49e12b91d937cd11f0b67cb259a57ab4ad2b59ac7a3b41d6c06c0ac5b0def9"},
     {file = "Babel-2.9.1.tar.gz", hash = "sha256:bc0c176f9f6a994582230df350aa6e05ba2ebe4b3ac317eab29d9be5d2768da0"},
@@ -1335,10 +1323,6 @@ joblib = [
     {file = "joblib-1.1.0-py2.py3-none-any.whl", hash = "sha256:f21f109b3c7ff9d95f8387f752d0d9c34a02aa2f7060c2135f465da0e5160ff6"},
     {file = "joblib-1.1.0.tar.gz", hash = "sha256:4158fcecd13733f8be669be0683b96ebdbbd38d23559f54dca7205aea1bf1e35"},
 ]
-jsonpointer = [
-    {file = "jsonpointer-2.3-py2.py3-none-any.whl", hash = "sha256:51801e558539b4e9cd268638c078c6c5746c9ac96bc38152d443400e4f3793e9"},
-    {file = "jsonpointer-2.3.tar.gz", hash = "sha256:97cba51526c829282218feb99dab1b1e6bdf8efd1c43dc9d57be093c0d69c99a"},
-]
 kiwisolver = [
     {file = "kiwisolver-1.3.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:1d819553730d3c2724582124aee8a03c846ec4362ded1034c16fb3ef309264e6"},
     {file = "kiwisolver-1.3.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:8d93a1095f83e908fc253f2fb569c2711414c0bfd451cab580466465b235b470"},
@@ -1473,8 +1457,8 @@ matplotlib = [
     {file = "matplotlib-3.5.1.tar.gz", hash = "sha256:b2e9810e09c3a47b73ce9cab5a72243a1258f61e7900969097a817232246ce1c"},
 ]
 mdit-py-plugins = [
-    {file = "mdit-py-plugins-0.3.0.tar.gz", hash = "sha256:ecc24f51eeec6ab7eecc2f9724e8272c2fb191c2e93cf98109120c2cace69750"},
-    {file = "mdit_py_plugins-0.3.0-py3-none-any.whl", hash = "sha256:b1279701cee2dbf50e188d3da5f51fee8d78d038cdf99be57c6b9d1aa93b4073"},
+    {file = "mdit-py-plugins-0.3.1.tar.gz", hash = "sha256:3fc13298497d6e04fe96efdd41281bfe7622152f9caa1815ea99b5c893de9441"},
+    {file = "mdit_py_plugins-0.3.1-py3-none-any.whl", hash = "sha256:606a7f29cf56dbdfaf914acb21709b8f8ee29d857e8f29dcc33d8cb84c57bfa1"},
 ]
 mdurl = [
     {file = "mdurl-0.1.0-py3-none-any.whl", hash = "sha256:40654d6dcb8d21501ed13c21cc0bd6fc42ff07ceb8be30029e5ae63ebc2ecfda"},
@@ -1517,8 +1501,8 @@ msgpack = [
     {file = "msgpack-1.0.3.tar.gz", hash = "sha256:51fdc7fb93615286428ee7758cecc2f374d5ff363bdd884c7ea622a7a327a81e"},
 ]
 myst-parser = [
-    {file = "myst-parser-0.16.1.tar.gz", hash = "sha256:a6473b9735c8c74959b49b36550725464f4aecc4481340c9a5f9153829191f83"},
-    {file = "myst_parser-0.16.1-py3-none-any.whl", hash = "sha256:617a90ceda2162ebf81cd13ad17d879bd4f49e7fb5c4f177bb905272555a2268"},
+    {file = "myst-parser-0.18.1.tar.gz", hash = "sha256:79317f4bb2c13053dd6e64f9da1ba1da6cd9c40c8a430c447a7b146a594c246d"},
+    {file = "myst_parser-0.18.1-py3-none-any.whl", hash = "sha256:61b275b85d9f58aa327f370913ae1bec26ebad372cc99f3ab85c8ec3ee8d9fb8"},
 ]
 networkx = [
     {file = "networkx-2.7-py3-none-any.whl", hash = "sha256:836544e160f1b7ebf720c01667b7d2f5724c0424374aef2b665ed64dd14b0c7d"},
@@ -2007,13 +1991,6 @@ soupsieve = [
 sphinx = [
     {file = "Sphinx-4.4.0-py3-none-any.whl", hash = "sha256:5da895959511473857b6d0200f56865ed62c31e8f82dd338063b84ec022701fe"},
     {file = "Sphinx-4.4.0.tar.gz", hash = "sha256:6caad9786055cb1fa22b4a365c1775816b876f91966481765d7d50e9f0dd35cc"},
-]
-sphinx-jsonschema = [
-    {file = "sphinx-jsonschema-1.19.1.tar.gz", hash = "sha256:b2385fe1c7acf2e759152aefed0cb17c920645b2a75c9934000c9c528e7d53c1"},
-]
-sphinx-pydantic = [
-    {file = "sphinx-pydantic-0.1.1.tar.gz", hash = "sha256:a830e4f07fe88fbdfe3edecc2f52ef133cde2def7cb882a3f22780f34963b0fb"},
-    {file = "sphinx_pydantic-0.1.1-py3-none-any.whl", hash = "sha256:371487ad81250d8bc5b944a2936b33c10ff88af7188d5be0ee6c4b46bb70254a"},
 ]
 sphinxcontrib-applehelp = [
     {file = "sphinxcontrib-applehelp-1.0.2.tar.gz", hash = "sha256:a072735ec80e7675e3f432fcae8610ecf509c5f1869d17e2eecff44389cdbc58"},
