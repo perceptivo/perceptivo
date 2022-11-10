@@ -3,19 +3,20 @@ entrypoint for patient interface
 """
 import sys
 import typing
-from typing import Optional
+from typing import Optional, List
 from time import sleep
 from pathlib import Path
 import threading
 from datetime import datetime, timedelta
 from queue import Empty
 import numpy as np
+import argparse
 
 import soundcard as sc
 
 from perceptivo.prefs import Patient_Prefs
 from perceptivo import Directories
-from perceptivo.runtimes.runtime import Runtime
+from perceptivo.runtimes.runtime import Runtime, base_args
 from perceptivo.sound import server
 from perceptivo.video.cameras import Picamera_Process
 from perceptivo.video.pupil import Pupil_Extractors, EllipseExtractor_Params, get_extractor
@@ -80,7 +81,6 @@ class Patient(Runtime):
         self.prefs = self.load_prefs(self.prefs_file) # type: Patient_Prefs
 
         super(Patient, self).__init__(**kwargs)
-
 
         if audio_config is None:
             self.audio_config = self.prefs.Audio_Config
@@ -526,9 +526,26 @@ class Patient(Runtime):
         return node
 
 
+def patient_parser(manual_args:Optional[List[str]] = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser('Perceptivo Patient Runtime')
+    parser = base_args(parser)
+
+    # Add any additional arguments to parse here
+
+    if manual_args is None:
+        args = parser.parse_args()
+    else:
+        args = parser.parse_args(manual_args)
+    return args
+
+
+
 
 
 def main():
+
+    args = patient_parser()
+
     try:
         patient = Patient()
         patient.quitting.wait()

@@ -69,7 +69,6 @@ class Runtime(Perceptivo_Object):
         if not Directories.user_dir.exists():
 
             for val in Directories().__dict__.values():
-                print(val)
                 if len(val.suffixes) == 0:
                     val.mkdir(parents=True, exist_ok=True)
 
@@ -85,6 +84,14 @@ class Runtime(Perceptivo_Object):
 
         return prefs
 
+    @classmethod
+    def make_default_prefs(cls, path:Optional[Path] = None):
+        if path is None:
+            path = Directories.prefs_file
+
+        prefs = cls.prefs_class()
+
+
 
 def base_args(parser:argparse.ArgumentParser) -> argparse.ArgumentParser:
     parser.add_argument(
@@ -92,5 +99,10 @@ def base_args(parser:argparse.ArgumentParser) -> argparse.ArgumentParser:
         default=Directories.prefs_file,
         type=Path,
         help="Location of the prefs.json file, (usually ~/.perceptivo/prefs.json)"
+    )
+    parser.add_argument(
+        '--make-default',
+        action='store_true',
+        help=f"Create a default prefs file. If --prefs is not passed, will be created in default prefs file location ({str(Directories.prefs_file)})"
     )
     return parser

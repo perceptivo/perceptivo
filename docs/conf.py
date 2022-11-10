@@ -42,7 +42,8 @@ extensions = [
     'sphinx.ext.graphviz',
     'myst_parser',
     'sphinxcontrib.bibtex',
-    'matplotlib.sphinxext.plot_directive'
+    'matplotlib.sphinxext.plot_directive',
+    'sphinxcontrib.autodoc_pydantic'
 ]
 
 # --------------------------------------------------
@@ -76,6 +77,14 @@ autodoc_default_options = {
 autodoc_mock_imports = ['autopilot', 'PySide6', 'pyqtgraph', 'pyzmq', 'zmq', 'soundcard']
 
 autosummary_generate = False
+
+# --------------------------------------------------
+# MyST
+# --------------------------------------------------
+
+myst_enable_extensions = [
+    'tasklist'
+]
 
 # --------------------------------------------------
 # intersphinx

@@ -2,13 +2,20 @@
 
 A hardware/software package to perform audiology exams by measuring pupil dilation.
 
+## Organization
 
+This documentation is split into three sections:
+
+* Narrative documentation: descriptions of how the component systems work and why
+* Meta: high-level docs for developers & coordinating development
+* API-level documentation: class, method, and function level documentation
+
+## Narrative Docs
 
 ```{toctree}
 ---
 maxdepth: 1
 caption: Hardware
-hidden: true
 ---
 hardware/overview
 hardware/speaker_candidates
@@ -16,19 +23,36 @@ hardware/speaker_candidates
 
 ```{toctree}
 ---
-maxdepth: 2
+maxdepth: 1
 caption: Software
-hidden: true
 ---
 software/overview
 software/installation
+software/configuration
 ```
+
+## Meta
 
 ```{toctree}
 ---
-maxdepth: 2
+maxdepth: 1
+caption: Meta
+---
+status/index
+dev/index
+references
+{ref}`genindex`
+{ref}`modindex`
+```
+
+## API Docs
+
+Modules are described in the [Software Overview](software/overview.md)
+
+```{toctree}
+---
+maxdepth: 1
 caption: API
-hidden: true
 ---
 api/runtimes/index
 api/data/index
@@ -44,17 +68,6 @@ api/prefs
 api/root
 ```
 
-```{toctree}
----
-maxdepth: 2
-caption: Meta
-hidden: true
----
-todo
-references
-{ref}`genindex`
-{ref}`modindex`
-```
 
 
 

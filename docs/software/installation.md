@@ -60,37 +60,20 @@ sudo apt install -y \
   libtiff5
 ```
 
-Install rust (needed to install poetry):
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source ~/.bashrc
-```
+Upgrade pip:
 
-You may need to add the local bin folder to PATH
-```bash
-echo 'export PATH=/home/pi/.local/bin:$PATH' >> ~/.bashrc
-source ~/.bashrc
-```
-
-Install poetry:
 ```bash
 pip install --upgrade pip
-pip install poetry
 ```
 
 
 
 ### Install perceptivo
 
-Clone the repository
+Clone the repository and enter the directory
 ```bash
 git clone https://github.com/perceptivo/perceptivo
-```
-
-install perceptivo
-```
 cd perceptivo
-poetry shell
 ```
 
 Depending on which raspi this is, you need to specify some additional, optional packages:
